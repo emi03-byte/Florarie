@@ -1,0 +1,146 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  min-height: 280px;
+  animation: rise 0.35s ease both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.emptyBox {
+  margin: auto 0;
+  text-align: center;
+  padding: 1.5rem 1rem;
+}
+
+.emptyTitle {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--leaf-deep);
+}
+
+.empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.photo {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--mist);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.badge {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rose);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.price {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--leaf-deep);
+}
+
+.section h3 {
+  margin: 0 0 0.55rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.section ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.section li {
+  line-height: 1.4;
+}
+
+.recipe {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.addBtn {
+  margin-top: auto;
+  padding: 1rem 1.15rem;
+  border: none;
+  background: var(--leaf-deep);
+  color: #f7faf6;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.addBtn:hover {
+  background: var(--leaf);
+  transform: translateY(-1px);
+}
+
+.addBtn:focus-visible {
+  outline: 2px solid var(--rose);
+  outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .top {
+    grid-template-columns: 1fr;
+  }
+
+  .photo {
+    max-width: 220px;
+  }
+}

@@ -1,0 +1,207 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(280px, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.form,
+.listWrap {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 1.35rem;
+}
+
+.form h2,
+.listWrap h2 {
+  margin: 0 0 1rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.form input,
+.form textarea {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+  resize: vertical;
+}
+
+.form input:focus,
+.form textarea:focus {
+  outline: 2px solid var(--leaf);
+  outline-offset: 1px;
+}
+
+.preview {
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--mist);
+}
+
+.ingBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ingLabel {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.ingRow {
+  display: grid;
+  grid-template-columns: 4rem 5rem 1fr 2rem;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.ingRow input {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  padding: 0.55rem 0.6rem;
+  font: inherit;
+  min-width: 0;
+}
+
+.ingRemove {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.ingAdd {
+  align-self: flex-start;
+  border: 1px dashed var(--line);
+  background: transparent;
+  color: var(--leaf-deep);
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.error {
+  margin: 0;
+  color: #a33a3a;
+  font-size: 0.9rem;
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.save,
+.cancel,
+.itemActions button {
+  border: none;
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save {
+  background: var(--leaf-deep);
+  color: #f7faf6;
+}
+
+.cancel {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.itemMain {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.itemThumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--mist);
+}
+
+.itemName {
+  margin: 0;
+  font-weight: 600;
+}
+
+.itemPrice {
+  margin: 0.2rem 0 0;
+  color: var(--leaf-deep);
+  font-weight: 700;
+}
+
+.itemActions {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.itemActions button {
+  background: var(--mist);
+  color: var(--ink);
+  padding: 0.45rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.delete {
+  color: #8a3030 !important;
+}
+
+@media (max-width: 800px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}

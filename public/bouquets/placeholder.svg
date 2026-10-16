@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="img" aria-label="Fr poz">
+  <rect width="640" height="640" fill="#e4ebe4"/>
+  <circle cx="320" cy="250" r="70" fill="#9bb39e"/>
+  <circle cx="250" cy="290" r="55" fill="#7a9e7e"/>
+  <circle cx="390" cy="290" r="55" fill="#7a9e7e"/>
+  <rect x="300" y="320" width="40" height="120" rx="12" fill="#4f7a55"/>
+  <text x="320" y="500" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#5f6d63">Fr poz</text>
+</svg>

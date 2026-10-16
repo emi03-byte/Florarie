@@ -1,0 +1,162 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 1.25rem;
+  animation: rise 0.35s ease both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.panelHead h2 {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+}
+
+.panelHead p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.empty {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.bouquetList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.bouquetRow {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 0.75rem 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.thumb {
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--mist);
+}
+
+.bouquetInfo {
+  min-width: 0;
+}
+
+.bouquetName {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.bouquetMeta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.bouquetMeta strong {
+  color: var(--leaf-deep);
+  font-size: 1.1rem;
+}
+
+.actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.actions button,
+.markGroup button {
+  border: 1px solid var(--line);
+  background: var(--mist);
+  color: var(--ink);
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.actions button:hover,
+.markGroup button:hover {
+  border-color: var(--leaf);
+}
+
+.allBtn {
+  background: var(--leaf-deep) !important;
+  border-color: var(--leaf-deep) !important;
+  color: #f7faf6 !important;
+}
+
+.markGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.markGroup input {
+  width: 4rem;
+  padding: 0.45rem 0.5rem;
+  border: 1px solid var(--line);
+  font: inherit;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.65rem 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.qty {
+  font-weight: 700;
+  color: var(--leaf-deep);
+  font-size: 1.1rem;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
