@@ -6,9 +6,13 @@
 }
 
 .panel {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  padding: 1.25rem;
+  padding: 1.35rem;
+  border-radius: var(--radius);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
   animation: rise 0.35s ease both;
 }
 
@@ -98,12 +102,13 @@
 
 .actions button,
 .markGroup button {
-  border: 1px solid var(--line);
-  background: var(--mist);
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.55);
   color: var(--ink);
   padding: 0.5rem 0.75rem;
   font-weight: 600;
   cursor: pointer;
+  border-radius: 999px;
 }
 
 .actions button:hover,
@@ -112,9 +117,9 @@
 }
 
 .allBtn {
-  background: var(--leaf-deep) !important;
-  border-color: var(--leaf-deep) !important;
-  color: #f7faf6 !important;
+  background: var(--accent-deep) !important;
+  border-color: var(--accent-deep) !important;
+  color: #fff8f7 !important;
 }
 
 .markGroup {
@@ -151,7 +156,7 @@
 
 .qty {
   font-weight: 700;
-  color: var(--leaf-deep);
+  color: var(--accent-deep);
   font-size: 1.1rem;
 }
 

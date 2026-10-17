@@ -2,10 +2,17 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 1.25rem;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  min-height: 280px;
+  padding: 1.5rem 1.4rem;
+  min-height: 420px;
+  max-height: calc(100vh - 6rem);
+  position: sticky;
+  top: 5.25rem;
+  border-radius: 20px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
 }
 
 .title {
@@ -14,7 +21,8 @@
   align-items: center;
   gap: 0.5rem;
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.7rem;
+  font-weight: 600;
 }
 
 .count {
@@ -25,10 +33,10 @@
   height: 1.5rem;
   padding: 0 0.4rem;
   border-radius: 999px;
-  background: var(--rose);
+  background: var(--accent-deep);
   color: #fff;
   font-family: var(--font-body);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
@@ -62,8 +70,9 @@
   width: 56px;
   height: 56px;
   overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--mist);
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .lineBody {
@@ -90,10 +99,11 @@
   line-height: 1;
   cursor: pointer;
   padding: 0 0.2rem;
+  border-radius: 8px;
 }
 
 .remove:hover {
-  color: var(--rose);
+  color: var(--accent);
 }
 
 .lineBottom {
@@ -107,8 +117,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.4);
   padding: 0.15rem 0.35rem;
+  border-radius: 999px;
 }
 
 .qty button {
@@ -119,6 +131,7 @@
   cursor: pointer;
   font-size: 1rem;
   color: var(--ink);
+  border-radius: 999px;
 }
 
 .qty span {
@@ -129,7 +142,7 @@
 
 .linePrice {
   font-weight: 600;
-  color: var(--leaf-deep);
+  color: var(--ink);
 }
 
 .footer {
@@ -148,22 +161,28 @@
 }
 
 .totalRow strong {
-  font-size: 1.25rem;
-  color: var(--leaf-deep);
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--ink);
 }
 
 .checkout {
-  padding: 0.85rem 1.1rem;
+  padding: 0.95rem 1.1rem;
   border: none;
-  background: var(--rose);
+  border-radius: 999px;
+  background: var(--accent-deep);
   color: #fffaf8;
   font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: filter 0.2s ease, transform 0.15s ease;
 }
 
 .checkout:hover:not(:disabled) {
-  filter: brightness(1.05);
+  filter: brightness(1.06);
   transform: translateY(-1px);
 }
 

@@ -118,6 +118,7 @@ function App() {
       <div className="bg-wash" aria-hidden="true" />
 
       <header className="topbar no-print">
+        <div className="nav-spacer" aria-hidden="true" />
         <div className="brand-block">
           <p className="brand">Florărie</p>
           <p className="tagline">Punct de vânzare</p>
@@ -142,35 +143,31 @@ function App() {
             className={view === 'admin' ? 'active' : ''}
             onClick={() => setView('admin')}
           >
-            Admin catalog
+            Admin
           </button>
         </nav>
       </header>
 
       <main className="main">
         {view === 'vanzare' && (
-          <section className="sales-layout">
-            <div className="sales-main">
-              <div className="section-head">
-                <h1>Buchete</h1>
-                <p>
-                  Vezi poza și prețul, apasă pe buchet pentru rețetă, apoi adaugă-l în coș.
-                </p>
+          <section className="sales-shop">
+            <div className="sales-layout">
+              <div className="sales-main">
+                <BouquetGrid
+                  bouquets={catalog}
+                  selectedId={selectedId}
+                  onSelect={(b) => setSelectedId(b.id)}
+                />
+                <BouquetDetail bouquet={selected} onAdd={addToCart} />
               </div>
-              <BouquetGrid
-                bouquets={catalog}
-                selectedId={selectedId}
-                onSelect={(b) => setSelectedId(b.id)}
+              <Cart
+                items={cart}
+                catalog={catalog}
+                onChangeQty={changeQty}
+                onRemove={(id) => setCart((prev) => prev.filter((i) => i.bouquetId !== id))}
+                onCheckout={checkout}
               />
-              <BouquetDetail bouquet={selected} onAdd={addToCart} />
             </div>
-            <Cart
-              items={cart}
-              catalog={catalog}
-              onChangeQty={changeQty}
-              onRemove={(id) => setCart((prev) => prev.filter((i) => i.bouquetId !== id))}
-              onCheckout={checkout}
-            />
           </section>
         )}
 
