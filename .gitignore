@@ -11,6 +11,12 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+server/.env
+server/data/
+server/dist/
+scripts/azure-secrets.json
+scripts/allowed-region.txt
 
 # Editor directories and files
 .vscode/*
@@ -22,3 +28,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Azure deploy artifacts
+scripts/az-token.txt
+scripts/deploy-result.txt
+scripts/*.zip
+scripts/api-slim/
+scripts/api-deploy/
+scripts/api-staging/

@@ -1,0 +1,51 @@
+import { useState, type FormEvent } from 'react';
+import { login } from '../lib/api';
+import styles from './Login.module.css';
+
+type Props = {
+  onSuccess: () => void;
+};
+
+export function Login({ onSuccess }: Props) {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      await login(password);
+      onSuccess();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Autentificare eșuată');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className={styles.page}>
+      <form className={styles.card} onSubmit={handleSubmit}>
+        <p className={styles.brand}>Florărie</p>
+        <h1>Punct de vânzare</h1>
+        <p className={styles.hint}>Introdu parola magazinului pentru a continua.</p>
+        <label>
+          Parolă
+          <input
+            type="password"
+            autoFocus
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+          />
+        </label>
+        {error ? <p className={styles.error}>{error}</p> : null}
+        <button type="submit" disabled={loading || !password.trim()}>
+          {loading ? 'Se verifică…' : 'Intră'}
+        </button>
+      </form>
+    </div>
+  );
+}

@@ -1,18 +1,22 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AdminForm } from './components/AdminForm';
 import { BouquetDetail } from './components/BouquetDetail';
 import { BouquetGrid } from './components/BouquetGrid';
 import { Cart } from './components/Cart';
 import { Invoice } from './components/Invoice';
+import { Login } from './components/Login';
 import { ProductionBoard } from './components/ProductionBoard';
 import {
-  createId,
-  loadCatalog,
-  loadOrders,
-  saveCatalog,
-  saveOrder,
-  saveOrders,
-} from './lib/storage';
+  createOrder,
+  deleteBouquet,
+  fetchCatalog,
+  fetchOrders,
+  isLoggedIn,
+  logout,
+  markBouquetMade,
+  saveBouquet,
+  updateBouquet,
+} from './lib/api';
 import { getOpenOrders } from './lib/materials';
 import type { Bouquet, CartItem, Order } from './types';
 import './App.css';
@@ -20,17 +24,35 @@ import './App.css';
 type View = 'vanzare' | 'admin' | 'factura' | 'productie';
 
 function App() {
+  const [authed, setAuthed] = useState(() => isLoggedIn());
   const [view, setView] = useState<View>('vanzare');
   const [catalog, setCatalog] = useState<Bouquet[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [lastOrder, setLastOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const [nextCatalog, nextOrders] = await Promise.all([fetchCatalog(), fetchOrders()]);
+      setCatalog(nextCatalog);
+      setOrders(nextOrders);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Nu am putut încărca datele';
+      setError(message);
+      if (message === 'Neautentificat') setAuthed(false);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    setCatalog(loadCatalog());
-    setOrders(loadOrders());
-  }, []);
+    if (authed) void loadData();
+  }, [authed, loadData]);
 
   const selected = useMemo(
     () => catalog.find((b) => b.id === selectedId) ?? null,
@@ -50,16 +72,6 @@ function App() {
       ),
     [orders],
   );
-
-  function persistCatalog(next: Bouquet[]) {
-    setCatalog(next);
-    saveCatalog(next);
-  }
-
-  function persistOrders(next: Order[]) {
-    setOrders(next);
-    saveOrders(next);
-  }
 
   function addToCart(bouquet: Bouquet) {
     setCart((prev) => {
@@ -85,32 +97,28 @@ function App() {
     );
   }
 
-  function checkout() {
+  async function checkout() {
     if (cart.length === 0) return;
+    setError('');
+    try {
+      const order = await createOrder(cart);
+      setOrders(await fetchOrders());
+      setLastOrder(order);
+      setCart([]);
+      setSelectedId(null);
+      setView('factura');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Nu am putut finaliza comanda');
+    }
+  }
 
-    const total = cart.reduce((sum, item) => {
-      const bouquet = catalog.find((b) => b.id === item.bouquetId);
-      return sum + (bouquet ? bouquet.price * item.quantity : 0);
-    }, 0);
-
-    const order: Order = {
-      id: createId('cmd'),
-      items: cart.map((item) => ({
-        bouquetId: item.bouquetId,
-        quantity: item.quantity,
-        madeQuantity: 0,
-      })),
-      createdAt: new Date().toISOString(),
-      total,
-      status: 'open',
-    };
-
-    saveOrder(order);
-    setOrders(loadOrders());
-    setLastOrder(order);
-    setCart([]);
-    setSelectedId(null);
-    setView('factura');
+  if (!authed) {
+    return (
+      <div className="app">
+        <div className="bg-wash" aria-hidden="true" />
+        <Login onSuccess={() => setAuthed(true)} />
+      </div>
+    );
   }
 
   return (
@@ -145,10 +153,25 @@ function App() {
           >
             Admin
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              logout();
+              setAuthed(false);
+              setCatalog([]);
+              setOrders([]);
+              setCart([]);
+            }}
+          >
+            Ieșire
+          </button>
         </nav>
       </header>
 
       <main className="main">
+        {error ? <p className="app-error no-print">{error}</p> : null}
+        {loading ? <p className="app-loading no-print">Se încarcă…</p> : null}
+
         {view === 'vanzare' && (
           <section className="sales-shop">
             <div className="sales-layout">
@@ -165,7 +188,7 @@ function App() {
                 catalog={catalog}
                 onChangeQty={changeQty}
                 onRemove={(id) => setCart((prev) => prev.filter((i) => i.bouquetId !== id))}
-                onCheckout={checkout}
+                onCheckout={() => void checkout()}
               />
             </div>
           </section>
@@ -192,7 +215,10 @@ function App() {
             <ProductionBoard
               orders={orders}
               catalog={catalog}
-              onOrdersChange={persistOrders}
+              onMarkMade={async (bouquetId, count) => {
+                const next = await markBouquetMade(bouquetId, count);
+                setOrders(next);
+              }}
             />
           </section>
         )}
@@ -202,24 +228,34 @@ function App() {
             <div className="section-head">
               <h1>Administrare catalog</h1>
               <p>
-                Adaugă, editează sau șterge buchete. Ingredientele cu cantitate se folosesc la
-                totalul de materiale.
+                Adaugă, editează sau șterge buchete. Modificările se salvează în baza de date.
               </p>
             </div>
             <AdminForm
               bouquets={catalog}
               onSave={(bouquet) => {
-                const exists = catalog.some((b) => b.id === bouquet.id);
-                persistCatalog(
-                  exists
-                    ? catalog.map((b) => (b.id === bouquet.id ? bouquet : b))
-                    : [...catalog, bouquet],
-                );
+                void (async () => {
+                  try {
+                    const exists = catalog.some((b) => b.id === bouquet.id);
+                    if (exists) await updateBouquet(bouquet);
+                    else await saveBouquet(bouquet);
+                    setCatalog(await fetchCatalog());
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : 'Salvare eșuată');
+                  }
+                })();
               }}
               onDelete={(id) => {
-                persistCatalog(catalog.filter((b) => b.id !== id));
-                if (selectedId === id) setSelectedId(null);
-                setCart((prev) => prev.filter((item) => item.bouquetId !== id));
+                void (async () => {
+                  try {
+                    await deleteBouquet(id);
+                    setCatalog(await fetchCatalog());
+                    if (selectedId === id) setSelectedId(null);
+                    setCart((prev) => prev.filter((item) => item.bouquetId !== id));
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : 'Ștergere eșuată');
+                  }
+                })();
               }}
             />
           </section>

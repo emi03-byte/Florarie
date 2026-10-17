@@ -1,20 +1,16 @@
 import { useMemo, useState } from 'react';
 import type { Bouquet, Order } from '../types';
-import {
-  aggregateBouquetsToMake,
-  aggregateMaterialsNeeded,
-  markBouquetMade,
-} from '../lib/materials';
+import { aggregateBouquetsToMake, aggregateMaterialsNeeded } from '../lib/materials';
 import { BouquetImage } from './BouquetImage';
 import styles from './ProductionBoard.module.css';
 
 type Props = {
   orders: Order[];
   catalog: Bouquet[];
-  onOrdersChange: (orders: Order[]) => void;
+  onMarkMade: (bouquetId: string, count: number) => Promise<void>;
 };
 
-export function ProductionBoard({ orders, catalog, onOrdersChange }: Props) {
+export function ProductionBoard({ orders, catalog, onMarkMade }: Props) {
   const bouquets = useMemo(
     () => aggregateBouquetsToMake(orders, catalog),
     [orders, catalog],
@@ -24,10 +20,20 @@ export function ProductionBoard({ orders, catalog, onOrdersChange }: Props) {
     [orders, catalog],
   );
   const [markAmounts, setMarkAmounts] = useState<Record<string, string>>({});
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
-  function markMade(bouquetId: string, count: number) {
+  async function markMade(bouquetId: string, count: number) {
     if (count <= 0) return;
-    onOrdersChange(markBouquetMade(orders, bouquetId, count));
+    setError('');
+    setBusyId(bouquetId);
+    try {
+      await onMarkMade(bouquetId, count);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Nu am putut marca buchetul');
+    } finally {
+      setBusyId(null);
+    }
   }
 
   return (
@@ -38,6 +44,8 @@ export function ProductionBoard({ orders, catalog, onOrdersChange }: Props) {
           <p>Separate pe tip. Marchează câte ai terminat — materialele scad automat.</p>
         </header>
 
+        {error ? <p className={styles.empty}>{error}</p> : null}
+
         {bouquets.length === 0 ? (
           <p className={styles.empty}>
             Nu ai buchete de făcut. Finalizează o comandă din Vânzare și revino aici.
@@ -46,6 +54,7 @@ export function ProductionBoard({ orders, catalog, onOrdersChange }: Props) {
           <ul className={styles.bouquetList}>
             {bouquets.map((row) => {
               const amount = Number(markAmounts[row.bouquetId] ?? '1');
+              const busy = busyId === row.bouquetId;
               return (
                 <li key={row.bouquetId} className={styles.bouquetRow}>
                   <div className={styles.thumb}>
@@ -62,7 +71,11 @@ export function ProductionBoard({ orders, catalog, onOrdersChange }: Props) {
                     </p>
                   </div>
                   <div className={styles.actions}>
-                    <button type="button" onClick={() => markMade(row.bouquetId, 1)}>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => markMade(row.bouquetId, 1)}
+                    >
                       +1 făcut
                     </button>
                     <div className={styles.markGroup}>
@@ -81,10 +94,12 @@ export function ProductionBoard({ orders, catalog, onOrdersChange }: Props) {
                       />
                       <button
                         type="button"
+                        disabled={busy}
                         onClick={() => {
                           const n = Number.isFinite(amount) ? Math.floor(amount) : 0;
-                          markMade(row.bouquetId, Math.min(n, row.remaining));
-                          setMarkAmounts((prev) => ({ ...prev, [row.bouquetId]: '1' }));
+                          void markMade(row.bouquetId, Math.min(n, row.remaining)).then(() =>
+                            setMarkAmounts((prev) => ({ ...prev, [row.bouquetId]: '1' })),
+                          );
                         }}
                       >
                         Marchează
@@ -93,6 +108,7 @@ export function ProductionBoard({ orders, catalog, onOrdersChange }: Props) {
                     <button
                       type="button"
                       className={styles.allBtn}
+                      disabled={busy}
                       onClick={() => markMade(row.bouquetId, row.remaining)}
                     >
                       Toate făcute

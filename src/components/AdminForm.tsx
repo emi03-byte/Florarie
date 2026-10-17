@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import type { Bouquet, Ingredient } from '../types';
-import { createId } from '../lib/storage';
+import { createId } from '../lib/id';
 import { formatRon } from '../lib/money';
 import { BouquetImage } from './BouquetImage';
 import styles from './AdminForm.module.css';
