@@ -295,7 +295,7 @@
 
 .checkout:disabled {
   opacity: 0.45;
-  cursor: not-allowed;
+  cursor: default;
 }
 
 @media (max-width: 640px) {

@@ -67,6 +67,12 @@ button {
   border-radius: var(--radius-sm);
 }
 
+button:disabled,
+button[disabled] {
+  cursor: default;
+  pointer-events: none;
+}
+
 .glass {
   background: var(--glass);
   border: 1px solid var(--glass-border);

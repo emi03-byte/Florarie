@@ -36,7 +36,10 @@
   background: #fff;
   border: 1px solid var(--line);
   padding: 2rem 2.25rem;
-  color: #1a1f1c;
+  color: #222;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.45;
   animation: fade 0.4s ease both;
 }
 
@@ -55,27 +58,19 @@
   margin-bottom: 1.75rem;
 }
 
-.brand {
-  margin: 0 0 0.35rem;
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--leaf-deep);
-}
-
 .header h1 {
   margin: 0 0 0.5rem;
-  font-size: 1.15rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #4a554e;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #222;
 }
 
 .meta {
   margin: 0;
-  font-size: 0.9rem;
-  color: #5c665f;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.95rem;
+  color: #333;
   line-height: 1.5;
 }
 
@@ -93,10 +88,9 @@
 }
 
 .table th {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #6a736c;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #222;
 }
 
 .table th:nth-child(2),
@@ -113,12 +107,14 @@
   justify-content: space-between;
   align-items: baseline;
   padding-top: 0.75rem;
-  border-top: 2px solid #1a1f1c;
-  font-size: 1.1rem;
+  border-top: 1px solid #222;
+  font-size: 0.95rem;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .footer strong {
-  font-size: 1.35rem;
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
 @media print {

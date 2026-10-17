@@ -36,20 +36,31 @@ export function buildInvoiceHtml(
   <meta charset="utf-8" />
   <title>Factură nr. ${dailyNumber}</title>
   <style>
-    body { font-family: Georgia, 'Times New Roman', serif; color: #1a1f1c; margin: 2rem; }
-    h1 { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.04em; color: #4a554e; }
-    .brand { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.35rem; color: #6a3542; }
-    .meta { color: #5c665f; line-height: 1.5; }
-    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
-    th, td { text-align: left; padding: 0.65rem 0.4rem; border-bottom: 1px solid #e2e6e3; }
-    th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: #6a736c; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #222;
+      margin: 2rem;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    h1 { font-size: 16px; font-weight: 700; margin: 0 0 0.5rem; color: #222; }
+    .meta { color: #333; line-height: 1.5; margin: 0 0 1rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 14px; }
+    th, td { text-align: left; padding: 0.55rem 0.35rem; border-bottom: 1px solid #ddd; font-weight: 400; }
+    th { font-weight: 700; color: #222; }
     th:nth-child(2), th:nth-child(3), th:nth-child(4),
     td:nth-child(2), td:nth-child(3), td:nth-child(4) { text-align: right; }
-    .footer { display: flex; justify-content: space-between; border-top: 2px solid #1a1f1c; padding-top: 0.75rem; font-size: 1.1rem; }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #222;
+      padding-top: 0.75rem;
+      font-size: 14px;
+    }
+    .footer strong { font-weight: 700; font-size: 14px; }
   </style>
 </head>
 <body>
-  <p class="brand">Florărie</p>
   <h1>Factură</h1>
   <p class="meta">Nr. ${dailyNumber}<br />Data: ${escapeHtml(date)}</p>
   <table>

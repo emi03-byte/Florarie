@@ -93,10 +93,16 @@ export function fetchOrders(): Promise<Order[]> {
   return request<Order[]>('/api/orders');
 }
 
-export function createOrder(items: { bouquetId: string; quantity: number }[]): Promise<Order> {
+export function createOrder(
+  items: { bouquetId: string; quantity: number }[],
+  options?: { invoiceOnly?: boolean },
+): Promise<Order> {
   return request<Order>('/api/orders', {
     method: 'POST',
-    body: JSON.stringify({ items }),
+    body: JSON.stringify({
+      items,
+      invoiceOnly: Boolean(options?.invoiceOnly),
+    }),
   });
 }
 

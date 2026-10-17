@@ -54,7 +54,7 @@ export function aggregateBouquetsToMake(
   }
 
   return Array.from(map.values())
-    .filter((row) => row.remaining > 0 || row.ordered > 0)
+    .filter((row) => row.remaining > 0)
     .sort((a, b) => a.name.localeCompare(b.name, 'ro'));
 }
 

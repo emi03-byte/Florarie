@@ -5,6 +5,7 @@ import { BouquetGrid } from './components/BouquetGrid';
 import { BouquetPreview } from './components/BouquetPreview';
 import { Cart } from './components/Cart';
 import { Invoice } from './components/Invoice';
+import { InvoiceBoard } from './components/InvoiceBoard';
 import { Login } from './components/Login';
 import { ProductionBoard } from './components/ProductionBoard';
 import {
@@ -26,7 +27,7 @@ import { formatEuro } from './lib/money';
 import type { Bouquet, CartItem, Order } from './types';
 import './App.css';
 
-type View = 'vanzare' | 'cos' | 'admin' | 'factura' | 'productie';
+type View = 'vanzare' | 'cos' | 'facturare' | 'admin' | 'factura' | 'productie';
 
 function App() {
   const [authed, setAuthed] = useState(() => isLoggedIn());
@@ -37,6 +38,9 @@ function App() {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [lastOrder, setLastOrder] = useState<Order | null>(null);
+  const [invoiceReturnView, setInvoiceReturnView] = useState<'vanzare' | 'facturare'>(
+    'vanzare',
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
@@ -158,6 +162,7 @@ function App() {
       setLastOrder(order);
       setCart([]);
       setSelectedIds([]);
+      setInvoiceReturnView('vanzare');
       downloadInvoice(
         order,
         catalog,
@@ -167,6 +172,22 @@ function App() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Nu am putut finaliza comanda');
     }
+  }
+
+  async function checkoutInvoiceOnly(items: CartItem[]) {
+    if (items.length === 0) return;
+    setError('');
+    const order = await createOrder(items, { invoiceOnly: true });
+    const nextOrders = await fetchOrders();
+    setOrders(nextOrders);
+    setLastOrder(order);
+    setInvoiceReturnView('facturare');
+    downloadInvoice(
+      order,
+      catalog,
+      order.dailyNumber ?? getDailyOrderNumber(order, nextOrders),
+    );
+    setView('factura');
   }
 
   if (!authed) {
@@ -180,15 +201,20 @@ function App() {
 
   return (
     <div
-      className={`app${view === 'productie' || view === 'admin' || view === 'cos' ? ' app-fill' : ''}`}
+      className={`app${view === 'productie' || view === 'admin' || view === 'cos' || view === 'facturare' ? ' app-fill' : ''}`}
     >
       <div className="bg-wash" aria-hidden="true" />
 
       <header className="topbar no-print">
-        <div className="brand-block">
-          <p className="brand">Florărie</p>
-          <p className="tagline">Punct de vânzare</p>
-        </div>
+        <button
+          type="button"
+          className="brand-block"
+          onClick={() => setView('vanzare')}
+          aria-label="Mergi la produse"
+        >
+          <span className="brand">Florărie</span>
+          <span className="tagline">Punct de vânzare</span>
+        </button>
         <nav className="nav">
           <button
             type="button"
@@ -203,6 +229,13 @@ function App() {
             onClick={() => setView('cos')}
           >
             Coș{cartCount > 0 ? ` (${cartCount})` : ''}
+          </button>
+          <button
+            type="button"
+            className={view === 'facturare' ? 'active' : ''}
+            onClick={() => setView('facturare')}
+          >
+            Facturare
           </button>
           <button
             type="button"
@@ -303,6 +336,12 @@ function App() {
           </section>
         )}
 
+        {view === 'facturare' && (
+          <section className="invoice-board-page">
+            <InvoiceBoard catalog={catalog} onSubmit={checkoutInvoiceOnly} />
+          </section>
+        )}
+
         {view === 'factura' && lastOrder && (
           <Invoice
             order={lastOrder}
@@ -311,7 +350,7 @@ function App() {
               lastOrder.dailyNumber ?? getDailyOrderNumber(lastOrder, orders)
             }
             onPrint={() => window.print()}
-            onNewSale={() => setView('vanzare')}
+            onNewSale={() => setView(invoiceReturnView)}
           />
         )}
 

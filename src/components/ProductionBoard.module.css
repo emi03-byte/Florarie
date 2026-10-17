@@ -343,7 +343,8 @@
 .btnConfirm:disabled,
 .btnAll:disabled {
   opacity: 0.55;
-  cursor: wait;
+  cursor: default;
+  pointer-events: none;
 }
 
 .btnConfirm {

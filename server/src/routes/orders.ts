@@ -12,6 +12,7 @@ ordersRouter.get('/', async (_req, res) => {
 
 ordersRouter.post('/', async (req, res) => {
   const itemsRaw = req.body?.items;
+  const invoiceOnly = Boolean(req.body?.invoiceOnly);
   if (!Array.isArray(itemsRaw) || itemsRaw.length === 0) {
     res.status(400).json({ error: 'Comanda trebuie să aibă cel puțin un produs' });
     return;
@@ -34,8 +35,14 @@ ordersRouter.post('/', async (req, res) => {
       res.status(400).json({ error: `Buchet necunoscut: ${bouquetId}` });
       return;
     }
-    items.push({ bouquetId, quantity: Math.floor(quantity), madeQuantity: 0 });
-    total += bouquet.price * Math.floor(quantity);
+    const qty = Math.floor(quantity);
+    items.push({
+      bouquetId,
+      quantity: qty,
+      // Invoice-only sales are already complete — they must not appear in De făcut.
+      madeQuantity: invoiceOnly ? qty : 0,
+    });
+    total += bouquet.price * qty;
   }
 
   const createdAt = new Date().toISOString();
@@ -45,7 +52,7 @@ ordersRouter.post('/', async (req, res) => {
     items,
     createdAt,
     total,
-    status: 'open',
+    status: invoiceOnly ? 'done' : 'open',
     dailyNumber: nextDailyOrderNumber(existing, createdAt),
   };
 

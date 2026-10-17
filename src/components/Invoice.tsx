@@ -44,7 +44,6 @@ export function Invoice({ order, catalog, dailyNumber, onPrint, onNewSale }: Pro
 
       <article className={styles.invoice} id="invoice-print">
         <header className={styles.header}>
-          <p className={styles.brand}>Florărie</p>
           <h1>Factură</h1>
           <p className={styles.meta}>
             Nr. {dailyNumber}
