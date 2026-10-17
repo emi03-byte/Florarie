@@ -13,6 +13,7 @@ import {
   fetchOrders,
   isLoggedIn,
   logout,
+  addBouquetToMake,
   markBouquetMade,
   saveBouquet,
   updateBouquet,
@@ -122,7 +123,9 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <div
+      className={`app${view === 'productie' || view === 'admin' ? ' app-fill' : ''}`}
+    >
       <div className="bg-wash" aria-hidden="true" />
 
       <header className="topbar no-print">
@@ -203,7 +206,7 @@ function App() {
         )}
 
         {view === 'productie' && (
-          <section>
+          <section className="production-page">
             <ProductionBoard
               orders={orders}
               catalog={catalog}
@@ -211,18 +214,16 @@ function App() {
                 const next = await markBouquetMade(bouquetId, count);
                 setOrders(next);
               }}
+              onAddToMake={async (bouquetId, count) => {
+                const next = await addBouquetToMake(bouquetId, count);
+                setOrders(next);
+              }}
             />
           </section>
         )}
 
         {view === 'admin' && (
-          <section>
-            <div className="section-head">
-              <h1>Administrare catalog</h1>
-              <p>
-                Adaugă, editează sau șterge buchete. Modificările se salvează în baza de date.
-              </p>
-            </div>
+          <section className="admin-page">
             <AdminForm
               bouquets={catalog}
               onSave={(bouquet) => {

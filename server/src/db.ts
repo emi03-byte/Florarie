@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { catalogCentros } from './catalogCentros.js';
 import { seedBouquets } from './seedData.js';
 import type { Bouquet, Ingredient, Order, OrderItem, OrderStatus } from './types.js';
 
@@ -14,6 +15,8 @@ export type DbDriver = {
   listOrders(): Promise<Order[]>;
   createOrder(order: Order): Promise<Order>;
   markBouquetMade(bouquetId: string, count: number): Promise<Order[]>;
+  /** Increase how many of this bouquet still need to be made. */
+  addBouquetToMake(bouquetId: string, count: number): Promise<Order[]>;
 };
 
 let driver: DbDriver | null = null;
@@ -73,16 +76,29 @@ async function initSqlite(): Promise<DbDriver> {
     const insertIng = db.prepare(
       'INSERT INTO ingredients (bouquet_id, name, quantity, unit) VALUES (?, ?, ?, ?)',
     );
+    const insertOrder = db.prepare(
+      'INSERT INTO orders (id, created_at, total, status) VALUES (?, ?, ?, ?)',
+    );
+    const insertItem = db.prepare(
+      'INSERT INTO order_items (order_id, bouquet_id, quantity, made_quantity) VALUES (?, ?, ?, 0)',
+    );
     const tx = db.transaction(() => {
-      for (const b of seedBouquets) {
+      // Same catalog as the published Azure shop (centros).
+      for (const b of catalogCentros) {
         insertBouquet.run(b.id, b.name, b.price, b.image, b.recipe);
         for (const ing of b.ingredients) {
           insertIng.run(b.id, ing.name, ing.quantity, ing.unit);
         }
       }
+      const orderId = 'cmd-prod-local';
+      const total = catalogCentros.reduce((sum, b) => sum + b.price * b.makeQty, 0);
+      insertOrder.run(orderId, new Date().toISOString(), total, 'open');
+      for (const b of catalogCentros) {
+        insertItem.run(orderId, b.id, b.makeQty);
+      }
     });
     tx();
-    console.log(`SQLite seeded at ${dbPath}`);
+    console.log(`SQLite seeded with centros catalog at ${dbPath}`);
   }
 
   function loadIngredients(bouquetId: string): Ingredient[] {
@@ -281,6 +297,70 @@ async function initSqlite(): Promise<DbDriver> {
             db.prepare(`UPDATE orders SET status = 'done' WHERE id = ?`).run(orderId);
           }
         }
+      });
+      tx();
+      return listOrdersSqlite();
+    },
+    async addBouquetToMake(bouquetId, count) {
+      const add = Math.max(0, Math.floor(count));
+      if (add <= 0) return listOrdersSqlite();
+
+      const bouquet = db.prepare('SELECT price FROM bouquets WHERE id = ?').get(bouquetId) as
+        | { price: number }
+        | undefined;
+      if (!bouquet) throw new Error('Buchet inexistent');
+
+      const tx = db.transaction(() => {
+        const existing = db
+          .prepare(
+            `SELECT oi.id AS item_id, oi.order_id, oi.quantity, o.total
+             FROM order_items oi
+             JOIN orders o ON o.id = oi.order_id
+             WHERE o.status = 'open' AND oi.bouquet_id = ?
+             ORDER BY o.created_at DESC, oi.id DESC
+             LIMIT 1`,
+          )
+          .get(bouquetId) as
+          | { item_id: number; order_id: string; quantity: number; total: number }
+          | undefined;
+
+        if (existing) {
+          db.prepare('UPDATE order_items SET quantity = ? WHERE id = ?').run(
+            existing.quantity + add,
+            existing.item_id,
+          );
+          db.prepare('UPDATE orders SET total = ? WHERE id = ?').run(
+            Number(existing.total) + Number(bouquet.price) * add,
+            existing.order_id,
+          );
+          return;
+        }
+
+        let order = db
+          .prepare(
+            `SELECT id, total FROM orders WHERE status = 'open' ORDER BY created_at DESC LIMIT 1`,
+          )
+          .get() as { id: string; total: number } | undefined;
+
+        if (!order) {
+          const orderId = createId('cmd');
+          const total = Number(bouquet.price) * add;
+          db.prepare(
+            'INSERT INTO orders (id, created_at, total, status) VALUES (?, ?, ?, ?)',
+          ).run(orderId, new Date().toISOString(), total, 'open');
+          db.prepare(
+            'INSERT INTO order_items (order_id, bouquet_id, quantity, made_quantity) VALUES (?, ?, ?, 0)',
+          ).run(orderId, bouquetId, add);
+          return;
+        }
+
+        db.prepare(
+          'INSERT INTO order_items (order_id, bouquet_id, quantity, made_quantity) VALUES (?, ?, ?, 0)',
+        ).run(order.id, bouquetId, add);
+        db.prepare('UPDATE orders SET total = ? WHERE id = ?').run(
+          Number(order.total) + Number(bouquet.price) * add,
+          order.id,
+        );
       });
       tx();
       return listOrdersSqlite();
@@ -582,6 +662,89 @@ async function initMssql(connectionString: string): Promise<DbDriver> {
             .query(`UPDATE dbo.orders SET status = 'done' WHERE id = @order_id`);
         }
       }
+
+      return listOrdersMssql();
+    },
+    async addBouquetToMake(bouquetId, count) {
+      const add = Math.max(0, Math.floor(count));
+      if (add <= 0) return listOrdersMssql();
+
+      const bouquetResult = await pool
+        .request()
+        .input('id', sql.NVarChar, bouquetId)
+        .query('SELECT price FROM dbo.bouquets WHERE id = @id');
+      if (!bouquetResult.recordset[0]) throw new Error('Buchet inexistent');
+      const price = Number(bouquetResult.recordset[0].price);
+
+      const existing = await pool.request().input('bouquet_id', sql.NVarChar, bouquetId).query(`
+          SELECT TOP 1 oi.id AS item_id, oi.order_id, oi.quantity, o.total
+          FROM dbo.order_items oi
+          JOIN dbo.orders o ON o.id = oi.order_id
+          WHERE o.status = N'open' AND oi.bouquet_id = @bouquet_id
+          ORDER BY o.created_at DESC, oi.id DESC
+        `);
+
+      if (existing.recordset[0]) {
+        const row = existing.recordset[0];
+        await pool
+          .request()
+          .input('quantity', sql.Int, Number(row.quantity) + add)
+          .input('id', sql.Int, row.item_id)
+          .query('UPDATE dbo.order_items SET quantity = @quantity WHERE id = @id');
+        await pool
+          .request()
+          .input('total', sql.Decimal(10, 2), Number(row.total) + price * add)
+          .input('order_id', sql.NVarChar, String(row.order_id))
+          .query('UPDATE dbo.orders SET total = @total WHERE id = @order_id');
+        return listOrdersMssql();
+      }
+
+      const open = await pool
+        .request()
+        .query(
+          `SELECT TOP 1 id, total FROM dbo.orders WHERE status = N'open' ORDER BY created_at DESC`,
+        );
+
+      if (!open.recordset[0]) {
+        const orderId = createId('cmd');
+        const total = price * add;
+        await pool
+          .request()
+          .input('id', sql.NVarChar, orderId)
+          .input('created_at', sql.DateTime2, new Date())
+          .input('total', sql.Decimal(10, 2), total)
+          .input('status', sql.NVarChar, 'open')
+          .query(
+            'INSERT INTO dbo.orders (id, created_at, total, status) VALUES (@id, @created_at, @total, @status)',
+          );
+        await pool
+          .request()
+          .input('order_id', sql.NVarChar, orderId)
+          .input('bouquet_id', sql.NVarChar, bouquetId)
+          .input('quantity', sql.Int, add)
+          .input('made_quantity', sql.Int, 0)
+          .query(
+            'INSERT INTO dbo.order_items (order_id, bouquet_id, quantity, made_quantity) VALUES (@order_id, @bouquet_id, @quantity, @made_quantity)',
+          );
+        return listOrdersMssql();
+      }
+
+      const orderId = String(open.recordset[0].id);
+      const orderTotal = Number(open.recordset[0].total);
+      await pool
+        .request()
+        .input('order_id', sql.NVarChar, orderId)
+        .input('bouquet_id', sql.NVarChar, bouquetId)
+        .input('quantity', sql.Int, add)
+        .input('made_quantity', sql.Int, 0)
+        .query(
+          'INSERT INTO dbo.order_items (order_id, bouquet_id, quantity, made_quantity) VALUES (@order_id, @bouquet_id, @quantity, @made_quantity)',
+        );
+      await pool
+        .request()
+        .input('total', sql.Decimal(10, 2), orderTotal + price * add)
+        .input('order_id', sql.NVarChar, orderId)
+        .query('UPDATE dbo.orders SET total = @total WHERE id = @order_id');
 
       return listOrdersMssql();
     },

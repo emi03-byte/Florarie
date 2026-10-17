@@ -106,3 +106,10 @@ export function markBouquetMade(bouquetId: string, count: number): Promise<Order
     body: JSON.stringify({ bouquetId, count }),
   });
 }
+
+export function addBouquetToMake(bouquetId: string, count: number): Promise<Order[]> {
+  return request<Order[]>('/api/orders/add-to-make', {
+    method: 'POST',
+    body: JSON.stringify({ bouquetId, count }),
+  });
+}

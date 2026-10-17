@@ -14,13 +14,11 @@ type Props = {
 type IngredientRow = {
   name: string;
   quantity: string;
-  unit: string;
 };
 
 const emptyIngredient = (): IngredientRow => ({
   name: '',
   quantity: '1',
-  unit: 'fire',
 });
 
 function createEmptyForm() {
@@ -58,7 +56,6 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
           ? existing.ingredients.map((ing) => ({
               name: ing.name,
               quantity: String(ing.quantity),
-              unit: ing.unit,
             }))
           : [emptyIngredient()],
     });
@@ -83,14 +80,13 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
     const ingredients: Ingredient[] = [];
     for (const row of form.ingredients) {
       const ingName = row.name.trim();
-      const unit = row.unit.trim() || 'buc';
       const quantity = Number(row.quantity.replace(',', '.'));
       if (!ingName && !row.quantity.trim()) continue;
       if (!ingName || !Number.isFinite(quantity) || quantity <= 0) {
         setError('Fiecare ingredient trebuie să aibă denumire și cantitate validă.');
         return;
       }
-      ingredients.push({ name: ingName, quantity, unit });
+      ingredients.push({ name: ingName, quantity, unit: 'fire' });
     }
 
     if (!name) {
@@ -102,7 +98,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
       return;
     }
     if (!recipe) {
-      setError('Adaugă detaliile de realizare.');
+      setError('Completează rețeta / pașii de realizare.');
       return;
     }
     if (ingredients.length === 0) {
@@ -125,45 +121,54 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
 
   return (
     <div className={styles.layout}>
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <h2>{editingId ? 'Editează buchet' : 'Adaugă buchet'}</h2>
-
-        <label>
-          Denumire
-          <input
-            value={form.name}
-            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            placeholder="ex. Buchet Trandafiri"
-          />
-        </label>
-
-        <label>
-          Preț (€)
-          <input
-            value={form.price}
-            onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-            inputMode="decimal"
-            placeholder="ex. 150"
-          />
-        </label>
-
-        <label>
-          Poză (cale sau URL)
-          <input
-            value={form.image}
-            onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))}
-            placeholder="/bouquets/trandafiri-rosii.jpg"
-          />
-        </label>
-        {form.image ? (
-          <div className={styles.preview}>
-            <BouquetImage src={form.image} alt="Previzualizare" />
+      <section className={styles.panel}>
+        <header className={styles.panelHead}>
+          <div className={styles.headText}>
+            <h2>{editingId ? 'Editează buchet' : 'Adaugă buchet'}</h2>
+            <p className={styles.hint}>
+              Aici gestionezi catalogul: denumire, preț, poză, ingrediente și rețetă.
+            </p>
           </div>
-        ) : null}
+          <p className={styles.summary}>{bouquets.length} în catalog</p>
+        </header>
 
-        <div className={styles.ingBlock}>
-          <p className={styles.ingLabel}>Ingrediente (cantitate + unitate + denumire)</p>
-          {form.ingredients.map((row, index) => (
+        <form className={`${styles.form} ${styles.panelScroll}`} onSubmit={handleSubmit}>
+          <label className={styles.field}>
+            <span className={styles.caption}>Denumire</span>
+            <input
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              placeholder="ex. Centro redondo — Clavel rosa"
+            />
+          </label>
+
+          <label className={styles.field}>
+            <span className={styles.caption}>Preț (€)</span>
+            <input
+              value={form.price}
+              onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
+              inputMode="decimal"
+              placeholder="ex. 33"
+            />
+          </label>
+
+          <label className={styles.field}>
+            <span className={styles.caption}>Poză (cale sau URL)</span>
+            <input
+              value={form.image}
+              onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))}
+              placeholder="/bouquets/centro-redondo-rosa.jpg"
+            />
+          </label>
+          {form.image ? (
+            <div className={styles.preview}>
+              <BouquetImage src={form.image} alt="Previzualizare" />
+            </div>
+          ) : null}
+
+          <div className={styles.ingBlock}>
+            <p className={styles.ingLabel}>Ingrediente</p>
+            {form.ingredients.map((row, index) => (
             <div key={index} className={styles.ingRow}>
               <input
                 value={row.quantity}
@@ -173,113 +178,117 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                 aria-label="Cantitate"
               />
               <input
-                value={row.unit}
-                onChange={(e) => updateIngredient(index, { unit: e.target.value })}
-                placeholder="fire"
-                aria-label="Unitate"
-              />
-              <input
                 value={row.name}
                 onChange={(e) => updateIngredient(index, { name: e.target.value })}
-                placeholder="trandafiri roșii"
+                placeholder="clavel rosa"
                 aria-label="Denumire material"
               />
-              <button
-                type="button"
-                className={styles.ingRemove}
-                onClick={() =>
-                  setForm((f) => ({
-                    ...f,
-                    ingredients:
-                      f.ingredients.length > 1
-                        ? f.ingredients.filter((_, i) => i !== index)
-                        : [emptyIngredient()],
-                  }))
-                }
-                aria-label="Șterge ingredient"
-              >
-                ×
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            className={styles.ingAdd}
-            onClick={() =>
-              setForm((f) => ({ ...f, ingredients: [...f.ingredients, emptyIngredient()] }))
-            }
-          >
-            + Adaugă ingredient
-          </button>
-        </div>
-
-        <label>
-          Cum se realizează
-          <textarea
-            rows={5}
-            value={form.recipe}
-            onChange={(e) => setForm((f) => ({ ...f, recipe: e.target.value }))}
-            placeholder="Pașii de realizare pentru vânzător..."
-          />
-        </label>
-
-        {error ? <p className={styles.error}>{error}</p> : null}
-
-        <div className={styles.formActions}>
-          <button type="submit" className={styles.save}>
-            {editingId ? 'Salvează modificările' : 'Adaugă în catalog'}
-          </button>
-          {editingId ? (
-            <button
-              type="button"
-              className={styles.cancel}
-              onClick={() => {
-                setEditingId(null);
-                setForm(createEmptyForm());
-                setError('');
-              }}
-            >
-              Anulează
-            </button>
-          ) : null}
-        </div>
-      </form>
-
-      <div className={styles.listWrap}>
-        <h2>Catalog ({bouquets.length})</h2>
-        <ul className={styles.list}>
-          {bouquets.map((bouquet) => (
-            <li key={bouquet.id} className={styles.item}>
-              <div className={styles.itemMain}>
-                <div className={styles.itemThumb}>
-                  <BouquetImage src={bouquet.image} alt={bouquet.name} />
-                </div>
-                <div>
-                  <p className={styles.itemName}>{bouquet.name}</p>
-                  <p className={styles.itemPrice}>{formatEuro(bouquet.price)}</p>
-                </div>
-              </div>
-              <div className={styles.itemActions}>
-                <button type="button" onClick={() => setEditingId(bouquet.id)}>
-                  Editează
-                </button>
                 <button
                   type="button"
-                  className={styles.delete}
-                  onClick={() => {
-                    if (window.confirm(`Ștergi „${bouquet.name}”?`)) {
-                      onDelete(bouquet.id);
-                      if (editingId === bouquet.id) setEditingId(null);
-                    }
-                  }}
+                  className={styles.ingRemove}
+                  onClick={() =>
+                    setForm((f) => ({
+                      ...f,
+                      ingredients:
+                        f.ingredients.length > 1
+                          ? f.ingredients.filter((_, i) => i !== index)
+                          : [emptyIngredient()],
+                    }))
+                  }
+                  aria-label="Șterge ingredient"
                 >
-                  Șterge
+                  ×
                 </button>
               </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+            ))}
+            <button
+              type="button"
+              className={styles.ingAdd}
+              onClick={() =>
+                setForm((f) => ({ ...f, ingredients: [...f.ingredients, emptyIngredient()] }))
+              }
+            >
+              + Adaugă ingredient
+            </button>
+          </div>
+
+          <label className={styles.field}>
+            <span className={styles.caption}>Cum se realizează</span>
+            <textarea
+              rows={4}
+              value={form.recipe}
+              onChange={(e) => setForm((f) => ({ ...f, recipe: e.target.value }))}
+              placeholder="Pașii de realizare..."
+            />
+          </label>
+
+          {error ? <p className={styles.error}>{error}</p> : null}
+
+          <div className={styles.formActions}>
+            <button type="submit" className={styles.save}>
+              {editingId ? 'Salvează' : 'Adaugă în catalog'}
+            </button>
+            {editingId ? (
+              <button
+                type="button"
+                className={styles.cancel}
+                onClick={() => {
+                  setEditingId(null);
+                  setForm(createEmptyForm());
+                  setError('');
+                }}
+              >
+                Anulează
+              </button>
+            ) : null}
+          </div>
+        </form>
+      </section>
+
+      <aside className={styles.panel}>
+        <header className={styles.panelHead}>
+          <h2>Catalog</h2>
+          <p className={styles.summary}>{bouquets.length} tipuri</p>
+        </header>
+
+        <div className={styles.panelScroll}>
+          {bouquets.length === 0 ? (
+            <p className={styles.empty}>Nu ai încă buchete în catalog.</p>
+          ) : (
+            <ul className={styles.list}>
+              {bouquets.map((bouquet) => (
+                <li
+                  key={bouquet.id}
+                  className={`${styles.item}${editingId === bouquet.id ? ` ${styles.itemActive}` : ''}`}
+                >
+                  <div className={styles.itemThumb}>
+                    <BouquetImage src={bouquet.image} alt={bouquet.name} />
+                  </div>
+                  <p className={styles.itemName}>{bouquet.name}</p>
+                  <span className={styles.itemPrice}>{formatEuro(bouquet.price)}</span>
+                  <div className={styles.itemActions}>
+                    <button type="button" onClick={() => setEditingId(bouquet.id)}>
+                      Editează
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.delete}
+                      onClick={() => {
+                        if (window.confirm(`Ștergi „${bouquet.name}”?`)) {
+                          onDelete(bouquet.id);
+                          if (editingId === bouquet.id) setEditingId(null);
+                        }
+                      }}
+                    >
+                      Șterge
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </aside>
     </div>
   );
 }

@@ -4,6 +4,40 @@
   color: var(--ink);
 }
 
+.app-fill {
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-fill .topbar {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.app-fill .main {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  height: auto;
+  max-height: none;
+  padding: 0.45rem 0.65rem 0.55rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-fill .app-error,
+.app-fill .app-loading {
+  flex-shrink: 0;
+  margin-bottom: 0.4rem;
+}
+
 .bg-wash {
   position: fixed;
   inset: 0;
@@ -117,6 +151,24 @@
   padding: 0.85rem clamp(1rem, 2.5vw, 2rem) 2rem;
   max-width: 1600px;
   margin: 0 auto;
+}
+
+.production-page,
+.admin-page {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.production-page > *,
+.admin-page > * {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
 }
 
 .section-head {

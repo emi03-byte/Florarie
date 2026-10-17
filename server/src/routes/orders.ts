@@ -60,3 +60,25 @@ ordersRouter.post('/mark-made', async (req, res) => {
   const orders = await db.markBouquetMade(bouquetId, count);
   res.json(orders);
 });
+
+ordersRouter.post('/add-to-make', async (req, res) => {
+  const bouquetId = String(req.body?.bouquetId ?? '');
+  const count = Number(req.body?.count);
+  if (!bouquetId || !Number.isFinite(count) || count <= 0) {
+    res.status(400).json({ error: 'bouquetId și count sunt obligatorii' });
+    return;
+  }
+  try {
+    const db = await getDb();
+    const bouquet = await db.getBouquet(bouquetId);
+    if (!bouquet) {
+      res.status(404).json({ error: 'Buchet inexistent' });
+      return;
+    }
+    const orders = await db.addBouquetToMake(bouquetId, count);
+    res.json(orders);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Nu am putut adăuga';
+    res.status(400).json({ error: message });
+  }
+});

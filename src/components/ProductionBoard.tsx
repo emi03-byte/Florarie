@@ -9,6 +9,7 @@ type Props = {
   orders: Order[];
   catalog: Bouquet[];
   onMarkMade: (bouquetId: string, count: number) => Promise<void>;
+  onAddToMake: (bouquetId: string, count: number) => Promise<void>;
 };
 
 type ModelGroup = {
@@ -59,7 +60,7 @@ function groupByModel(rows: BouquetToMake[]): ModelGroup[] {
     .sort((a, b) => a.model.localeCompare(b.model, 'es'));
 }
 
-export function ProductionBoard({ orders, catalog, onMarkMade }: Props) {
+export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Props) {
   const bouquets = useMemo(
     () => aggregateBouquetsToMake(orders, catalog),
     [orders, catalog],
@@ -74,8 +75,23 @@ export function ProductionBoard({ orders, catalog, onMarkMade }: Props) {
     [bouquets],
   );
 
+  const [markAmounts, setMarkAmounts] = useState<Record<string, string>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState('');
+
+  function getAmount(bouquetId: string, remaining: number): number {
+    if (remaining <= 0) return 1;
+    const raw = markAmounts[bouquetId];
+    const n = raw === undefined ? 1 : Number(raw);
+    if (!Number.isFinite(n)) return 1;
+    return Math.min(Math.max(1, Math.floor(n)), remaining);
+  }
+
+  function setAmount(bouquetId: string, value: number, remaining: number) {
+    if (remaining <= 0) return;
+    const next = Math.min(Math.max(1, value), remaining);
+    setMarkAmounts((prev) => ({ ...prev, [bouquetId]: String(next) }));
+  }
 
   async function markMade(bouquetId: string, count: number) {
     if (count <= 0) return;
@@ -83,8 +99,22 @@ export function ProductionBoard({ orders, catalog, onMarkMade }: Props) {
     setBusyId(bouquetId);
     try {
       await onMarkMade(bouquetId, count);
+      setMarkAmounts((prev) => ({ ...prev, [bouquetId]: '1' }));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Nu am putut marca buchetul');
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function addToMake(bouquetId: string, count: number) {
+    if (count <= 0) return;
+    setError('');
+    setBusyId(bouquetId);
+    try {
+      await onAddToMake(bouquetId, count);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Nu am putut adăuga');
     } finally {
       setBusyId(null);
     }
@@ -106,64 +136,120 @@ export function ProductionBoard({ orders, catalog, onMarkMade }: Props) {
 
         {error ? <p className={styles.error}>{error}</p> : null}
 
-        {bouquets.length === 0 ? (
-          <p className={styles.empty}>
-            Nu ai buchete de făcut. Finalizează o comandă din Vânzare și revino aici.
-          </p>
-        ) : (
-          <div className={styles.groups}>
-            {groups.map((group) => (
-              <article key={group.model} className={styles.group}>
-                <header className={styles.groupHead}>
-                  <h3 className={styles.groupTitle}>{group.model}</h3>
-                  <div className={styles.groupMeta}>
-                    <span className={styles.groupBadge}>{group.remaining}</span>
-                    <span className={styles.groupProgress}>
-                      {group.made}/{group.ordered}
-                    </span>
-                  </div>
-                </header>
-                <ul className={styles.variantList}>
-                  {group.items.map((row) => {
-                    const busy = busyId === row.bouquetId;
-                    return (
-                      <li key={row.bouquetId} className={styles.variantRow}>
-                        <div className={styles.thumb}>
-                          <BouquetImage src={row.image} alt={row.name} />
-                        </div>
-                        <p className={styles.variantName}>{row.variant}</p>
-                        <span
-                          className={styles.remainBadge}
-                          title={`Făcute ${row.made} din ${row.ordered}`}
-                        >
-                          {row.remaining}
-                        </span>
-                        <div className={styles.actions}>
-                          <button
-                            type="button"
-                            className={styles.btnSoft}
-                            disabled={busy}
-                            onClick={() => markMade(row.bouquetId, 1)}
+        <div className={styles.panelScroll}>
+          {bouquets.length === 0 ? (
+            <p className={styles.empty}>
+              Nu ai buchete de făcut. Finalizează o comandă din Vânzare și revino aici.
+            </p>
+          ) : (
+            <div className={styles.groups}>
+              {groups.map((group) => (
+                <article key={group.model} className={styles.group}>
+                  <header className={styles.groupHead}>
+                    <h3 className={styles.groupTitle}>{group.model}</h3>
+                    <div className={styles.groupMeta}>
+                      <span className={styles.groupBadge} title="Rămase de făcut">
+                        {group.remaining}
+                      </span>
+                      <span className={styles.groupProgress} title="Făcute din total">
+                        <span className={styles.metaMade}>{group.made}</span>
+                        <span className={styles.metaSep}>/</span>
+                        <span className={styles.metaTotal}>{group.ordered}</span>
+                      </span>
+                    </div>
+                  </header>
+                  <ul className={styles.variantList}>
+                    {group.items.map((row) => {
+                      const busy = busyId === row.bouquetId;
+                      const amount = getAmount(row.bouquetId, row.remaining);
+                      const canMark = row.remaining > 0;
+                      return (
+                        <li key={row.bouquetId} className={styles.variantRow}>
+                          <div className={styles.thumb}>
+                            <BouquetImage src={row.image} alt={row.name} />
+                          </div>
+                          <p className={styles.variantName}>{row.variant}</p>
+                          <span
+                            className={styles.remainBadge}
+                            title={`Făcute ${row.made} din ${row.ordered}`}
                           >
-                            +1
-                          </button>
-                          <button
-                            type="button"
-                            className={styles.btnAll}
-                            disabled={busy}
-                            onClick={() => markMade(row.bouquetId, row.remaining)}
-                          >
-                            Toate
-                          </button>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </article>
-            ))}
-          </div>
-        )}
+                            {row.remaining}
+                          </span>
+                          <div className={styles.actions}>
+                            <button
+                              type="button"
+                              className={styles.btnAdd}
+                              disabled={busy}
+                              title="Adaugă încă 1 la de făcut"
+                              onClick={() => addToMake(row.bouquetId, 1)}
+                            >
+                              + Adaugă
+                            </button>
+                            <div className={styles.qtyGroup}>
+                              <button
+                                type="button"
+                                className={styles.btnIcon}
+                                disabled={!canMark || busy || amount <= 1}
+                                aria-label="Scade cantitatea făcută"
+                                onClick={() =>
+                                  setAmount(row.bouquetId, amount - 1, row.remaining)
+                                }
+                              >
+                                −
+                              </button>
+                              <input
+                                type="number"
+                                min={1}
+                                max={Math.max(1, row.remaining)}
+                                value={markAmounts[row.bouquetId] ?? '1'}
+                                disabled={!canMark || busy}
+                                aria-label={`Câte ${row.variant} am făcut`}
+                                onChange={(e) =>
+                                  setMarkAmounts((prev) => ({
+                                    ...prev,
+                                    [row.bouquetId]: e.target.value,
+                                  }))
+                                }
+                              />
+                              <button
+                                type="button"
+                                className={styles.btnIcon}
+                                disabled={!canMark || busy || amount >= row.remaining}
+                                aria-label="Crește cantitatea făcută"
+                                onClick={() =>
+                                  setAmount(row.bouquetId, amount + 1, row.remaining)
+                                }
+                              >
+                                +
+                              </button>
+                            </div>
+                            <button
+                              type="button"
+                              className={styles.btnConfirm}
+                              disabled={!canMark || busy}
+                              onClick={() => markMade(row.bouquetId, amount)}
+                            >
+                              Am făcut
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.btnAll}
+                              disabled={!canMark || busy}
+                              title={`Marchează toate cele ${row.remaining} rămase ca făcute`}
+                              onClick={() => markMade(row.bouquetId, row.remaining)}
+                            >
+                              Am făcut toate
+                            </button>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       <aside className={`${styles.panel} ${styles.materialsPanel}`}>
@@ -171,21 +257,20 @@ export function ProductionBoard({ orders, catalog, onMarkMade }: Props) {
           <h2>Materiale</h2>
         </header>
 
-        {materials.length === 0 ? (
-          <p className={styles.empty}>Nu ai materiale de pregătit momentan.</p>
-        ) : (
-          <ul className={styles.materialList}>
-            {materials.map((row) => (
-              <li key={`${row.name}|${row.unit}`} className={styles.materialChip}>
-                <span className={styles.materialName}>
-                  {row.name}
-                  <span className={styles.materialUnit}> · {row.unit}</span>
-                </span>
-                <span className={styles.materialQty}>{row.quantity}</span>
-              </li>
-            ))}
-          </ul>
-        )}
+        <div className={styles.panelScroll}>
+          {materials.length === 0 ? (
+            <p className={styles.empty}>Nu ai materiale de pregătit momentan.</p>
+          ) : (
+            <ul className={styles.materialList}>
+              {materials.map((row) => (
+                <li key={`${row.name}|${row.unit}`} className={styles.materialChip}>
+                  <span className={styles.materialName}>{row.name}</span>
+                  <span className={styles.materialQty}>{row.quantity}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </aside>
     </div>
   );

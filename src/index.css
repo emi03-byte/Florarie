@@ -45,6 +45,14 @@ body,
   min-height: 100%;
 }
 
+html:has(.app-fill),
+html:has(.app-fill) body,
+#root:has(.app-fill) {
+  height: 100%;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
 body {
   min-width: 320px;
 }
