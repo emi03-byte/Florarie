@@ -74,3 +74,39 @@ button {
   backdrop-filter: blur(22px) saturate(160%);
   -webkit-backdrop-filter: blur(22px) saturate(160%);
 }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 77, 92, 0.45) rgba(42, 36, 40, 0.06);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  margin: 0.35rem 0;
+  background: rgba(42, 36, 40, 0.06);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(168, 104, 118, 0.7),
+    rgba(139, 77, 92, 0.85)
+  );
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(168, 104, 118, 0.9),
+    rgba(139, 77, 92, 0.95)
+  );
+  background-clip: padding-box;
+}

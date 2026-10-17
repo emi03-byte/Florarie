@@ -27,4 +27,6 @@ export type Order = {
   createdAt: string;
   total: number;
   status: OrderStatus;
+  /** Invoice number for the local calendar day (Europe/Bucharest); resets at 00:00. */
+  dailyNumber?: number;
 };

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { nextDailyOrderNumber } from '../dailyOrderNumber.js';
 import { createId, getDb } from '../db.js';
 import type { Order, OrderItem } from '../types.js';
 
@@ -37,12 +38,15 @@ ordersRouter.post('/', async (req, res) => {
     total += bouquet.price * Math.floor(quantity);
   }
 
+  const createdAt = new Date().toISOString();
+  const existing = await db.listOrders();
   const order: Order = {
     id: createId('cmd'),
     items,
-    createdAt: new Date().toISOString(),
+    createdAt,
     total,
     status: 'open',
+    dailyNumber: nextDailyOrderNumber(existing, createdAt),
   };
 
   await db.createOrder(order);

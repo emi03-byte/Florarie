@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AdminForm } from './components/AdminForm';
 import { BouquetDetail } from './components/BouquetDetail';
 import { BouquetGrid } from './components/BouquetGrid';
+import { BouquetPreview } from './components/BouquetPreview';
 import { Cart } from './components/Cart';
 import { Invoice } from './components/Invoice';
 import { Login } from './components/Login';
@@ -18,22 +19,29 @@ import {
   saveBouquet,
   updateBouquet,
 } from './lib/api';
+import { getDailyOrderNumber } from './lib/dailyOrderNumber';
+import { downloadInvoice } from './lib/invoiceDownload';
 import { getOpenOrders } from './lib/materials';
+import { formatEuro } from './lib/money';
 import type { Bouquet, CartItem, Order } from './types';
 import './App.css';
 
-type View = 'vanzare' | 'admin' | 'factura' | 'productie';
+type View = 'vanzare' | 'cos' | 'admin' | 'factura' | 'productie';
 
 function App() {
   const [authed, setAuthed] = useState(() => isLoggedIn());
   const [view, setView] = useState<View>('vanzare');
   const [catalog, setCatalog] = useState<Bouquet[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [previewId, setPreviewId] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [lastOrder, setLastOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const toastId = useRef(0);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -55,10 +63,24 @@ function App() {
     if (authed) void loadData();
   }, [authed, loadData]);
 
-  const selected = useMemo(
-    () => catalog.find((b) => b.id === selectedId) ?? null,
-    [catalog, selectedId],
+  const selectedBouquets = useMemo(
+    () =>
+      selectedIds
+        .map((id) => catalog.find((b) => b.id === id))
+        .filter((b): b is Bouquet => Boolean(b)),
+    [catalog, selectedIds],
   );
+
+  const previewBouquet = useMemo(
+    () => catalog.find((b) => b.id === previewId) ?? null,
+    [catalog, previewId],
+  );
+
+  function toggleSelect(bouquet: Bouquet) {
+    setSelectedIds((prev) =>
+      prev.includes(bouquet.id) ? prev : [...prev, bouquet.id],
+    );
+  }
 
   const openCount = useMemo(
     () =>
@@ -74,19 +96,47 @@ function App() {
     [orders],
   );
 
-  function addToCart(bouquet: Bouquet) {
+  function showToast(message: string) {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastId.current += 1;
+    const id = toastId.current;
+    setToast({ id, message });
+    toastTimer.current = setTimeout(() => {
+      setToast((current) => (current?.id === id ? null : current));
+    }, 1800);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+    };
+  }, []);
+
+  function addToCart(bouquet: Bouquet, quantity = 1) {
+    const addQty = Math.max(1, Math.min(99, quantity));
     setCart((prev) => {
       const existing = prev.find((item) => item.bouquetId === bouquet.id);
       if (existing) {
         return prev.map((item) =>
           item.bouquetId === bouquet.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: item.quantity + addQty }
             : item,
         );
       }
-      return [...prev, { bouquetId: bouquet.id, quantity: 1 }];
+      return [...prev, { bouquetId: bouquet.id, quantity: addQty }];
     });
+    showToast(
+      addQty === 1
+        ? `Adăugat: ${bouquet.name}`
+        : `Adăugat: ${addQty} × ${bouquet.name}`,
+    );
   }
+
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const cartTotal = cart.reduce((sum, item) => {
+    const bouquet = catalog.find((b) => b.id === item.bouquetId);
+    return sum + (bouquet ? bouquet.price * item.quantity : 0);
+  }, 0);
 
   function changeQty(bouquetId: string, quantity: number) {
     if (quantity <= 0) {
@@ -103,10 +153,16 @@ function App() {
     setError('');
     try {
       const order = await createOrder(cart);
-      setOrders(await fetchOrders());
+      const nextOrders = await fetchOrders();
+      setOrders(nextOrders);
       setLastOrder(order);
       setCart([]);
-      setSelectedId(null);
+      setSelectedIds([]);
+      downloadInvoice(
+        order,
+        catalog,
+        order.dailyNumber ?? getDailyOrderNumber(order, nextOrders),
+      );
       setView('factura');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Nu am putut finaliza comanda');
@@ -124,7 +180,7 @@ function App() {
 
   return (
     <div
-      className={`app${view === 'productie' || view === 'admin' ? ' app-fill' : ''}`}
+      className={`app${view === 'productie' || view === 'admin' || view === 'cos' ? ' app-fill' : ''}`}
     >
       <div className="bg-wash" aria-hidden="true" />
 
@@ -140,6 +196,13 @@ function App() {
             onClick={() => setView('vanzare')}
           >
             Vânzare
+          </button>
+          <button
+            type="button"
+            className={view === 'cos' ? 'active' : ''}
+            onClick={() => setView('cos')}
+          >
+            Coș{cartCount > 0 ? ` (${cartCount})` : ''}
           </button>
           <button
             type="button"
@@ -170,29 +233,73 @@ function App() {
         </nav>
       </header>
 
+      {toast ? (
+        <div
+          key={toast.id}
+          className="app-toast no-print"
+          role="status"
+          aria-live="polite"
+        >
+          {toast.message}
+        </div>
+      ) : null}
+
       <main className="main">
         {error ? <p className="app-error no-print">{error}</p> : null}
         {loading ? <p className="app-loading no-print">Se încarcă…</p> : null}
 
         {view === 'vanzare' && (
           <section className="sales-shop">
-            <div className="sales-layout">
-              <div className="sales-main">
-                <BouquetGrid
-                  bouquets={catalog}
-                  selectedId={selectedId}
-                  onSelect={(b) => setSelectedId(b.id)}
-                />
-                <BouquetDetail bouquet={selected} onAdd={addToCart} />
-              </div>
-              <Cart
-                items={cart}
-                catalog={catalog}
-                onChangeQty={changeQty}
-                onRemove={(id) => setCart((prev) => prev.filter((i) => i.bouquetId !== id))}
-                onCheckout={() => void checkout()}
+            <div className="sales-main">
+              <BouquetGrid
+                bouquets={catalog}
+                selectedIds={selectedIds}
+                onSelect={toggleSelect}
+                onViewDetails={(b) => setPreviewId(b.id)}
+                onAdd={addToCart}
+              />
+              <BouquetDetail
+                bouquets={selectedBouquets}
+                onAdd={(bouquet) => addToCart(bouquet, 1)}
+                onRemove={(id) =>
+                  setSelectedIds((prev) => prev.filter((item) => item !== id))
+                }
               />
             </div>
+            {cartCount > 0 ? (
+              <div className="sales-checkout-bar no-print">
+                <p>
+                  <strong>{cartCount}</strong> în coș · {formatEuro(cartTotal)}
+                </p>
+                <button
+                  type="button"
+                  className="sales-checkout-btn"
+                  onClick={() => setView('cos')}
+                >
+                  Vezi coșul
+                </button>
+              </div>
+            ) : null}
+            {previewBouquet ? (
+              <BouquetPreview
+                bouquet={previewBouquet}
+                onClose={() => setPreviewId(null)}
+                onAdd={addToCart}
+              />
+            ) : null}
+          </section>
+        )}
+
+        {view === 'cos' && (
+          <section className="cart-page">
+            <Cart
+              items={cart}
+              catalog={catalog}
+              onChangeQty={changeQty}
+              onRemove={(id) => setCart((prev) => prev.filter((i) => i.bouquetId !== id))}
+              onCheckout={() => void checkout()}
+              onContinueShopping={() => setView('vanzare')}
+            />
           </section>
         )}
 
@@ -200,6 +307,9 @@ function App() {
           <Invoice
             order={lastOrder}
             catalog={catalog}
+            dailyNumber={
+              lastOrder.dailyNumber ?? getDailyOrderNumber(lastOrder, orders)
+            }
             onPrint={() => window.print()}
             onNewSale={() => setView('vanzare')}
           />
@@ -243,7 +353,7 @@ function App() {
                   try {
                     await deleteBouquet(id);
                     setCatalog(await fetchCatalog());
-                    if (selectedId === id) setSelectedId(null);
+                    setSelectedIds((prev) => prev.filter((item) => item !== id));
                     setCart((prev) => prev.filter((item) => item.bouquetId !== id));
                   } catch (err) {
                     setError(err instanceof Error ? err.message : 'Ștergere eșuată');

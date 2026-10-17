@@ -79,12 +79,15 @@ function normalizeOrder(raw: unknown): Order | null {
         ? 'done'
         : 'open';
 
+  const dailyNumber = Number(order.dailyNumber);
   return {
     id,
     createdAt,
     total: Number.isFinite(total) ? total : 0,
     items,
     status: isOrderComplete(items) ? 'done' : status === 'done' ? 'done' : 'open',
+    dailyNumber:
+      Number.isFinite(dailyNumber) && dailyNumber > 0 ? dailyNumber : undefined,
   };
 }
 

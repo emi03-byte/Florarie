@@ -5,11 +5,12 @@ import styles from './Invoice.module.css';
 type Props = {
   order: Order;
   catalog: Bouquet[];
+  dailyNumber: number;
   onPrint: () => void;
   onNewSale: () => void;
 };
 
-export function Invoice({ order, catalog, onPrint, onNewSale }: Props) {
+export function Invoice({ order, catalog, dailyNumber, onPrint, onNewSale }: Props) {
   const lines = order.items
     .map((item) => {
       const bouquet = catalog.find((b) => b.id === item.bouquetId);
@@ -34,7 +35,7 @@ export function Invoice({ order, catalog, onPrint, onNewSale }: Props) {
     <section className={styles.wrap}>
       <div className={`${styles.actions} no-print`}>
         <button type="button" className={styles.primary} onClick={onPrint}>
-          Tipărește factura
+          Tipărește
         </button>
         <button type="button" className={styles.secondary} onClick={onNewSale}>
           Comandă nouă
@@ -46,7 +47,7 @@ export function Invoice({ order, catalog, onPrint, onNewSale }: Props) {
           <p className={styles.brand}>Florărie</p>
           <h1>Factură</h1>
           <p className={styles.meta}>
-            Nr. {order.id}
+            Nr. {dailyNumber}
             <br />
             Data: {date.toLocaleString('ro-RO')}
           </p>

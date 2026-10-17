@@ -56,7 +56,8 @@ async function initSqlite(): Promise<DbDriver> {
       id TEXT PRIMARY KEY,
       created_at TEXT NOT NULL,
       total REAL NOT NULL,
-      status TEXT NOT NULL
+      status TEXT NOT NULL,
+      daily_number INTEGER
     );
     CREATE TABLE IF NOT EXISTS order_items (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -67,6 +68,11 @@ async function initSqlite(): Promise<DbDriver> {
       FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
     );
   `);
+
+  const orderCols = db.prepare('PRAGMA table_info(orders)').all() as { name: string }[];
+  if (!orderCols.some((col) => col.name === 'daily_number')) {
+    db.exec('ALTER TABLE orders ADD COLUMN daily_number INTEGER');
+  }
 
   const count = db.prepare('SELECT COUNT(*) AS c FROM bouquets').get() as { c: number };
   if (count.c === 0) {
@@ -137,6 +143,7 @@ async function initSqlite(): Promise<DbDriver> {
     created_at: string;
     total: number;
     status: string;
+    daily_number?: number | null;
   }): Order {
     const items = db
       .prepare(
@@ -148,11 +155,13 @@ async function initSqlite(): Promise<DbDriver> {
       made_quantity: number;
     }[];
 
+    const dailyNumber = Number(row.daily_number);
     return {
       id: row.id,
       createdAt: row.created_at,
       total: Number(row.total),
       status: row.status as OrderStatus,
+      dailyNumber: Number.isFinite(dailyNumber) && dailyNumber > 0 ? dailyNumber : undefined,
       items: items.map((item) => ({
         bouquetId: item.bouquet_id,
         quantity: Number(item.quantity),
@@ -169,6 +178,7 @@ async function initSqlite(): Promise<DbDriver> {
       created_at: string;
       total: number;
       status: string;
+      daily_number?: number | null;
     }[];
     return rows.map(mapOrder);
   }
@@ -236,8 +246,14 @@ async function initSqlite(): Promise<DbDriver> {
     async createOrder(order) {
       const tx = db.transaction(() => {
         db.prepare(
-          'INSERT INTO orders (id, created_at, total, status) VALUES (?, ?, ?, ?)',
-        ).run(order.id, order.createdAt, order.total, order.status);
+          'INSERT INTO orders (id, created_at, total, status, daily_number) VALUES (?, ?, ?, ?, ?)',
+        ).run(
+          order.id,
+          order.createdAt,
+          order.total,
+          order.status,
+          order.dailyNumber ?? null,
+        );
         const insertItem = db.prepare(
           'INSERT INTO order_items (order_id, bouquet_id, quantity, made_quantity) VALUES (?, ?, ?, ?)',
         );
@@ -397,7 +413,8 @@ async function initMssql(connectionString: string): Promise<DbDriver> {
           id NVARCHAR(64) NOT NULL PRIMARY KEY,
           created_at DATETIME2 NOT NULL,
           total DECIMAL(10, 2) NOT NULL,
-          status NVARCHAR(20) NOT NULL
+          status NVARCHAR(20) NOT NULL,
+          daily_number INT NULL
         );
         CREATE TABLE dbo.order_items (
           id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
@@ -407,6 +424,11 @@ async function initMssql(connectionString: string): Promise<DbDriver> {
           made_quantity INT NOT NULL CONSTRAINT DF_made DEFAULT (0),
           CONSTRAINT FK_order_items_order FOREIGN KEY (order_id) REFERENCES dbo.orders(id) ON DELETE CASCADE
         );
+      END
+
+      IF COL_LENGTH('dbo.orders', 'daily_number') IS NULL
+      BEGIN
+        ALTER TABLE dbo.orders ADD daily_number INT NULL;
       END
     `);
 
@@ -481,6 +503,7 @@ async function initMssql(connectionString: string): Promise<DbDriver> {
     created_at: Date | string;
     total: number;
     status: string;
+    daily_number?: number | null;
   }): Promise<Order> {
     const itemsResult = await pool
       .request()
@@ -493,11 +516,13 @@ async function initMssql(connectionString: string): Promise<DbDriver> {
         ? row.created_at.toISOString()
         : new Date(row.created_at).toISOString();
 
+    const dailyNumber = Number(row.daily_number);
     return {
       id: row.id,
       createdAt,
       total: Number(row.total),
       status: row.status as OrderStatus,
+      dailyNumber: Number.isFinite(dailyNumber) && dailyNumber > 0 ? dailyNumber : undefined,
       items: itemsResult.recordset.map((item) => ({
         bouquetId: String(item.bouquet_id),
         quantity: Number(item.quantity),
@@ -596,8 +621,9 @@ async function initMssql(connectionString: string): Promise<DbDriver> {
           .input('created_at', sql.DateTime2, new Date(order.createdAt))
           .input('total', sql.Decimal(10, 2), order.total)
           .input('status', sql.NVarChar, order.status)
+          .input('daily_number', sql.Int, order.dailyNumber ?? null)
           .query(
-            'INSERT INTO dbo.orders (id, created_at, total, status) VALUES (@id, @created_at, @total, @status)',
+            'INSERT INTO dbo.orders (id, created_at, total, status, daily_number) VALUES (@id, @created_at, @total, @status, @daily_number)',
           );
         for (const item of order.items) {
           await new sql.Request(transaction)

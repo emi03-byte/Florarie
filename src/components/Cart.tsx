@@ -1,4 +1,5 @@
 import type { Bouquet, CartItem } from '../types';
+import { formatIngredient } from '../lib/ingredients';
 import { formatEuro } from '../lib/money';
 import { BouquetImage } from './BouquetImage';
 import styles from './Cart.module.css';
@@ -9,9 +10,17 @@ type Props = {
   onChangeQty: (bouquetId: string, quantity: number) => void;
   onRemove: (bouquetId: string) => void;
   onCheckout: () => void;
+  onContinueShopping?: () => void;
 };
 
-export function Cart({ items, catalog, onChangeQty, onRemove, onCheckout }: Props) {
+export function Cart({
+  items,
+  catalog,
+  onChangeQty,
+  onRemove,
+  onCheckout,
+  onContinueShopping,
+}: Props) {
   const lines = items
     .map((item) => {
       const bouquet = catalog.find((b) => b.id === item.bouquetId);
@@ -24,14 +33,25 @@ export function Cart({ items, catalog, onChangeQty, onRemove, onCheckout }: Prop
   const count = lines.reduce((sum, line) => sum + line.item.quantity, 0);
 
   return (
-    <aside className={styles.cart}>
-      <h2 className={styles.title}>
-        Coș {count > 0 ? <span className={styles.count}>{count}</span> : null}
-      </h2>
+    <aside className={`${styles.cart} ${styles.cartPage}`}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>
+          Coș {count > 0 ? <span className={styles.count}>{count}</span> : null}
+        </h2>
+        {onContinueShopping ? (
+          <button
+            type="button"
+            className={styles.continue}
+            onClick={onContinueShopping}
+          >
+            Continuă cumpărăturile
+          </button>
+        ) : null}
+      </div>
 
       {lines.length === 0 ? (
         <p className={styles.empty}>
-          Coșul e gol. Selectează un buchet și apasă „Adaugă în coș”.
+          Coșul e gol. Continuă cumpărăturile și adaugă buchete.
         </p>
       ) : (
         <ul className={styles.list}>
@@ -70,6 +90,16 @@ export function Cart({ items, catalog, onChangeQty, onRemove, onCheckout }: Prop
                       +
                     </button>
                   </div>
+                  <p className={styles.needs}>
+                    {bouquet.ingredients
+                      .map((ing) =>
+                        formatIngredient({
+                          ...ing,
+                          quantity: ing.quantity * item.quantity,
+                        }),
+                      )
+                      .join(', ')}
+                  </p>
                   <span className={styles.linePrice}>{formatEuro(lineTotal)}</span>
                 </div>
               </div>
@@ -89,7 +119,7 @@ export function Cart({ items, catalog, onChangeQty, onRemove, onCheckout }: Prop
           disabled={lines.length === 0}
           onClick={onCheckout}
         >
-          Finalizează și scoate factura
+          Scoate factura
         </button>
       </div>
     </aside>
