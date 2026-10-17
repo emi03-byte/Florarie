@@ -1,5 +1,5 @@
 import type { Bouquet } from '../types';
-import { formatRon } from '../lib/money';
+import { formatEuro } from '../lib/money';
 import { BouquetImage } from './BouquetImage';
 import styles from './BouquetGrid.module.css';
 
@@ -27,7 +27,7 @@ export function BouquetGrid({ bouquets, selectedId, onSelect }: Props) {
             </span>
             <span className={styles.body}>
               <span className={styles.name}>{bouquet.name}</span>
-              <span className={styles.price}>{formatRon(bouquet.price)}</span>
+              <span className={styles.price}>{formatEuro(bouquet.price)}</span>
               <span className={styles.hint}>{selected ? 'Selectat' : 'Vezi detalii'}</span>
             </span>
           </button>

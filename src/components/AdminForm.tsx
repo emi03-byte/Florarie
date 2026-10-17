@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import type { Bouquet, Ingredient } from '../types';
 import { createId } from '../lib/id';
-import { formatRon } from '../lib/money';
+import { formatEuro } from '../lib/money';
 import { BouquetImage } from './BouquetImage';
 import styles from './AdminForm.module.css';
 
@@ -138,7 +138,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
         </label>
 
         <label>
-          Preț (RON)
+          Preț (€)
           <input
             value={form.price}
             onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
@@ -256,7 +256,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                 </div>
                 <div>
                   <p className={styles.itemName}>{bouquet.name}</p>
-                  <p className={styles.itemPrice}>{formatRon(bouquet.price)}</p>
+                  <p className={styles.itemPrice}>{formatEuro(bouquet.price)}</p>
                 </div>
               </div>
               <div className={styles.itemActions}>

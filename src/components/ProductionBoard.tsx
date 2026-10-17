@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { Bouquet, Order } from '../types';
 import { aggregateBouquetsToMake, aggregateMaterialsNeeded } from '../lib/materials';
+import type { BouquetToMake } from '../lib/materials';
 import { BouquetImage } from './BouquetImage';
 import styles from './ProductionBoard.module.css';
 
@@ -9,6 +10,54 @@ type Props = {
   catalog: Bouquet[];
   onMarkMade: (bouquetId: string, count: number) => Promise<void>;
 };
+
+type ModelGroup = {
+  model: string;
+  remaining: number;
+  made: number;
+  ordered: number;
+  items: Array<BouquetToMake & { variant: string }>;
+};
+
+function parseName(name: string): { model: string; variant: string } {
+  const sep = ' — ';
+  const idx = name.indexOf(sep);
+  if (idx === -1) return { model: name, variant: name };
+  return {
+    model: name.slice(0, idx).trim(),
+    variant: name.slice(idx + sep.length).trim() || name,
+  };
+}
+
+function groupByModel(rows: BouquetToMake[]): ModelGroup[] {
+  const map = new Map<string, ModelGroup>();
+
+  for (const row of rows) {
+    const { model, variant } = parseName(row.name);
+    const existing = map.get(model);
+    if (existing) {
+      existing.remaining += row.remaining;
+      existing.made += row.made;
+      existing.ordered += row.ordered;
+      existing.items.push({ ...row, variant });
+    } else {
+      map.set(model, {
+        model,
+        remaining: row.remaining,
+        made: row.made,
+        ordered: row.ordered,
+        items: [{ ...row, variant }],
+      });
+    }
+  }
+
+  return Array.from(map.values())
+    .map((group) => ({
+      ...group,
+      items: [...group.items].sort((a, b) => a.variant.localeCompare(b.variant, 'es')),
+    }))
+    .sort((a, b) => a.model.localeCompare(b.model, 'es'));
+}
 
 export function ProductionBoard({ orders, catalog, onMarkMade }: Props) {
   const bouquets = useMemo(
@@ -19,7 +68,12 @@ export function ProductionBoard({ orders, catalog, onMarkMade }: Props) {
     () => aggregateMaterialsNeeded(orders, catalog),
     [orders, catalog],
   );
-  const [markAmounts, setMarkAmounts] = useState<Record<string, string>>({});
+  const groups = useMemo(() => groupByModel(bouquets), [bouquets]);
+  const totalRemaining = useMemo(
+    () => bouquets.reduce((sum, row) => sum + row.remaining, 0),
+    [bouquets],
+  );
+
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState('');
 
@@ -40,116 +94,99 @@ export function ProductionBoard({ orders, catalog, onMarkMade }: Props) {
     <div className={styles.layout}>
       <section className={styles.panel}>
         <header className={styles.panelHead}>
-          <h2>Buchete de făcut</h2>
-          <p>Separate pe tip. Marchează câte ai terminat — materialele scad automat.</p>
+          <div className={styles.headRow}>
+            <h2>Buchete de făcut</h2>
+            {bouquets.length > 0 ? (
+              <p className={styles.summary}>
+                <strong>{totalRemaining}</strong> de făcut · {bouquets.length} tipuri
+              </p>
+            ) : null}
+          </div>
         </header>
 
-        {error ? <p className={styles.empty}>{error}</p> : null}
+        {error ? <p className={styles.error}>{error}</p> : null}
 
         {bouquets.length === 0 ? (
           <p className={styles.empty}>
             Nu ai buchete de făcut. Finalizează o comandă din Vânzare și revino aici.
           </p>
         ) : (
-          <ul className={styles.bouquetList}>
-            {bouquets.map((row) => {
-              const amount = Number(markAmounts[row.bouquetId] ?? '1');
-              const busy = busyId === row.bouquetId;
-              return (
-                <li key={row.bouquetId} className={styles.bouquetRow}>
-                  <div className={styles.thumb}>
-                    <BouquetImage src={row.image} alt={row.name} />
+          <div className={styles.groups}>
+            {groups.map((group) => (
+              <article key={group.model} className={styles.group}>
+                <header className={styles.groupHead}>
+                  <h3 className={styles.groupTitle}>{group.model}</h3>
+                  <div className={styles.groupMeta}>
+                    <span className={styles.groupBadge}>{group.remaining}</span>
+                    <span className={styles.groupProgress}>
+                      {group.made}/{group.ordered}
+                    </span>
                   </div>
-                  <div className={styles.bouquetInfo}>
-                    <p className={styles.bouquetName}>{row.name}</p>
-                    <p className={styles.bouquetMeta}>
-                      Rămase <strong>{row.remaining}</strong>
-                      <span>
-                        {' '}
-                        (făcute {row.made} din {row.ordered})
-                      </span>
-                    </p>
-                  </div>
-                  <div className={styles.actions}>
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => markMade(row.bouquetId, 1)}
-                    >
-                      +1 făcut
-                    </button>
-                    <div className={styles.markGroup}>
-                      <input
-                        type="number"
-                        min={1}
-                        max={row.remaining}
-                        value={markAmounts[row.bouquetId] ?? '1'}
-                        onChange={(e) =>
-                          setMarkAmounts((prev) => ({
-                            ...prev,
-                            [row.bouquetId]: e.target.value,
-                          }))
-                        }
-                        aria-label={`Câte ${row.name} ai făcut`}
-                      />
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => {
-                          const n = Number.isFinite(amount) ? Math.floor(amount) : 0;
-                          void markMade(row.bouquetId, Math.min(n, row.remaining)).then(() =>
-                            setMarkAmounts((prev) => ({ ...prev, [row.bouquetId]: '1' })),
-                          );
-                        }}
-                      >
-                        Marchează
-                      </button>
-                    </div>
-                    <button
-                      type="button"
-                      className={styles.allBtn}
-                      disabled={busy}
-                      onClick={() => markMade(row.bouquetId, row.remaining)}
-                    >
-                      Toate făcute
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+                </header>
+                <ul className={styles.variantList}>
+                  {group.items.map((row) => {
+                    const busy = busyId === row.bouquetId;
+                    return (
+                      <li key={row.bouquetId} className={styles.variantRow}>
+                        <div className={styles.thumb}>
+                          <BouquetImage src={row.image} alt={row.name} />
+                        </div>
+                        <p className={styles.variantName}>{row.variant}</p>
+                        <span
+                          className={styles.remainBadge}
+                          title={`Făcute ${row.made} din ${row.ordered}`}
+                        >
+                          {row.remaining}
+                        </span>
+                        <div className={styles.actions}>
+                          <button
+                            type="button"
+                            className={styles.btnSoft}
+                            disabled={busy}
+                            onClick={() => markMade(row.bouquetId, 1)}
+                          >
+                            +1
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.btnAll}
+                            disabled={busy}
+                            onClick={() => markMade(row.bouquetId, row.remaining)}
+                          >
+                            Toate
+                          </button>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </article>
+            ))}
+          </div>
         )}
       </section>
 
-      <section className={styles.panel}>
+      <aside className={`${styles.panel} ${styles.materialsPanel}`}>
         <header className={styles.panelHead}>
-          <h2>Materiale de cumpărat</h2>
-          <p>Total comun din toate buchetele nefăcute — nu per buchet.</p>
+          <h2>Materiale</h2>
         </header>
 
         {materials.length === 0 ? (
           <p className={styles.empty}>Nu ai materiale de pregătit momentan.</p>
         ) : (
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Material</th>
-                <th>Unitate</th>
-                <th>Cantitate</th>
-              </tr>
-            </thead>
-            <tbody>
-              {materials.map((row) => (
-                <tr key={`${row.name}|${row.unit}`}>
-                  <td>{row.name}</td>
-                  <td>{row.unit}</td>
-                  <td className={styles.qty}>{row.quantity}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ul className={styles.materialList}>
+            {materials.map((row) => (
+              <li key={`${row.name}|${row.unit}`} className={styles.materialChip}>
+                <span className={styles.materialName}>
+                  {row.name}
+                  <span className={styles.materialUnit}> · {row.unit}</span>
+                </span>
+                <span className={styles.materialQty}>{row.quantity}</span>
+              </li>
+            ))}
+          </ul>
         )}
-      </section>
+      </aside>
     </div>
   );
 }

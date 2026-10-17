@@ -1,5 +1,5 @@
 import type { Bouquet } from '../types';
-import { formatRon } from '../lib/money';
+import { formatEuro } from '../lib/money';
 import { formatIngredient } from '../lib/ingredients';
 import { BouquetImage } from './BouquetImage';
 import styles from './BouquetDetail.module.css';
@@ -32,7 +32,7 @@ export function BouquetDetail({ bouquet, onAdd }: Props) {
         <header className={styles.header}>
           <p className={styles.badge}>Detalii pentru vânzător</p>
           <h2 className={styles.title}>{bouquet.name}</h2>
-          <p className={styles.price}>{formatRon(bouquet.price)}</p>
+          <p className={styles.price}>{formatEuro(bouquet.price)}</p>
         </header>
       </div>
 
@@ -53,7 +53,7 @@ export function BouquetDetail({ bouquet, onAdd }: Props) {
       </section>
 
       <button type="button" className={styles.addBtn} onClick={() => onAdd(bouquet)}>
-        Adaugă în coș — {formatRon(bouquet.price)}
+        Adaugă în coș — {formatEuro(bouquet.price)}
       </button>
     </aside>
   );

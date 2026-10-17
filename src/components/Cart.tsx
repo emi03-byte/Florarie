@@ -1,5 +1,5 @@
 import type { Bouquet, CartItem } from '../types';
-import { formatRon } from '../lib/money';
+import { formatEuro } from '../lib/money';
 import { BouquetImage } from './BouquetImage';
 import styles from './Cart.module.css';
 
@@ -70,7 +70,7 @@ export function Cart({ items, catalog, onChangeQty, onRemove, onCheckout }: Prop
                       +
                     </button>
                   </div>
-                  <span className={styles.linePrice}>{formatRon(lineTotal)}</span>
+                  <span className={styles.linePrice}>{formatEuro(lineTotal)}</span>
                 </div>
               </div>
             </li>
@@ -81,7 +81,7 @@ export function Cart({ items, catalog, onChangeQty, onRemove, onCheckout }: Prop
       <div className={styles.footer}>
         <div className={styles.totalRow}>
           <span>Total de plată</span>
-          <strong>{formatRon(total)}</strong>
+          <strong>{formatEuro(total)}</strong>
         </div>
         <button
           type="button"

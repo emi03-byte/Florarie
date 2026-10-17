@@ -1,5 +1,5 @@
 import type { Bouquet, Order } from '../types';
-import { formatRon } from '../lib/money';
+import { formatEuro } from '../lib/money';
 import styles from './Invoice.module.css';
 
 type Props = {
@@ -66,8 +66,8 @@ export function Invoice({ order, catalog, onPrint, onNewSale }: Props) {
               <tr key={line.name + line.quantity}>
                 <td>{line.name}</td>
                 <td>{line.quantity}</td>
-                <td>{formatRon(line.unitPrice)}</td>
-                <td>{formatRon(line.lineTotal)}</td>
+                <td>{formatEuro(line.unitPrice)}</td>
+                <td>{formatEuro(line.lineTotal)}</td>
               </tr>
             ))}
           </tbody>
@@ -75,7 +75,7 @@ export function Invoice({ order, catalog, onPrint, onNewSale }: Props) {
 
         <footer className={styles.footer}>
           <span>Total de plată</span>
-          <strong>{formatRon(order.total)}</strong>
+          <strong>{formatEuro(order.total)}</strong>
         </footer>
       </article>
     </section>

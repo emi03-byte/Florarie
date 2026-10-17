@@ -126,7 +126,6 @@ function App() {
       <div className="bg-wash" aria-hidden="true" />
 
       <header className="topbar no-print">
-        <div className="nav-spacer" aria-hidden="true" />
         <div className="brand-block">
           <p className="brand">Florărie</p>
           <p className="tagline">Punct de vânzare</p>
@@ -205,13 +204,6 @@ function App() {
 
         {view === 'productie' && (
           <section>
-            <div className="section-head">
-              <h1>De făcut</h1>
-              <p>
-                Buchetele pe tipuri separat; firele și florile — total comun pentru ce mai e
-                de făcut.
-              </p>
-            </div>
             <ProductionBoard
               orders={orders}
               catalog={catalog}
