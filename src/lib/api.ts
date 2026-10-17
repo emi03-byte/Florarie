@@ -38,10 +38,10 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, { ...init, headers });
   if (response.status === 401) {
     setToken(null);
-    throw new Error('Neautentificat');
+    throw new Error('No autenticado');
   }
   if (!response.ok) {
-    let message = `Eroare ${response.status}`;
+    let message = `Error ${response.status}`;
     try {
       const data = (await response.json()) as { error?: string };
       if (data.error) message = data.error;

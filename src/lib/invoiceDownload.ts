@@ -15,7 +15,7 @@ export function buildInvoiceHtml(
   catalog: Bouquet[],
   dailyNumber: number,
 ): string {
-  const date = new Date(order.createdAt).toLocaleString('ro-RO');
+  const date = new Date(order.createdAt).toLocaleString('es-ES');
   const rows = order.items
     .map((item) => {
       const bouquet = catalog.find((b) => b.id === item.bouquetId);
@@ -31,10 +31,10 @@ export function buildInvoiceHtml(
     .join('');
 
   return `<!DOCTYPE html>
-<html lang="ro">
+<html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Factură nr. ${dailyNumber}</title>
+  <title>Factura n.º ${dailyNumber}</title>
   <style>
     body {
       font-family: Arial, Helvetica, sans-serif;
@@ -61,16 +61,16 @@ export function buildInvoiceHtml(
   </style>
 </head>
 <body>
-  <h1>Factură</h1>
-  <p class="meta">Nr. ${dailyNumber}<br />Data: ${escapeHtml(date)}</p>
+  <h1>Factura</h1>
+  <p class="meta">N.º ${dailyNumber}<br />Fecha: ${escapeHtml(date)}</p>
   <table>
     <thead>
-      <tr><th>Denumire</th><th>Cant.</th><th>Preț</th><th>Total</th></tr>
+      <tr><th>Descripción</th><th>Cant.</th><th>Precio</th><th>Total</th></tr>
     </thead>
     <tbody>${rows}</tbody>
   </table>
   <div class="footer">
-    <span>Total de plată</span>
+    <span>Total a pagar</span>
     <strong>${escapeHtml(formatEuro(order.total))}</strong>
   </div>
 </body>

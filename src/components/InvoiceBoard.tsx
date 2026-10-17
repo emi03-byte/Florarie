@@ -87,7 +87,7 @@ export function InvoiceBoard({ catalog, onSubmit }: Props) {
       await onSubmit(items);
       setItems([]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Nu am putut scoate factura');
+      setError(err instanceof Error ? err.message : 'No se ha podido emitir la factura');
     } finally {
       setBusy(false);
     }
@@ -97,8 +97,8 @@ export function InvoiceBoard({ catalog, onSubmit }: Props) {
     <div className={styles.layout}>
       <section className={styles.catalogPanel}>
         <header className={styles.head}>
-          <h2>Facturare</h2>
-          <p>Selectează produse</p>
+          <h2>Facturación</h2>
+          <p>Selecciona productos</p>
         </header>
         <div className={styles.gridScroll}>
           <div className={styles.grid}>
@@ -122,7 +122,7 @@ export function InvoiceBoard({ catalog, onSubmit }: Props) {
                           type="button"
                           onClick={() => setQty(bouquet.id, qty - 1)}
                           disabled={qty <= 1}
-                          aria-label="Scade cantitatea"
+                          aria-label="Reducir cantidad"
                         >
                           −
                         </button>
@@ -135,12 +135,12 @@ export function InvoiceBoard({ catalog, onSubmit }: Props) {
                             const raw = Number(e.target.value);
                             setQty(bouquet.id, Number.isFinite(raw) ? raw : 1);
                           }}
-                          aria-label={`Cantitate ${bouquet.name}`}
+                          aria-label={`Cantidad ${bouquet.name}`}
                         />
                         <button
                           type="button"
                           onClick={() => setQty(bouquet.id, qty + 1)}
-                          aria-label="Crește cantitatea"
+                          aria-label="Aumentar cantidad"
                         >
                           +
                         </button>
@@ -150,7 +150,7 @@ export function InvoiceBoard({ catalog, onSubmit }: Props) {
                         className={styles.addBtn}
                         onClick={() => addBouquet(bouquet, qty)}
                       >
-                        Adaugă
+                        Añadir
                       </button>
                     </div>
                   </div>
@@ -163,16 +163,16 @@ export function InvoiceBoard({ catalog, onSubmit }: Props) {
 
       <aside className={styles.billPanel}>
         <header className={styles.billHead}>
-          <h3>Factură</h3>
+          <h3>Factura</h3>
           {count > 0 ? (
-            <p className={styles.count}>Total produse: {count}</p>
+            <p className={styles.count}>Total productos: {count}</p>
           ) : null}
         </header>
 
         {error ? <p className={styles.error}>{error}</p> : null}
 
         {lines.length === 0 ? (
-          <p className={styles.empty}>Nu ai selectat încă produse.</p>
+          <p className={styles.empty}>Aún no has seleccionado productos.</p>
         ) : (
           <ul className={styles.list}>
             {lines.map(({ item, bouquet, lineTotal }) => (
@@ -187,7 +187,7 @@ export function InvoiceBoard({ catalog, onSubmit }: Props) {
                       type="button"
                       className={styles.remove}
                       onClick={() => changeLineQty(item.bouquetId, 0)}
-                      aria-label={`Elimină ${bouquet.name}`}
+                      aria-label={`Quitar ${bouquet.name}`}
                     >
                       ×
                     </button>
@@ -199,7 +199,7 @@ export function InvoiceBoard({ catalog, onSubmit }: Props) {
                         onClick={() =>
                           changeLineQty(item.bouquetId, item.quantity - 1)
                         }
-                        aria-label="Scade cantitatea"
+                        aria-label="Reducir cantidad"
                       >
                         −
                       </button>
@@ -209,7 +209,7 @@ export function InvoiceBoard({ catalog, onSubmit }: Props) {
                         onClick={() =>
                           changeLineQty(item.bouquetId, item.quantity + 1)
                         }
-                        aria-label="Crește cantitatea"
+                        aria-label="Aumentar cantidad"
                       >
                         +
                       </button>
@@ -233,7 +233,7 @@ export function InvoiceBoard({ catalog, onSubmit }: Props) {
             disabled={lines.length === 0 || busy}
             onClick={() => void handleSubmit()}
           >
-            {busy ? 'Se generează…' : 'Scoate factura'}
+            {busy ? 'Generando…' : 'Emitir factura'}
           </button>
         </div>
       </aside>

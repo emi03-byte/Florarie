@@ -36,3 +36,4 @@ scripts/*.zip
 scripts/api-slim/
 scripts/api-deploy/
 scripts/api-staging/
+server/public/

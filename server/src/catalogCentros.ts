@@ -2,7 +2,7 @@ import type { Bouquet, Ingredient } from './types.js';
 
 export type CatalogItem = Bouquet & { makeQty: number };
 
-function ing(name: string, quantity: number, unit = 'fire'): Ingredient {
+function ing(name: string, quantity: number, unit = 'uds'): Ingredient {
   return { name, quantity, unit };
 }
 
@@ -35,7 +35,7 @@ function clavelVariants(
       name: `${modelName} — Clavel ${color}`,
       price,
       image: `/bouquets/${id}.jpg`,
-      recipe: `${recipe} Garoafele (clavel) sunt ${color}.`,
+      recipe: `${recipe} Los claveles son ${color}.`,
       ingredients,
       makeQty: qty,
     };
@@ -61,7 +61,7 @@ function rosaVariants(
       name: `${modelName} — Rosa ${color}`,
       price,
       image: `/bouquets/${id}.jpg`,
-      recipe: `${recipe} Trandafirii sunt ${color}.`,
+      recipe: `${recipe} Las rosas son ${color}.`,
       ingredients,
       makeQty: qty,
     };
@@ -116,7 +116,7 @@ export const catalogCentros: CatalogItem[] = [
     'centro-redondo',
     'Centro redondo',
     33,
-    'Centro redondo: margaritas blancas, clavel, lentisco, chico și paniculata.',
+    'Centro redondo: margaritas blancas, clavel, lentisco, chico y paniculata.',
     redondoBase,
     [
       { color: 'rosa', qty: 50 },
@@ -132,7 +132,7 @@ export const catalogCentros: CatalogItem[] = [
     'centro-cara',
     'Centro de cara',
     33,
-    'Centro de cara: margarita blanca, clavel, lentisco, chico, paniculata și cordeline.',
+    'Centro de cara: margarita blanca, clavel, lentisco, chico, paniculata y cordeline.',
     caraBase,
     [
       { color: 'rosa', qty: 40 },
@@ -147,7 +147,7 @@ export const catalogCentros: CatalogItem[] = [
     'centro-redondo-gladiolo',
     'Centro redondo con gladiolo',
     39,
-    'Centro redondo con gladiolo: margaritas, clavel, lentisco, chico, paniculata și 3 gladiolo.',
+    'Centro redondo con gladiolo: margaritas, clavel, lentisco, chico, paniculata y 3 gladiolo.',
     redondoGladioloBase,
     [
       { color: 'rosa', qty: 30 },
@@ -163,7 +163,7 @@ export const catalogCentros: CatalogItem[] = [
     'centro-cara-gladiolo',
     'Centro de cara con gladiolo',
     39,
-    'Centro de cara con gladiolo: margarita, clavel, lentisco, chico, paniculata, cordeline și 3 gladiolo.',
+    'Centro de cara con gladiolo: margarita, clavel, lentisco, chico, paniculata, cordeline y 3 gladiolo.',
     caraGladioloBase,
     [
       { color: 'rosa', qty: 50 },
@@ -179,7 +179,7 @@ export const catalogCentros: CatalogItem[] = [
     'centro-cara-12-rosas',
     'Centro cara 12 rosas',
     46,
-    'Centro cara cu 12 trandafiri, chico, aspidistra, paniculata și cordeline.',
+    'Centro cara con 12 rosas, chico, aspidistra, paniculata y cordeline.',
     cara12RosasBase,
     [
       { color: 'rojas', qty: 55 },
@@ -195,7 +195,7 @@ export const catalogCentros: CatalogItem[] = [
     'centro-ovalado-18-rosas',
     'Centro ovalado 18 rosas',
     70,
-    'Centro ovalado cu 18 trandafiri, monstera, chico, paniculata și aspidistra.',
+    'Centro ovalado con 18 rosas, monstera, chico, paniculata y aspidistra.',
     ovalado18RosasBase,
     [
       { color: 'blanca', qty: 20 },

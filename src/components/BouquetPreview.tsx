@@ -47,7 +47,7 @@ export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
           type="button"
           className={styles.close}
           onClick={onClose}
-          aria-label="Închide"
+          aria-label="Cerrar"
         >
           ×
         </button>
@@ -57,13 +57,13 @@ export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
         </div>
 
         <div className={styles.body}>
-          <p className={styles.badge}>Detalii</p>
+          <p className={styles.badge}>Detalles</p>
           <h2 id="bouquet-preview-title" className={styles.title}>
             {bouquet.name}
           </h2>
           <p className={styles.price}>{formatEuro(bouquet.price)}</p>
 
-          <h3 className={styles.sectionTitle}>Ingrediente</h3>
+          <h3 className={styles.sectionTitle}>Ingredientes</h3>
           <ul className={styles.list}>
             {bouquet.ingredients.map((item) => (
               <li key={`${item.name}|${item.unit}|${item.quantity}`}>
@@ -77,7 +77,7 @@ export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
               <button
                 type="button"
                 onClick={() => changeQty(qty - 1)}
-                aria-label="Scade cantitatea"
+                aria-label="Reducir cantidad"
                 disabled={qty <= 1}
               >
                 −
@@ -91,12 +91,12 @@ export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
                   const raw = Number(e.target.value);
                   changeQty(Number.isFinite(raw) ? raw : 1);
                 }}
-                aria-label={`Cantitate ${bouquet.name}`}
+                aria-label={`Cantidad ${bouquet.name}`}
               />
               <button
                 type="button"
                 onClick={() => changeQty(qty + 1)}
-                aria-label="Crește cantitatea"
+                aria-label="Aumentar cantidad"
               >
                 +
               </button>
@@ -109,7 +109,7 @@ export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
                 onClose();
               }}
             >
-              Adaugă în coș
+              Añadir al carrito
             </button>
           </div>
         </div>

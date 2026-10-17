@@ -10,7 +10,7 @@ function parseIngredients(raw: unknown): Ingredient[] | null {
   for (const item of raw) {
     if (!item || typeof item !== 'object') return null;
     const name = String((item as Ingredient).name ?? '').trim();
-    const unit = String((item as Ingredient).unit ?? 'buc').trim() || 'buc';
+    const unit = String((item as Ingredient).unit ?? 'uds').trim() || 'uds';
     const quantity = Number((item as Ingredient).quantity);
     if (!name || !Number.isFinite(quantity) || quantity <= 0) return null;
     ingredients.push({ name, unit, quantity });
@@ -32,7 +32,7 @@ bouquetsRouter.post('/', async (req, res) => {
   const id = String(req.body?.id ?? '').trim() || createId('buc');
 
   if (!name || !Number.isFinite(price) || price < 0 || !recipe || !ingredients) {
-    res.status(400).json({ error: 'Date buchet invalide' });
+    res.status(400).json({ error: 'Datos del centro no válidos' });
     return;
   }
 
@@ -50,14 +50,14 @@ bouquetsRouter.put('/:id', async (req, res) => {
   const ingredients = parseIngredients(req.body?.ingredients);
 
   if (!name || !Number.isFinite(price) || price < 0 || !recipe || !ingredients) {
-    res.status(400).json({ error: 'Date buchet invalide' });
+    res.status(400).json({ error: 'Datos del centro no válidos' });
     return;
   }
 
   const db = await getDb();
   const existing = await db.getBouquet(id);
   if (!existing) {
-    res.status(404).json({ error: 'Buchet inexistent' });
+    res.status(404).json({ error: 'Centro inexistente' });
     return;
   }
 
@@ -69,7 +69,7 @@ bouquetsRouter.delete('/:id', async (req, res) => {
   const db = await getDb();
   const ok = await db.deleteBouquet(req.params.id);
   if (!ok) {
-    res.status(404).json({ error: 'Buchet inexistent' });
+    res.status(404).json({ error: 'Centro inexistente' });
     return;
   }
   res.status(204).end();

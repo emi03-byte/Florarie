@@ -19,7 +19,7 @@ export function Login({ onSuccess }: Props) {
       await login(password);
       onSuccess();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Autentificare eșuată');
+      setError(err instanceof Error ? err.message : 'Error de autenticación');
     } finally {
       setLoading(false);
     }
@@ -28,11 +28,20 @@ export function Login({ onSuccess }: Props) {
   return (
     <div className={styles.page}>
       <form className={styles.card} onSubmit={handleSubmit}>
-        <p className={styles.brand}>Florărie</p>
-        <h1>Punct de vânzare</h1>
-        <p className={styles.hint}>Introdu parola magazinului pentru a continua.</p>
+        <img
+          className={styles.logo}
+          src="/brand-mark.svg"
+          alt=""
+          width={56}
+          height={56}
+        />
+        <p className={styles.brand}>Florarie</p>
+        <h1>Punto de venta</h1>
+        <p className={styles.hint}>
+          Introduce la contraseña de la tienda para continuar.
+        </p>
         <label>
-          Parolă
+          Contraseña
           <input
             type="password"
             autoFocus
@@ -43,7 +52,7 @@ export function Login({ onSuccess }: Props) {
         </label>
         {error ? <p className={styles.error}>{error}</p> : null}
         <button type="submit" disabled={loading || !password.trim()}>
-          {loading ? 'Se verifică…' : 'Intră'}
+          {loading ? 'Comprobando…' : 'Entrar'}
         </button>
       </form>
     </div>

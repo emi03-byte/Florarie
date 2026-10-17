@@ -36,7 +36,7 @@ export function Cart({
     <aside className={`${styles.cart} ${styles.cartPage}`}>
       <div className={styles.header}>
         <h2 className={styles.title}>
-          Coș {count > 0 ? <span className={styles.count}>{count}</span> : null}
+          Carrito {count > 0 ? <span className={styles.count}>{count}</span> : null}
         </h2>
         {onContinueShopping ? (
           <button
@@ -44,14 +44,14 @@ export function Cart({
             className={styles.continue}
             onClick={onContinueShopping}
           >
-            Continuă cumpărăturile
+            Seguir comprando
           </button>
         ) : null}
       </div>
 
       {lines.length === 0 ? (
         <p className={styles.empty}>
-          Coșul e gol. Continuă cumpărăturile și adaugă buchete.
+          El carrito está vacío. Sigue comprando y añade centros.
         </p>
       ) : (
         <ul className={styles.list}>
@@ -67,7 +67,7 @@ export function Cart({
                     type="button"
                     className={styles.remove}
                     onClick={() => onRemove(item.bouquetId)}
-                    aria-label={`Elimină ${bouquet.name}`}
+                    aria-label={`Quitar ${bouquet.name}`}
                   >
                     ×
                   </button>
@@ -77,7 +77,7 @@ export function Cart({
                     <button
                       type="button"
                       onClick={() => onChangeQty(item.bouquetId, item.quantity - 1)}
-                      aria-label="Scade cantitatea"
+                      aria-label="Reducir cantidad"
                     >
                       −
                     </button>
@@ -85,7 +85,7 @@ export function Cart({
                     <button
                       type="button"
                       onClick={() => onChangeQty(item.bouquetId, item.quantity + 1)}
-                      aria-label="Crește cantitatea"
+                      aria-label="Aumentar cantidad"
                     >
                       +
                     </button>
@@ -110,7 +110,7 @@ export function Cart({
 
       <div className={styles.footer}>
         <div className={styles.totalRow}>
-          <span>Total de plată</span>
+          <span>Total a pagar</span>
           <strong>{formatEuro(total)}</strong>
         </div>
         <button
@@ -119,7 +119,7 @@ export function Cart({
           disabled={lines.length === 0}
           onClick={onCheckout}
         >
-          Scoate factura
+          Emitir factura
         </button>
       </div>
     </aside>

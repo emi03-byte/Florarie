@@ -32,6 +32,6 @@ export type Order = {
   createdAt: string;
   total: number;
   status: OrderStatus;
-  /** Număr factură în ziua respectivă (se resetează la 00:00). */
+  /** Número de factura del día (se reinicia a las 00:00). */
   dailyNumber?: number;
 };

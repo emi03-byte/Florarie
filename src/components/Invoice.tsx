@@ -35,29 +35,29 @@ export function Invoice({ order, catalog, dailyNumber, onPrint, onNewSale }: Pro
     <section className={styles.wrap}>
       <div className={`${styles.actions} no-print`}>
         <button type="button" className={styles.primary} onClick={onPrint}>
-          Tipărește
+          Imprimir
         </button>
         <button type="button" className={styles.secondary} onClick={onNewSale}>
-          Comandă nouă
+          Nuevo pedido
         </button>
       </div>
 
       <article className={styles.invoice} id="invoice-print">
         <header className={styles.header}>
-          <h1>Factură</h1>
+          <h1>Factura</h1>
           <p className={styles.meta}>
-            Nr. {dailyNumber}
+            N.º {dailyNumber}
             <br />
-            Data: {date.toLocaleString('ro-RO')}
+            Fecha: {date.toLocaleString('es-ES')}
           </p>
         </header>
 
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Denumire</th>
+              <th>Descripción</th>
               <th>Cant.</th>
-              <th>Preț</th>
+              <th>Precio</th>
               <th>Total</th>
             </tr>
           </thead>
@@ -74,7 +74,7 @@ export function Invoice({ order, catalog, dailyNumber, onPrint, onNewSale }: Pro
         </table>
 
         <footer className={styles.footer}>
-          <span>Total de plată</span>
+          <span>Total a pagar</span>
           <strong>{formatEuro(order.total)}</strong>
         </footer>
       </article>

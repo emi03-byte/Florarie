@@ -55,9 +55,9 @@ function App() {
       setCatalog(nextCatalog);
       setOrders(nextOrders);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Nu am putut încărca datele';
+      const message = err instanceof Error ? err.message : 'No se han podido cargar los datos';
       setError(message);
-      if (message === 'Neautentificat') setAuthed(false);
+      if (message === 'No autenticado') setAuthed(false);
     } finally {
       setLoading(false);
     }
@@ -131,8 +131,8 @@ function App() {
     });
     showToast(
       addQty === 1
-        ? `Adăugat: ${bouquet.name}`
-        : `Adăugat: ${addQty} × ${bouquet.name}`,
+        ? `Añadido: ${bouquet.name}`
+        : `Añadido: ${addQty} × ${bouquet.name}`,
     );
   }
 
@@ -170,7 +170,7 @@ function App() {
       );
       setView('factura');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Nu am putut finaliza comanda');
+      setError(err instanceof Error ? err.message : 'No se ha podido completar el pedido');
     }
   }
 
@@ -210,10 +210,10 @@ function App() {
           type="button"
           className="brand-block"
           onClick={() => setView('vanzare')}
-          aria-label="Mergi la produse"
+          aria-label="Ir a productos"
         >
-          <span className="brand">Florărie</span>
-          <span className="tagline">Punct de vânzare</span>
+          <span className="brand">Florarie</span>
+          <span className="tagline">Punto de venta</span>
         </button>
         <nav className="nav">
           <button
@@ -221,28 +221,28 @@ function App() {
             className={view === 'vanzare' || view === 'factura' ? 'active' : ''}
             onClick={() => setView('vanzare')}
           >
-            Vânzare
+            Venta
           </button>
           <button
             type="button"
             className={view === 'cos' ? 'active' : ''}
             onClick={() => setView('cos')}
           >
-            Coș{cartCount > 0 ? ` (${cartCount})` : ''}
+            Carrito{cartCount > 0 ? ` (${cartCount})` : ''}
           </button>
           <button
             type="button"
             className={view === 'facturare' ? 'active' : ''}
             onClick={() => setView('facturare')}
           >
-            Facturare
+            Facturación
           </button>
           <button
             type="button"
             className={view === 'productie' ? 'active' : ''}
             onClick={() => setView('productie')}
           >
-            De făcut{openCount > 0 ? ` (${openCount})` : ''}
+            Por hacer{openCount > 0 ? ` (${openCount})` : ''}
           </button>
           <button
             type="button"
@@ -261,7 +261,7 @@ function App() {
               setCart([]);
             }}
           >
-            Ieșire
+            Salir
           </button>
         </nav>
       </header>
@@ -279,7 +279,7 @@ function App() {
 
       <main className="main">
         {error ? <p className="app-error no-print">{error}</p> : null}
-        {loading ? <p className="app-loading no-print">Se încarcă…</p> : null}
+        {loading ? <p className="app-loading no-print">Cargando…</p> : null}
 
         {view === 'vanzare' && (
           <section className="sales-shop">
@@ -302,14 +302,14 @@ function App() {
             {cartCount > 0 ? (
               <div className="sales-checkout-bar no-print">
                 <p>
-                  <strong>{cartCount}</strong> în coș · {formatEuro(cartTotal)}
+                  <strong>{cartCount}</strong> en el carrito · {formatEuro(cartTotal)}
                 </p>
                 <button
                   type="button"
                   className="sales-checkout-btn"
                   onClick={() => setView('cos')}
                 >
-                  Vezi coșul
+                  Ver carrito
                 </button>
               </div>
             ) : null}
@@ -383,7 +383,7 @@ function App() {
                     else await saveBouquet(bouquet);
                     setCatalog(await fetchCatalog());
                   } catch (err) {
-                    setError(err instanceof Error ? err.message : 'Salvare eșuată');
+                    setError(err instanceof Error ? err.message : 'Error al guardar');
                   }
                 })();
               }}
@@ -395,7 +395,7 @@ function App() {
                     setSelectedIds((prev) => prev.filter((item) => item !== id));
                     setCart((prev) => prev.filter((item) => item.bouquetId !== id));
                   } catch (err) {
-                    setError(err instanceof Error ? err.message : 'Ștergere eșuată');
+                    setError(err instanceof Error ? err.message : 'Error al eliminar');
                   }
                 })();
               }}

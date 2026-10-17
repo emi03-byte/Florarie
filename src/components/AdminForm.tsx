@@ -83,26 +83,26 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
       const quantity = Number(row.quantity.replace(',', '.'));
       if (!ingName && !row.quantity.trim()) continue;
       if (!ingName || !Number.isFinite(quantity) || quantity <= 0) {
-        setError('Fiecare ingredient trebuie să aibă denumire și cantitate validă.');
+        setError('Cada ingrediente debe tener nombre y cantidad válidos.');
         return;
       }
-      ingredients.push({ name: ingName, quantity, unit: 'fire' });
+      ingredients.push({ name: ingName, quantity, unit: 'uds' });
     }
 
     if (!name) {
-      setError('Completează denumirea buchetului.');
+      setError('Completa el nombre del centro.');
       return;
     }
     if (!Number.isFinite(price) || price < 0) {
-      setError('Prețul trebuie să fie un număr valid.');
+      setError('El precio debe ser un número válido.');
       return;
     }
     if (!recipe) {
-      setError('Completează rețeta / pașii de realizare.');
+      setError('Completa la receta / pasos de elaboración.');
       return;
     }
     if (ingredients.length === 0) {
-      setError('Adaugă cel puțin un ingredient.');
+      setError('Añade al menos un ingrediente.');
       return;
     }
 
@@ -124,36 +124,36 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
       <section className={styles.panel}>
         <header className={styles.panelHead}>
           <div className={styles.headText}>
-            <h2>{editingId ? 'Editează buchet' : 'Adaugă buchet'}</h2>
+            <h2>{editingId ? 'Editar centro' : 'Añadir centro'}</h2>
             <p className={styles.hint}>
-              Aici gestionezi catalogul: denumire, preț, poză, ingrediente și rețetă.
+              Aquí gestionas el catálogo: nombre, precio, foto, ingredientes y receta.
             </p>
           </div>
-          <p className={styles.summary}>{bouquets.length} în catalog</p>
+          <p className={styles.summary}>{bouquets.length} en el catálogo</p>
         </header>
 
         <form className={`${styles.form} ${styles.panelScroll}`} onSubmit={handleSubmit}>
           <label className={styles.field}>
-            <span className={styles.caption}>Denumire</span>
+            <span className={styles.caption}>Nombre</span>
             <input
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder="ex. Centro redondo — Clavel rosa"
+              placeholder="ej. Centro redondo — Clavel rosa"
             />
           </label>
 
           <label className={styles.field}>
-            <span className={styles.caption}>Preț (€)</span>
+            <span className={styles.caption}>Precio (€)</span>
             <input
               value={form.price}
               onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
               inputMode="decimal"
-              placeholder="ex. 33"
+              placeholder="ej. 33"
             />
           </label>
 
           <label className={styles.field}>
-            <span className={styles.caption}>Poză (cale sau URL)</span>
+            <span className={styles.caption}>Foto (ruta o URL)</span>
             <input
               value={form.image}
               onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))}
@@ -162,12 +162,12 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
           </label>
           {form.image ? (
             <div className={styles.preview}>
-              <BouquetImage src={form.image} alt="Previzualizare" />
+              <BouquetImage src={form.image} alt="Vista previa" />
             </div>
           ) : null}
 
           <div className={styles.ingBlock}>
-            <p className={styles.ingLabel}>Ingrediente</p>
+            <p className={styles.ingLabel}>Ingredientes</p>
             {form.ingredients.map((row, index) => (
             <div key={index} className={styles.ingRow}>
               <input
@@ -175,13 +175,13 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                 onChange={(e) => updateIngredient(index, { quantity: e.target.value })}
                 placeholder="11"
                 inputMode="decimal"
-                aria-label="Cantitate"
+                aria-label="Cantidad"
               />
               <input
                 value={row.name}
                 onChange={(e) => updateIngredient(index, { name: e.target.value })}
                 placeholder="clavel rosa"
-                aria-label="Denumire material"
+                aria-label="Nombre del material"
               />
                 <button
                   type="button"
@@ -195,7 +195,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                           : [emptyIngredient()],
                     }))
                   }
-                  aria-label="Șterge ingredient"
+                  aria-label="Eliminar ingrediente"
                 >
                   ×
                 </button>
@@ -208,17 +208,17 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                 setForm((f) => ({ ...f, ingredients: [...f.ingredients, emptyIngredient()] }))
               }
             >
-              + Adaugă ingredient
+              + Añadir ingrediente
             </button>
           </div>
 
           <label className={styles.field}>
-            <span className={styles.caption}>Cum se realizează</span>
+            <span className={styles.caption}>Cómo se elabora</span>
             <textarea
               rows={4}
               value={form.recipe}
               onChange={(e) => setForm((f) => ({ ...f, recipe: e.target.value }))}
-              placeholder="Pașii de realizare..."
+              placeholder="Pasos de elaboración..."
             />
           </label>
 
@@ -226,7 +226,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
 
           <div className={styles.formActions}>
             <button type="submit" className={styles.save}>
-              {editingId ? 'Salvează' : 'Adaugă în catalog'}
+              {editingId ? 'Guardar' : 'Añadir al catálogo'}
             </button>
             {editingId ? (
               <button
@@ -238,7 +238,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                   setError('');
                 }}
               >
-                Anulează
+                Cancelar
               </button>
             ) : null}
           </div>
@@ -247,13 +247,13 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
 
       <aside className={styles.panel}>
         <header className={styles.panelHead}>
-          <h2>Catalog</h2>
-          <p className={styles.summary}>{bouquets.length} tipuri</p>
+          <h2>Catálogo</h2>
+          <p className={styles.summary}>{bouquets.length} tipos</p>
         </header>
 
         <div className={styles.panelScroll}>
           {bouquets.length === 0 ? (
-            <p className={styles.empty}>Nu ai încă buchete în catalog.</p>
+            <p className={styles.empty}>Aún no hay centros en el catálogo.</p>
           ) : (
             <ul className={styles.list}>
               {bouquets.map((bouquet) => (
@@ -268,19 +268,19 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                   <span className={styles.itemPrice}>{formatEuro(bouquet.price)}</span>
                   <div className={styles.itemActions}>
                     <button type="button" onClick={() => setEditingId(bouquet.id)}>
-                      Editează
+                      Editar
                     </button>
                     <button
                       type="button"
                       className={styles.delete}
                       onClick={() => {
-                        if (window.confirm(`Ștergi „${bouquet.name}”?`)) {
+                        if (window.confirm(`¿Eliminar «${bouquet.name}»?`)) {
                           onDelete(bouquet.id);
                           if (editingId === bouquet.id) setEditingId(null);
                         }
                       }}
                     >
-                      Șterge
+                      Eliminar
                     </button>
                   </div>
                 </li>

@@ -324,7 +324,7 @@ async function initSqlite(): Promise<DbDriver> {
       const bouquet = db.prepare('SELECT price FROM bouquets WHERE id = ?').get(bouquetId) as
         | { price: number }
         | undefined;
-      if (!bouquet) throw new Error('Buchet inexistent');
+      if (!bouquet) throw new Error('Centro inexistente');
 
       const tx = db.transaction(() => {
         const existing = db
@@ -699,7 +699,7 @@ async function initMssql(connectionString: string): Promise<DbDriver> {
         .request()
         .input('id', sql.NVarChar, bouquetId)
         .query('SELECT price FROM dbo.bouquets WHERE id = @id');
-      if (!bouquetResult.recordset[0]) throw new Error('Buchet inexistent');
+      if (!bouquetResult.recordset[0]) throw new Error('Centro inexistente');
       const price = Number(bouquetResult.recordset[0].price);
 
       const existing = await pool.request().input('bouquet_id', sql.NVarChar, bouquetId).query(`

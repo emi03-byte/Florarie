@@ -24,7 +24,7 @@ export type AuthedRequest = Request & { user?: { role: string } };
 export function requireAuth(req: AuthedRequest, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
-    res.status(401).json({ error: 'Neautentificat' });
+    res.status(401).json({ error: 'No autenticado' });
     return;
   }
   try {
@@ -32,6 +32,6 @@ export function requireAuth(req: AuthedRequest, res: Response, next: NextFunctio
     req.user = payload;
     next();
   } catch {
-    res.status(401).json({ error: 'Sesiune invalidă sau expirată' });
+    res.status(401).json({ error: 'Sesión no válida o caducada' });
   }
 }
