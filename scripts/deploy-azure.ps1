@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 $ResourceGroup = "rg-florarie"
 $Location = "westeurope"
 $SqlServer = "florarie-sql-$(Get-Random -Maximum 99999)"
-$SqlDb = "florarie"
+$SqlDb = "florarie-free"
 $SqlAdmin = "florarieadmin"
 $AppName = "florarie-api-$(Get-Random -Maximum 99999)"
 $PlanName = "plan-florarie"
@@ -38,12 +38,13 @@ az sql server firewall-rule create `
   --start-ip-address 0.0.0.0 `
   --end-ip-address 0.0.0.0 | Out-Null
 
-Write-Host "==> SQL database $SqlDb (Basic)"
+Write-Host "==> SQL database $SqlDb (free offer: serverless, auto-pause when monthly free limit is used)"
 az sql db create `
   --resource-group $ResourceGroup `
   --server $SqlServer `
   --name $SqlDb `
-  --service-objective Basic `
+  --edition GeneralPurpose --family Gen5 --capacity 2 --compute-model Serverless `
+  --use-free-limit true --free-limit-exhaustion-behavior AutoPause `
   --backup-storage-redundancy Local | Out-Null
 
 $SqlConn = "Server=tcp:$SqlServer.database.windows.net,1433;Initial Catalog=$SqlDb;Persist Security Info=False;User ID=$SqlAdmin;Password=$SqlPassword;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
