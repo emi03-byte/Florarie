@@ -20,7 +20,7 @@
   width: min(920px, 100%);
   max-height: min(88dvh, 680px);
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.95);
   box-shadow: 0 24px 60px rgba(42, 36, 40, 0.22);
@@ -100,10 +100,13 @@
 
 .title {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+  font-family: var(--font-body);
+  font-size: clamp(1.15rem, 2.2vw, 1.4rem);
   font-weight: 600;
-  line-height: 1.15;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--ink);
 }
 
 .price {
@@ -136,7 +139,7 @@
 .addRow {
   margin-top: 1rem;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr;
   gap: 0.65rem;
   align-items: center;
 }
@@ -204,12 +207,30 @@
 }
 
 @media (max-width: 720px) {
+  .backdrop {
+    padding: 0.5rem;
+    align-items: flex-end;
+  }
+
   .dialog {
     grid-template-columns: 1fr;
-    max-height: min(92dvh, 760px);
+    width: 100%;
+    max-height: min(88dvh, 760px);
+    border-radius: 18px 18px 14px 14px;
   }
 
   .photo {
-    max-height: 240px;
+    max-height: 220px;
+  }
+
+  .addBtn {
+    min-height: 48px;
+    width: 100%;
+    font-size: 0.85rem;
+  }
+
+  .close {
+    min-width: 44px;
+    min-height: 44px;
   }
 }

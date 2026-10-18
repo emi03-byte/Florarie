@@ -1,7 +1,7 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.85rem;
+  gap: 0.55rem;
 }
 
 .card {
@@ -12,19 +12,16 @@
   border: 1px solid var(--glass-border);
   background: var(--glass);
   color: var(--ink);
-  border-radius: 14px;
+  border-radius: var(--radius);
   box-shadow: var(--glass-shadow);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease,
-    border-color 0.28s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .card:hover,
 .card:focus-within {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 36px rgba(42, 36, 40, 0.12);
-  border-color: rgba(255, 255, 255, 0.85);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(42, 36, 40, 0.07);
+  border-color: rgba(42, 36, 40, 0.12);
 }
 
 .card:hover .photo :global(img),
@@ -160,10 +157,13 @@
 }
 
 .name {
-  font-family: var(--font-display);
-  font-size: 0.98rem;
-  font-weight: 600;
-  line-height: 1.2;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--ink);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -171,9 +171,11 @@
 }
 
 .price {
-  font-family: var(--font-display);
-  font-size: 0.92rem;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
   font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
   color: var(--ink);
 }
 
@@ -276,8 +278,38 @@
 
 @media (max-width: 700px) {
   .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.65rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .card {
+    border-radius: 10px;
+  }
+
+  .photoWrap {
+    margin: 0.35rem 0.35rem 0;
+  }
+
+  .photo {
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+  }
+
+  .body {
+    padding: 0.35rem 0.3rem 0.4rem;
+    gap: 0.05rem;
+  }
+
+  .name {
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.2;
+    -webkit-line-clamp: 2;
+  }
+
+  .price {
+    font-size: 0.74rem;
+    font-weight: 700;
   }
 
   .actions {
@@ -285,7 +317,10 @@
     pointer-events: auto;
     transform: none;
     position: static;
-    margin: 0 0.45rem 0.45rem;
+    margin: 0 0.3rem 0.35rem;
+    gap: 0.25rem;
+    padding: 0.3rem;
+    border-radius: 8px;
   }
 
   .detailLink {
@@ -294,6 +329,44 @@
 
   .detailAction {
     display: inline-block;
+    min-height: 0;
+    padding: 0;
+    font-size: 0.58rem;
+  }
+
+  .qty {
+    grid-template-columns: 1.7rem 1fr 1.7rem;
+    gap: 0.15rem;
+  }
+
+  .addBtn {
+    min-height: 34px;
+    height: 34px;
+    width: 100%;
+    font-size: 0.58rem;
+    letter-spacing: 0.03em;
+    padding: 0.2rem 0.25rem;
+    border-radius: 7px;
+  }
+
+  .card:hover,
+  .card:focus-within {
+    transform: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .name {
+    font-size: 0.76rem;
+  }
+
+  .addBtn {
+    font-size: 0.62rem;
   }
 }
 

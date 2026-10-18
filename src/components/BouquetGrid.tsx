@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { Bouquet } from '../types';
 import { formatEuro } from '../lib/money';
 import { BouquetImage } from './BouquetImage';
@@ -9,7 +8,7 @@ type Props = {
   selectedIds: string[];
   onSelect: (bouquet: Bouquet) => void;
   onViewDetails: (bouquet: Bouquet) => void;
-  onAdd: (bouquet: Bouquet, quantity: number) => void;
+  onAdd: (bouquet: Bouquet) => void;
 };
 
 export function BouquetGrid({
@@ -19,22 +18,10 @@ export function BouquetGrid({
   onViewDetails,
   onAdd,
 }: Props) {
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
-
-  function getQty(id: string): number {
-    return quantities[id] ?? 1;
-  }
-
-  function setQty(id: string, value: number) {
-    const next = Math.max(1, Math.min(99, value));
-    setQuantities((prev) => ({ ...prev, [id]: next }));
-  }
-
   return (
     <div className={styles.grid}>
       {bouquets.map((bouquet) => {
         const selected = selectedIds.includes(bouquet.id);
-        const qty = getQty(bouquet.id);
         return (
           <article
             key={bouquet.id}
@@ -80,41 +67,10 @@ export function BouquetGrid({
               >
                 Vezi detalii
               </button>
-              <div className={styles.qty}>
-                <button
-                  type="button"
-                  onClick={() => setQty(bouquet.id, qty - 1)}
-                  aria-label="Scade cantitatea"
-                  disabled={qty <= 1}
-                >
-                  −
-                </button>
-                <input
-                  type="number"
-                  min={1}
-                  max={99}
-                  value={qty}
-                  onChange={(e) => {
-                    const raw = Number(e.target.value);
-                    setQty(bouquet.id, Number.isFinite(raw) ? raw : 1);
-                  }}
-                  aria-label={`Cantidad ${bouquet.name}`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setQty(bouquet.id, qty + 1)}
-                  aria-label="Crește cantitatea"
-                >
-                  +
-                </button>
-              </div>
               <button
                 type="button"
                 className={styles.addBtn}
-                onClick={() => {
-                  onAdd(bouquet, qty);
-                  setQty(bouquet.id, 1);
-                }}
+                onClick={() => onAdd(bouquet)}
               >
                 Adaugă în coș
               </button>

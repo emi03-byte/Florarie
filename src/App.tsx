@@ -9,6 +9,7 @@ import { InvoiceBoard } from './components/InvoiceBoard';
 import { Login } from './components/Login';
 import { OrderHistory } from './components/OrderHistory';
 import { ProductionBoard } from './components/ProductionBoard';
+import { QuantityDialog } from './components/QuantityDialog';
 import {
   createOrder,
   deleteBouquet,
@@ -52,8 +53,53 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
+  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+  const [qtyAsk, setQtyAsk] = useState<Bouquet | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const toastId = useRef(0);
+  const searchRef = useRef<HTMLDivElement | null>(null);
+
+  function goTo(next: View) {
+    setMobileMoreOpen(false);
+    setView(next);
+  }
+
+  function normalizeSearch(value: string) {
+    return value
+      .normalize('NFD')
+      .replace(/\p{M}/gu, '')
+      .toLowerCase()
+      .trim();
+  }
+
+  const searchSuggestions = useMemo(() => {
+    const q = normalizeSearch(searchQuery);
+    if (q.length < 3) return [];
+    return catalog
+      .filter((b) => normalizeSearch(b.name).includes(q))
+      .slice(0, 8);
+  }, [catalog, searchQuery]);
+
+  useEffect(() => {
+    function onPointerDown(event: MouseEvent | TouchEvent) {
+      const el = searchRef.current;
+      if (!el || !(event.target instanceof Node) || el.contains(event.target)) return;
+      setSearchOpen(false);
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setSearchOpen(false);
+    }
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, []);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -115,7 +161,7 @@ function App() {
     setToast({ id, message });
     toastTimer.current = setTimeout(() => {
       setToast((current) => (current?.id === id ? null : current));
-    }, 1800);
+    }, 2800);
   }
 
   useEffect(() => {
@@ -123,6 +169,10 @@ function App() {
       if (toastTimer.current) clearTimeout(toastTimer.current);
     };
   }, []);
+
+  function askAddToCart(bouquet: Bouquet) {
+    setQtyAsk(bouquet);
+  }
 
   function addToCart(bouquet: Bouquet, quantity = 1) {
     const addQty = Math.max(1, Math.min(99, quantity));
@@ -145,10 +195,6 @@ function App() {
   }
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const cartTotal = cart.reduce((sum, item) => {
-    const bouquet = catalog.find((b) => b.id === item.bouquetId);
-    return sum + (bouquet ? bouquet.price * item.quantity : 0);
-  }, 0);
 
   function changeQty(bouquetId: string, quantity: number) {
     if (quantity <= 0) {
@@ -207,9 +253,11 @@ function App() {
     );
   }
 
+  const moreActive = view === 'istoric' || view === 'admin';
+
   return (
     <div
-      className={`app${view === 'productie' || view === 'admin' || view === 'cos' || view === 'facturare' || view === 'istoric' ? ' app-fill' : ''}`}
+      className={`app${view === 'productie' || view === 'admin' || view === 'cos' || view === 'facturare' || view === 'istoric' ? ' app-fill' : ''}${mobileMoreOpen ? ' mobile-more-open' : ''}`}
     >
       <div className="bg-wash" aria-hidden="true" />
 
@@ -217,52 +265,98 @@ function App() {
         <button
           type="button"
           className="brand-block"
-          onClick={() => setView('vanzare')}
+          onClick={() => goTo('vanzare')}
           aria-label="Mergi la produse"
         >
           <span className="brand">Florarie</span>
           <span className="tagline">Punct de vânzare</span>
         </button>
-        <nav className="nav">
+        <div className="topbar-search" ref={searchRef}>
+          <label className="topbar-search-label" htmlFor="product-search">
+            Caută produs
+          </label>
+          <input
+            id="product-search"
+            className="topbar-search-input"
+            type="search"
+            enterKeyHint="search"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            placeholder="Caută produs…"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setSearchOpen(true);
+            }}
+            onFocus={() => setSearchOpen(true)}
+          />
+          {searchOpen && searchQuery.trim().length >= 3 ? (
+            <ul className="topbar-search-suggestions" role="listbox" aria-label="Sugestii produse">
+              {searchSuggestions.length === 0 ? (
+                <li className="topbar-search-empty">Niciun produs găsit</li>
+              ) : (
+                searchSuggestions.map((bouquet) => (
+                  <li key={bouquet.id} role="option">
+                    <button
+                      type="button"
+                      className="topbar-search-suggestion"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setSearchOpen(false);
+                        setPreviewId(bouquet.id);
+                        goTo('vanzare');
+                      }}
+                    >
+                      <span className="topbar-search-name">{bouquet.name}</span>
+                      <span className="topbar-search-price">{formatEuro(bouquet.price)}</span>
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
+          ) : null}
+        </div>
+        <nav className="nav nav-desktop" aria-label="Navigare principală">
           <button
             type="button"
             className={view === 'vanzare' || view === 'factura' ? 'active' : ''}
-            onClick={() => setView('vanzare')}
+            onClick={() => goTo('vanzare')}
           >
             Vânzare
           </button>
           <button
             type="button"
             className={view === 'cos' ? 'active' : ''}
-            onClick={() => setView('cos')}
+            onClick={() => goTo('cos')}
           >
             Coș{cartCount > 0 ? ` (${cartCount})` : ''}
           </button>
           <button
             type="button"
             className={view === 'facturare' ? 'active' : ''}
-            onClick={() => setView('facturare')}
+            onClick={() => goTo('facturare')}
           >
             Facturare
           </button>
           <button
             type="button"
             className={view === 'productie' ? 'active' : ''}
-            onClick={() => setView('productie')}
+            onClick={() => goTo('productie')}
           >
             De făcut{openCount > 0 ? ` (${openCount})` : ''}
           </button>
           <button
             type="button"
             className={view === 'istoric' ? 'active' : ''}
-            onClick={() => setView('istoric')}
+            onClick={() => goTo('istoric')}
           >
             Istoric
           </button>
           <button
             type="button"
             className={view === 'admin' ? 'active' : ''}
-            onClick={() => setView('admin')}
+            onClick={() => goTo('admin')}
           >
             Admin
           </button>
@@ -279,7 +373,100 @@ function App() {
             Ieșire
           </button>
         </nav>
+        {cartCount > 0 ? (
+          <button
+            type="button"
+            className="topbar-cart-mobile"
+            onClick={() => goTo('cos')}
+          >
+            Coș · {cartCount}
+          </button>
+        ) : null}
       </header>
+
+      <nav className="nav-mobile no-print" aria-label="Navigare telefon">
+        <button
+          type="button"
+          className={view === 'vanzare' || view === 'factura' ? 'active' : ''}
+          onClick={() => goTo('vanzare')}
+        >
+          <span className="nav-mobile-label">Vânzare</span>
+        </button>
+        <button
+          type="button"
+          className={view === 'cos' ? 'active' : ''}
+          onClick={() => goTo('cos')}
+        >
+          <span className="nav-mobile-label">
+            Coș{cartCount > 0 ? ` ${cartCount}` : ''}
+          </span>
+        </button>
+        <button
+          type="button"
+          className={view === 'facturare' ? 'active' : ''}
+          onClick={() => goTo('facturare')}
+        >
+          <span className="nav-mobile-label">Factură</span>
+        </button>
+        <button
+          type="button"
+          className={view === 'productie' ? 'active' : ''}
+          onClick={() => goTo('productie')}
+        >
+          <span className="nav-mobile-label">
+            De făcut{openCount > 0 ? ` ${openCount}` : ''}
+          </span>
+        </button>
+        <button
+          type="button"
+          className={moreActive || mobileMoreOpen ? 'active' : ''}
+          aria-expanded={mobileMoreOpen}
+          onClick={() => setMobileMoreOpen((open) => !open)}
+        >
+          <span className="nav-mobile-label">Mai mult</span>
+        </button>
+      </nav>
+
+      {mobileMoreOpen ? (
+        <div className="nav-more no-print">
+          <button
+            type="button"
+            className="nav-more-backdrop"
+            aria-label="Închide meniul"
+            onClick={() => setMobileMoreOpen(false)}
+          />
+          <div className="nav-more-sheet" role="dialog" aria-label="Mai multe opțiuni">
+            <button
+              type="button"
+              className={view === 'istoric' ? 'active' : ''}
+              onClick={() => goTo('istoric')}
+            >
+              Istoric comenzi
+            </button>
+            <button
+              type="button"
+              className={view === 'admin' ? 'active' : ''}
+              onClick={() => goTo('admin')}
+            >
+              Admin catalog
+            </button>
+            <button
+              type="button"
+              className="nav-more-danger"
+              onClick={() => {
+                setMobileMoreOpen(false);
+                logout();
+                setAuthed(false);
+                setCatalog([]);
+                setOrders([]);
+                setCart([]);
+              }}
+            >
+              Ieșire
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {toast ? (
         <div
@@ -304,39 +491,39 @@ function App() {
                 selectedIds={selectedIds}
                 onSelect={toggleSelect}
                 onViewDetails={(b) => setPreviewId(b.id)}
-                onAdd={addToCart}
+                onAdd={askAddToCart}
               />
-              <BouquetDetail
-                bouquets={selectedBouquets}
-                onAdd={(bouquet) => addToCart(bouquet, 1)}
-                onRemove={(id) =>
-                  setSelectedIds((prev) => prev.filter((item) => item !== id))
-                }
-              />
-            </div>
-            {cartCount > 0 ? (
-              <div className="sales-checkout-bar no-print">
-                <p>
-                  <strong>{cartCount}</strong> în coș · {formatEuro(cartTotal)}
-                </p>
-                <button
-                  type="button"
-                  className="sales-checkout-btn"
-                  onClick={() => setView('cos')}
-                >
-                  Vezi coșul
-                </button>
+              <div className="sales-detail-desktop">
+                <BouquetDetail
+                  bouquets={selectedBouquets}
+                  onAdd={askAddToCart}
+                  onRemove={(id) =>
+                    setSelectedIds((prev) => prev.filter((item) => item !== id))
+                  }
+                />
               </div>
-            ) : null}
+            </div>
             {previewBouquet ? (
               <BouquetPreview
                 bouquet={previewBouquet}
                 onClose={() => setPreviewId(null)}
-                onAdd={addToCart}
+                onAdd={askAddToCart}
               />
             ) : null}
           </section>
         )}
+
+        {qtyAsk ? (
+          <QuantityDialog
+            bouquet={qtyAsk}
+            onCancel={() => setQtyAsk(null)}
+            onConfirm={(quantity) => {
+              addToCart(qtyAsk, quantity);
+              setQtyAsk(null);
+              setPreviewId(null);
+            }}
+          />
+        ) : null}
 
         {view === 'cos' && (
           <section className="cart-page">
@@ -346,7 +533,7 @@ function App() {
               onChangeQty={changeQty}
               onRemove={(id) => setCart((prev) => prev.filter((i) => i.bouquetId !== id))}
               onCheckout={() => void checkout()}
-              onContinueShopping={() => setView('vanzare')}
+              onContinueShopping={() => goTo('vanzare')}
             />
           </section>
         )}
@@ -372,7 +559,7 @@ function App() {
                 lastOrder.dailyNumber ?? getDailyOrderNumber(lastOrder, orders),
               )
             }
-            onNewSale={() => setView(invoiceReturnView)}
+            onNewSale={() => goTo(invoiceReturnView)}
           />
         )}
 

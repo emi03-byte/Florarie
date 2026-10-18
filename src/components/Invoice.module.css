@@ -138,6 +138,26 @@
   font-weight: 700;
 }
 
+@media (max-width: 640px) {
+  .wrap {
+    gap: 0.85rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .primary,
+  .secondary {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .invoice {
+    padding: 1.25rem 1rem;
+  }
+}
+
 @media print {
   .wrap {
     max-width: none;

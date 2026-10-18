@@ -135,7 +135,7 @@ export function InvoiceBoard({ catalog, onSubmit }: Props) {
                             const raw = Number(e.target.value);
                             setQty(bouquet.id, Number.isFinite(raw) ? raw : 1);
                           }}
-                          aria-label={`Cantidad ${bouquet.name}`}
+                          aria-label={`Cantitate ${bouquet.name}`}
                         />
                         <button
                           type="button"

@@ -11,12 +11,10 @@
   flex-direction: column;
   gap: 0.85rem;
   padding: 2rem 1.75rem;
-  border-radius: 22px;
+  border-radius: var(--radius);
   background: var(--glass);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
 }
 
 .logo {
@@ -91,4 +89,21 @@
   margin: 0;
   color: #a33a3a;
   font-size: 0.9rem;
+}
+
+@media (max-width: 520px) {
+  .page {
+    padding: 1rem;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .card {
+    padding: 1.5rem 1.15rem;
+  }
+
+  .card input,
+  .card button {
+    min-height: 48px;
+    font-size: 1rem;
+  }
 }

@@ -171,7 +171,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                 onChange={(e) => updateIngredient(index, { quantity: e.target.value })}
                 placeholder="11"
                 inputMode="decimal"
-                aria-label="Cantidad"
+                aria-label="Cantitate"
               />
               <input
                 value={row.name}
