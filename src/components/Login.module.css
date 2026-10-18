@@ -19,9 +19,11 @@
 
 .logo {
   display: block;
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   margin: 0 auto 0.15rem;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .brand {

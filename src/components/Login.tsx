@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { login } from '../lib/api';
+import brandMark from '../assets/brand-mark.svg';
 import styles from './Login.module.css';
 
 type Props = {
@@ -30,8 +31,8 @@ export function Login({ onSuccess }: Props) {
       <form className={styles.card} onSubmit={handleSubmit}>
         <img
           className={styles.logo}
-          src="/brand-mark.svg"
-          alt=""
+          src={brandMark}
+          alt="Florarie"
           width={56}
           height={56}
         />
