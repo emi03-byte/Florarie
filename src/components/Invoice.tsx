@@ -7,10 +7,18 @@ type Props = {
   catalog: Bouquet[];
   dailyNumber: number;
   onPrint: () => void;
+  onDownload: () => void;
   onNewSale: () => void;
 };
 
-export function Invoice({ order, catalog, dailyNumber, onPrint, onNewSale }: Props) {
+export function Invoice({
+  order,
+  catalog,
+  dailyNumber,
+  onPrint,
+  onDownload,
+  onNewSale,
+}: Props) {
   const lines = order.items
     .map((item) => {
       const bouquet = catalog.find((b) => b.id === item.bouquetId);
@@ -33,31 +41,41 @@ export function Invoice({ order, catalog, dailyNumber, onPrint, onNewSale }: Pro
 
   return (
     <section className={styles.wrap}>
+      <div className={`${styles.confirm} no-print`}>
+        <p className={styles.confirmTitle}>
+          Comanda nr. {dailyNumber} înregistrată
+        </p>
+        <p className={styles.confirmSuccess}>Comandă finalizată cu succes</p>
+      </div>
+
       <div className={`${styles.actions} no-print`}>
         <button type="button" className={styles.primary} onClick={onPrint}>
-          Imprimir
+          Tipărește
+        </button>
+        <button type="button" className={styles.secondary} onClick={onDownload}>
+          Descarcă din nou
         </button>
         <button type="button" className={styles.secondary} onClick={onNewSale}>
-          Nuevo pedido
+          Comandă nouă
         </button>
       </div>
 
       <article className={styles.invoice} id="invoice-print">
         <header className={styles.header}>
-          <h1>Factura</h1>
+          <h1>Factură</h1>
           <p className={styles.meta}>
-            N.º {dailyNumber}
+            Nr. {dailyNumber}
             <br />
-            Fecha: {date.toLocaleString('es-ES')}
+            Data: {date.toLocaleString('ro-RO')}
           </p>
         </header>
 
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Descripción</th>
+              <th>Denumire</th>
               <th>Cant.</th>
-              <th>Precio</th>
+              <th>Preț</th>
               <th>Total</th>
             </tr>
           </thead>
@@ -74,7 +92,7 @@ export function Invoice({ order, catalog, dailyNumber, onPrint, onNewSale }: Pro
         </table>
 
         <footer className={styles.footer}>
-          <span>Total a pagar</span>
+          <span>Total de plată</span>
           <strong>{formatEuro(order.total)}</strong>
         </footer>
       </article>

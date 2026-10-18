@@ -14,7 +14,7 @@ ordersRouter.post('/', async (req, res) => {
   const itemsRaw = req.body?.items;
   const invoiceOnly = Boolean(req.body?.invoiceOnly);
   if (!Array.isArray(itemsRaw) || itemsRaw.length === 0) {
-    res.status(400).json({ error: 'El pedido debe tener al menos un producto' });
+    res.status(400).json({ error: 'Comanda trebuie să aibă cel puțin un produs' });
     return;
   }
 
@@ -27,19 +27,19 @@ ordersRouter.post('/', async (req, res) => {
     const bouquetId = String(raw?.bouquetId ?? '');
     const quantity = Number(raw?.quantity);
     if (!bouquetId || !Number.isFinite(quantity) || quantity <= 0) {
-      res.status(400).json({ error: 'Líneas de pedido no válidas' });
+      res.status(400).json({ error: 'Linii comandă invalide' });
       return;
     }
     const bouquet = catalog.find((b) => b.id === bouquetId);
     if (!bouquet) {
-      res.status(400).json({ error: `Centro desconocido: ${bouquetId}` });
+      res.status(400).json({ error: `Buchet necunoscut: ${bouquetId}` });
       return;
     }
     const qty = Math.floor(quantity);
     items.push({
       bouquetId,
       quantity: qty,
-      // Invoice-only sales are already complete — they must not appear in Por hacer.
+      // Invoice-only sales are already complete — they must not appear in De făcut.
       madeQuantity: invoiceOnly ? qty : 0,
     });
     total += bouquet.price * qty;
@@ -64,7 +64,7 @@ ordersRouter.post('/mark-made', async (req, res) => {
   const bouquetId = String(req.body?.bouquetId ?? '');
   const count = Number(req.body?.count);
   if (!bouquetId || !Number.isFinite(count) || count <= 0) {
-    res.status(400).json({ error: 'bouquetId y count son obligatorios' });
+    res.status(400).json({ error: 'bouquetId și count sunt obligatorii' });
     return;
   }
   const db = await getDb();
@@ -76,20 +76,20 @@ ordersRouter.post('/add-to-make', async (req, res) => {
   const bouquetId = String(req.body?.bouquetId ?? '');
   const count = Number(req.body?.count);
   if (!bouquetId || !Number.isFinite(count) || count <= 0) {
-    res.status(400).json({ error: 'bouquetId y count son obligatorios' });
+    res.status(400).json({ error: 'bouquetId și count sunt obligatorii' });
     return;
   }
   try {
     const db = await getDb();
     const bouquet = await db.getBouquet(bouquetId);
     if (!bouquet) {
-      res.status(404).json({ error: 'Centro inexistente' });
+      res.status(404).json({ error: 'Buchet inexistent' });
       return;
     }
     const orders = await db.addBouquetToMake(bouquetId, count);
     res.json(orders);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'No se ha podido añadir';
+    const message = error instanceof Error ? error.message : 'Nu am putut adăuga';
     res.status(400).json({ error: message });
   }
 });

@@ -40,7 +40,8 @@ export function normalizeIngredient(raw: unknown): Ingredient | null {
 }
 
 export function formatIngredient(ingredient: Ingredient): string {
-  return `${ingredient.quantity} ${ingredient.unit} ${ingredient.name}`;
+  // Quantity + name only — skip units like "fire" / "uds" in the UI.
+  return `${ingredient.quantity} ${ingredient.name}`;
 }
 
 export function materialKey(name: string, unit: string): string {

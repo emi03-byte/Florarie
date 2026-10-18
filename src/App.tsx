@@ -7,6 +7,7 @@ import { Cart } from './components/Cart';
 import { Invoice } from './components/Invoice';
 import { InvoiceBoard } from './components/InvoiceBoard';
 import { Login } from './components/Login';
+import { OrderHistory } from './components/OrderHistory';
 import { ProductionBoard } from './components/ProductionBoard';
 import {
   createOrder,
@@ -27,7 +28,14 @@ import { formatEuro } from './lib/money';
 import type { Bouquet, CartItem, Order } from './types';
 import './App.css';
 
-type View = 'vanzare' | 'cos' | 'facturare' | 'admin' | 'factura' | 'productie';
+type View =
+  | 'vanzare'
+  | 'cos'
+  | 'facturare'
+  | 'istoric'
+  | 'admin'
+  | 'factura'
+  | 'productie';
 
 function App() {
   const [authed, setAuthed] = useState(() => isLoggedIn());
@@ -55,9 +63,9 @@ function App() {
       setCatalog(nextCatalog);
       setOrders(nextOrders);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'No se han podido cargar los datos';
+      const message = err instanceof Error ? err.message : 'Nu am putut încărca datele';
       setError(message);
-      if (message === 'No autenticado') setAuthed(false);
+      if (message === 'Neautentificat') setAuthed(false);
     } finally {
       setLoading(false);
     }
@@ -131,8 +139,8 @@ function App() {
     });
     showToast(
       addQty === 1
-        ? `Añadido: ${bouquet.name}`
-        : `Añadido: ${addQty} × ${bouquet.name}`,
+        ? `Adăugat: ${bouquet.name}`
+        : `Adăugat: ${addQty} × ${bouquet.name}`,
     );
   }
 
@@ -170,7 +178,7 @@ function App() {
       );
       setView('factura');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se ha podido completar el pedido');
+      setError(err instanceof Error ? err.message : 'Nu am putut finaliza comanda');
     }
   }
 
@@ -201,7 +209,7 @@ function App() {
 
   return (
     <div
-      className={`app${view === 'productie' || view === 'admin' || view === 'cos' || view === 'facturare' ? ' app-fill' : ''}`}
+      className={`app${view === 'productie' || view === 'admin' || view === 'cos' || view === 'facturare' || view === 'istoric' ? ' app-fill' : ''}`}
     >
       <div className="bg-wash" aria-hidden="true" />
 
@@ -210,10 +218,10 @@ function App() {
           type="button"
           className="brand-block"
           onClick={() => setView('vanzare')}
-          aria-label="Ir a productos"
+          aria-label="Mergi la produse"
         >
           <span className="brand">Florarie</span>
-          <span className="tagline">Punto de venta</span>
+          <span className="tagline">Punct de vânzare</span>
         </button>
         <nav className="nav">
           <button
@@ -221,28 +229,35 @@ function App() {
             className={view === 'vanzare' || view === 'factura' ? 'active' : ''}
             onClick={() => setView('vanzare')}
           >
-            Venta
+            Vânzare
           </button>
           <button
             type="button"
             className={view === 'cos' ? 'active' : ''}
             onClick={() => setView('cos')}
           >
-            Carrito{cartCount > 0 ? ` (${cartCount})` : ''}
+            Coș{cartCount > 0 ? ` (${cartCount})` : ''}
           </button>
           <button
             type="button"
             className={view === 'facturare' ? 'active' : ''}
             onClick={() => setView('facturare')}
           >
-            Facturación
+            Facturare
           </button>
           <button
             type="button"
             className={view === 'productie' ? 'active' : ''}
             onClick={() => setView('productie')}
           >
-            Por hacer{openCount > 0 ? ` (${openCount})` : ''}
+            De făcut{openCount > 0 ? ` (${openCount})` : ''}
+          </button>
+          <button
+            type="button"
+            className={view === 'istoric' ? 'active' : ''}
+            onClick={() => setView('istoric')}
+          >
+            Istoric
           </button>
           <button
             type="button"
@@ -261,7 +276,7 @@ function App() {
               setCart([]);
             }}
           >
-            Salir
+            Ieșire
           </button>
         </nav>
       </header>
@@ -279,7 +294,7 @@ function App() {
 
       <main className="main">
         {error ? <p className="app-error no-print">{error}</p> : null}
-        {loading ? <p className="app-loading no-print">Cargando…</p> : null}
+        {loading ? <p className="app-loading no-print">Se încarcă…</p> : null}
 
         {view === 'vanzare' && (
           <section className="sales-shop">
@@ -302,14 +317,14 @@ function App() {
             {cartCount > 0 ? (
               <div className="sales-checkout-bar no-print">
                 <p>
-                  <strong>{cartCount}</strong> en el carrito · {formatEuro(cartTotal)}
+                  <strong>{cartCount}</strong> în coș · {formatEuro(cartTotal)}
                 </p>
                 <button
                   type="button"
                   className="sales-checkout-btn"
                   onClick={() => setView('cos')}
                 >
-                  Ver carrito
+                  Vezi coșul
                 </button>
               </div>
             ) : null}
@@ -350,6 +365,13 @@ function App() {
               lastOrder.dailyNumber ?? getDailyOrderNumber(lastOrder, orders)
             }
             onPrint={() => window.print()}
+            onDownload={() =>
+              downloadInvoice(
+                lastOrder,
+                catalog,
+                lastOrder.dailyNumber ?? getDailyOrderNumber(lastOrder, orders),
+              )
+            }
             onNewSale={() => setView(invoiceReturnView)}
           />
         )}
@@ -371,6 +393,19 @@ function App() {
           </section>
         )}
 
+        {view === 'istoric' && (
+          <section className="history-page">
+            <OrderHistory
+              orders={orders}
+              catalog={catalog}
+              onDownload={(order, dailyNumber) => {
+                downloadInvoice(order, catalog, dailyNumber);
+                showToast(`Factură descărcată: nr. ${dailyNumber}`);
+              }}
+            />
+          </section>
+        )}
+
         {view === 'admin' && (
           <section className="admin-page">
             <AdminForm
@@ -379,11 +414,24 @@ function App() {
                 void (async () => {
                   try {
                     const exists = catalog.some((b) => b.id === bouquet.id);
-                    if (exists) await updateBouquet(bouquet);
-                    else await saveBouquet(bouquet);
-                    setCatalog(await fetchCatalog());
+                    if (exists) {
+                      const saved = await updateBouquet(bouquet);
+                      const next = await fetchCatalog();
+                      setCatalog(
+                        next.map((item) => (item.id === saved.id ? saved : item)),
+                      );
+                      showToast(`Salvat: ${saved.name}`);
+                    } else {
+                      const saved = await saveBouquet(bouquet);
+                      const next = await fetchCatalog();
+                      setCatalog([
+                        saved,
+                        ...next.filter((item) => item.id !== saved.id),
+                      ]);
+                      showToast(`Produsul „${saved.name}” a fost adăugat`);
+                    }
                   } catch (err) {
-                    setError(err instanceof Error ? err.message : 'Error al guardar');
+                    setError(err instanceof Error ? err.message : 'Salvare eșuată');
                   }
                 })();
               }}
@@ -395,7 +443,7 @@ function App() {
                     setSelectedIds((prev) => prev.filter((item) => item !== id));
                     setCart((prev) => prev.filter((item) => item.bouquetId !== id));
                   } catch (err) {
-                    setError(err instanceof Error ? err.message : 'Error al eliminar');
+                    setError(err instanceof Error ? err.message : 'Ștergere eșuată');
                   }
                 })();
               }}

@@ -15,9 +15,9 @@ export function BouquetDetail({ bouquets, onAdd, onRemove }: Props) {
     return (
       <aside className={styles.panel}>
         <div className={styles.emptyBox}>
-          <p className={styles.emptyTitle}>Elige centros</p>
+          <p className={styles.emptyTitle}>Alege buchete</p>
           <p className={styles.empty}>
-            Pulsa productos del catálogo: cada uno queda aquí abajo con sus detalles.
+            Apasă pe produse din catalog — fiecare rămâne aici jos cu detaliile.
           </p>
         </div>
       </aside>
@@ -34,12 +34,12 @@ export function BouquetDetail({ bouquets, onAdd, onRemove }: Props) {
             </div>
             <header className={styles.header}>
               <div className={styles.headerRow}>
-                <p className={styles.badge}>Detalles</p>
+                <p className={styles.badge}>Detalii</p>
                 <button
                   type="button"
                   className={styles.removeBtn}
                   onClick={() => onRemove(bouquet.id)}
-                  aria-label={`Quitar ${bouquet.name} de los detalles`}
+                  aria-label={`Scoate ${bouquet.name} din detalii`}
                 >
                   ×
                 </button>
@@ -65,7 +65,7 @@ export function BouquetDetail({ bouquets, onAdd, onRemove }: Props) {
             className={styles.addBtn}
             onClick={() => onAdd(bouquet)}
           >
-            Añadir al carrito — {formatEuro(bouquet.price)}
+            Adaugă în coș — {formatEuro(bouquet.price)}
           </button>
         </aside>
       ))}

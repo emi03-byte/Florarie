@@ -55,9 +55,9 @@ function groupByModel(rows: BouquetToMake[]): ModelGroup[] {
   return Array.from(map.values())
     .map((group) => ({
       ...group,
-      items: [...group.items].sort((a, b) => a.variant.localeCompare(b.variant, 'es')),
+      items: [...group.items].sort((a, b) => a.variant.localeCompare(b.variant, 'ro')),
     }))
-    .sort((a, b) => a.model.localeCompare(b.model, 'es'));
+    .sort((a, b) => a.model.localeCompare(b.model, 'ro'));
 }
 
 export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Props) {
@@ -101,7 +101,7 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
       await onMarkMade(bouquetId, count);
       setMarkAmounts((prev) => ({ ...prev, [bouquetId]: '1' }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se ha podido marcar el centro');
+      setError(err instanceof Error ? err.message : 'Nu am putut marca buchetul');
     } finally {
       setBusyId(null);
     }
@@ -114,7 +114,7 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
     try {
       await onAddToMake(bouquetId, count);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se ha podido añadir');
+      setError(err instanceof Error ? err.message : 'Nu am putut adăuga');
     } finally {
       setBusyId(null);
     }
@@ -125,10 +125,10 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
       <section className={styles.panel}>
         <header className={styles.panelHead}>
           <div className={styles.headRow}>
-            <h2>Centros por hacer</h2>
+            <h2>Buchete de făcut</h2>
             {bouquets.length > 0 ? (
               <p className={styles.summary}>
-                <strong>{totalRemaining}</strong> por hacer · {bouquets.length} tipos
+                <strong>{totalRemaining}</strong> de făcut · {bouquets.length} tipuri
               </p>
             ) : null}
           </div>
@@ -139,7 +139,7 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
         <div className={styles.panelScroll}>
           {bouquets.length === 0 ? (
             <p className={styles.empty}>
-              No hay centros por hacer. Finaliza un pedido en Venta y vuelve aquí.
+              Nu ai buchete de făcut. Finalizează o comandă din Vânzare și revino aici.
             </p>
           ) : (
             <div className={styles.groups}>
@@ -148,10 +148,10 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
                   <header className={styles.groupHead}>
                     <h3 className={styles.groupTitle}>{group.model}</h3>
                     <div className={styles.groupMeta}>
-                      <span className={styles.groupBadge} title="Pendientes por hacer">
+                      <span className={styles.groupBadge} title="Rămase de făcut">
                         {group.remaining}
                       </span>
-                      <span className={styles.groupProgress} title="Hechos del total">
+                      <span className={styles.groupProgress} title="Făcute din total">
                         <span className={styles.metaMade}>{group.made}</span>
                         <span className={styles.metaSep}>/</span>
                         <span className={styles.metaTotal}>{group.ordered}</span>
@@ -171,7 +171,7 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
                           <p className={styles.variantName}>{row.variant}</p>
                           <span
                             className={styles.remainBadge}
-                            title={`Hechos ${row.made} de ${row.ordered}`}
+                            title={`Făcute ${row.made} din ${row.ordered}`}
                           >
                             {row.remaining}
                           </span>
@@ -180,17 +180,17 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
                               type="button"
                               className={styles.btnAdd}
                               disabled={busy}
-                              title="Añadir 1 más a por hacer"
+                              title="Adaugă încă 1 la de făcut"
                               onClick={() => addToMake(row.bouquetId, 1)}
                             >
-                              + Añadir
+                              + Adaugă
                             </button>
                             <div className={styles.qtyGroup}>
                               <button
                                 type="button"
                                 className={styles.btnIcon}
                                 disabled={!canMark || busy || amount <= 1}
-                                aria-label="Reducir cantidad hecha"
+                                aria-label="Scade cantitatea făcută"
                                 onClick={() =>
                                   setAmount(row.bouquetId, amount - 1, row.remaining)
                                 }
@@ -203,7 +203,7 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
                                 max={Math.max(1, row.remaining)}
                                 value={markAmounts[row.bouquetId] ?? '1'}
                                 disabled={!canMark || busy}
-                                aria-label={`Cuántos ${row.variant} he hecho`}
+                                aria-label={`Câte ${row.variant} am făcut`}
                                 onChange={(e) =>
                                   setMarkAmounts((prev) => ({
                                     ...prev,
@@ -215,7 +215,7 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
                                 type="button"
                                 className={styles.btnIcon}
                                 disabled={!canMark || busy || amount >= row.remaining}
-                                aria-label="Aumentar cantidad hecha"
+                                aria-label="Crește cantitatea făcută"
                                 onClick={() =>
                                   setAmount(row.bouquetId, amount + 1, row.remaining)
                                 }
@@ -229,16 +229,16 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
                               disabled={!canMark || busy}
                               onClick={() => markMade(row.bouquetId, amount)}
                             >
-                              Hecho
+                              Am făcut
                             </button>
                             <button
                               type="button"
                               className={styles.btnAll}
                               disabled={!canMark || busy}
-                              title={`Marcar los ${row.remaining} pendientes como hechos`}
+                              title={`Marchează toate cele ${row.remaining} rămase ca făcute`}
                               onClick={() => markMade(row.bouquetId, row.remaining)}
                             >
-                              Hechos todos
+                              Am făcut toate
                             </button>
                           </div>
                         </li>
@@ -259,7 +259,7 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
 
         <div className={styles.panelScroll}>
           {materials.length === 0 ? (
-            <p className={styles.empty}>No hay materiales que preparar de momento.</p>
+            <p className={styles.empty}>Nu ai materiale de pregătit momentan.</p>
           ) : (
             <ul className={styles.materialList}>
               {materials.map((row) => (

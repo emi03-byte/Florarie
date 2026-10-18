@@ -31,8 +31,8 @@ bouquetsRouter.post('/', async (req, res) => {
   const ingredients = parseIngredients(req.body?.ingredients);
   const id = String(req.body?.id ?? '').trim() || createId('buc');
 
-  if (!name || !Number.isFinite(price) || price < 0 || !recipe || !ingredients) {
-    res.status(400).json({ error: 'Datos del centro no válidos' });
+  if (!name || !Number.isFinite(price) || price < 0 || !ingredients) {
+    res.status(400).json({ error: 'Date buchet invalide' });
     return;
   }
 
@@ -49,15 +49,15 @@ bouquetsRouter.put('/:id', async (req, res) => {
   const recipe = String(req.body?.recipe ?? '').trim();
   const ingredients = parseIngredients(req.body?.ingredients);
 
-  if (!name || !Number.isFinite(price) || price < 0 || !recipe || !ingredients) {
-    res.status(400).json({ error: 'Datos del centro no válidos' });
+  if (!name || !Number.isFinite(price) || price < 0 || !ingredients) {
+    res.status(400).json({ error: 'Date buchet invalide' });
     return;
   }
 
   const db = await getDb();
   const existing = await db.getBouquet(id);
   if (!existing) {
-    res.status(404).json({ error: 'Centro inexistente' });
+    res.status(404).json({ error: 'Buchet inexistent' });
     return;
   }
 
@@ -69,7 +69,7 @@ bouquetsRouter.delete('/:id', async (req, res) => {
   const db = await getDb();
   const ok = await db.deleteBouquet(req.params.id);
   if (!ok) {
-    res.status(404).json({ error: 'Centro inexistente' });
+    res.status(404).json({ error: 'Buchet inexistent' });
     return;
   }
   res.status(204).end();

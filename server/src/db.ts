@@ -185,7 +185,8 @@ async function initSqlite(): Promise<DbDriver> {
 
   return {
     async listBouquets() {
-      const rows = db.prepare('SELECT * FROM bouquets ORDER BY name').all() as {
+      // Newest inserts first (SQLite rowid); keeps freshly added products on top.
+      const rows = db.prepare('SELECT * FROM bouquets ORDER BY rowid DESC').all() as {
         id: string;
         name: string;
         price: number;
@@ -324,7 +325,7 @@ async function initSqlite(): Promise<DbDriver> {
       const bouquet = db.prepare('SELECT price FROM bouquets WHERE id = ?').get(bouquetId) as
         | { price: number }
         | undefined;
-      if (!bouquet) throw new Error('Centro inexistente');
+      if (!bouquet) throw new Error('Buchet inexistent');
 
       const tx = db.transaction(() => {
         const existing = db
@@ -540,7 +541,14 @@ async function initMssql(connectionString: string): Promise<DbDriver> {
 
   return {
     async listBouquets() {
-      const result = await pool.request().query('SELECT * FROM dbo.bouquets ORDER BY name');
+      // Custom adds (buc-*) first by id desc; catalog centros keep name order.
+      const result = await pool.request().query(`
+        SELECT * FROM dbo.bouquets
+        ORDER BY
+          CASE WHEN id LIKE N'buc-%' THEN 0 ELSE 1 END,
+          CASE WHEN id LIKE N'buc-%' THEN id ELSE NULL END DESC,
+          name
+      `);
       return Promise.all(result.recordset.map((row) => mapBouquet(row)));
     },
     async getBouquet(id) {
@@ -699,7 +707,7 @@ async function initMssql(connectionString: string): Promise<DbDriver> {
         .request()
         .input('id', sql.NVarChar, bouquetId)
         .query('SELECT price FROM dbo.bouquets WHERE id = @id');
-      if (!bouquetResult.recordset[0]) throw new Error('Centro inexistente');
+      if (!bouquetResult.recordset[0]) throw new Error('Buchet inexistent');
       const price = Number(bouquetResult.recordset[0].price);
 
       const existing = await pool.request().input('bouquet_id', sql.NVarChar, bouquetId).query(`

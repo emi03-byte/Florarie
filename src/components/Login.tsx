@@ -19,7 +19,7 @@ export function Login({ onSuccess }: Props) {
       await login(password);
       onSuccess();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error de autenticación');
+      setError(err instanceof Error ? err.message : 'Autentificare eșuată');
     } finally {
       setLoading(false);
     }
@@ -36,12 +36,12 @@ export function Login({ onSuccess }: Props) {
           height={56}
         />
         <p className={styles.brand}>Florarie</p>
-        <h1>Punto de venta</h1>
+        <h1>Punct de vânzare</h1>
         <p className={styles.hint}>
-          Introduce la contraseña de la tienda para continuar.
+          Introdu parola magazinului pentru a continua.
         </p>
         <label>
-          Contraseña
+          Parolă
           <input
             type="password"
             autoFocus
@@ -52,7 +52,7 @@ export function Login({ onSuccess }: Props) {
         </label>
         {error ? <p className={styles.error}>{error}</p> : null}
         <button type="submit" disabled={loading || !password.trim()}>
-          {loading ? 'Comprobando…' : 'Entrar'}
+          {loading ? 'Se verifică…' : 'Intră'}
         </button>
       </form>
     </div>

@@ -47,7 +47,7 @@ export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
           type="button"
           className={styles.close}
           onClick={onClose}
-          aria-label="Cerrar"
+          aria-label="Închide"
         >
           ×
         </button>
@@ -57,7 +57,7 @@ export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
         </div>
 
         <div className={styles.body}>
-          <p className={styles.badge}>Detalles</p>
+          <p className={styles.badge}>Detalii</p>
           <h2 id="bouquet-preview-title" className={styles.title}>
             {bouquet.name}
           </h2>
@@ -77,7 +77,7 @@ export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
               <button
                 type="button"
                 onClick={() => changeQty(qty - 1)}
-                aria-label="Reducir cantidad"
+                aria-label="Scade cantitatea"
                 disabled={qty <= 1}
               >
                 −
@@ -96,7 +96,7 @@ export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
               <button
                 type="button"
                 onClick={() => changeQty(qty + 1)}
-                aria-label="Aumentar cantidad"
+                aria-label="Crește cantitatea"
               >
                 +
               </button>
@@ -109,7 +109,7 @@ export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
                 onClose();
               }}
             >
-              Añadir al carrito
+              Adaugă în coș
             </button>
           </div>
         </div>

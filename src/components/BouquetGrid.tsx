@@ -57,7 +57,7 @@ export function BouquetGrid({
                 className={styles.detailLink}
                 onClick={() => onViewDetails(bouquet)}
               >
-                Ver detalles
+                Vezi detalii
               </button>
             </div>
             <button
@@ -78,13 +78,13 @@ export function BouquetGrid({
                 className={styles.detailAction}
                 onClick={() => onViewDetails(bouquet)}
               >
-                Ver detalles
+                Vezi detalii
               </button>
               <div className={styles.qty}>
                 <button
                   type="button"
                   onClick={() => setQty(bouquet.id, qty - 1)}
-                  aria-label="Reducir cantidad"
+                  aria-label="Scade cantitatea"
                   disabled={qty <= 1}
                 >
                   −
@@ -103,7 +103,7 @@ export function BouquetGrid({
                 <button
                   type="button"
                   onClick={() => setQty(bouquet.id, qty + 1)}
-                  aria-label="Aumentar cantidad"
+                  aria-label="Crește cantitatea"
                 >
                   +
                 </button>
@@ -116,7 +116,7 @@ export function BouquetGrid({
                   setQty(bouquet.id, 1);
                 }}
               >
-                Añadir al carrito
+                Adaugă în coș
               </button>
             </div>
           </article>
