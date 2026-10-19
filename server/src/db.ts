@@ -541,12 +541,17 @@ async function initMssql(connectionString: string): Promise<DbDriver> {
 
   return {
     async listBouquets() {
-      // Custom adds (buc-*) first by id desc; catalog centros keep name order.
+      // Custom adds (buc-*) first; then Vechi catalog, then Nou, then the rest.
       const result = await pool.request().query(`
         SELECT * FROM dbo.bouquets
         ORDER BY
           CASE WHEN id LIKE N'buc-%' THEN 0 ELSE 1 END,
           CASE WHEN id LIKE N'buc-%' THEN id ELSE NULL END DESC,
+          CASE
+            WHEN name LIKE N'Vechi ·%' THEN 0
+            WHEN name LIKE N'Nou ·%' THEN 1
+            ELSE 2
+          END,
           name
       `);
       return Promise.all(result.recordset.map((row) => mapBouquet(row)));

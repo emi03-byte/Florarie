@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AdminForm } from './components/AdminForm';
-import { BouquetDetail } from './components/BouquetDetail';
 import { BouquetGrid } from './components/BouquetGrid';
 import { BouquetPreview } from './components/BouquetPreview';
 import { Cart } from './components/Cart';
@@ -43,7 +42,6 @@ function App() {
   const [view, setView] = useState<View>('vanzare');
   const [catalog, setCatalog] = useState<Bouquet[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [lastOrder, setLastOrder] = useState<Order | null>(null);
@@ -121,23 +119,13 @@ function App() {
     if (authed) void loadData();
   }, [authed, loadData]);
 
-  const selectedBouquets = useMemo(
-    () =>
-      selectedIds
-        .map((id) => catalog.find((b) => b.id === id))
-        .filter((b): b is Bouquet => Boolean(b)),
-    [catalog, selectedIds],
-  );
-
   const previewBouquet = useMemo(
     () => catalog.find((b) => b.id === previewId) ?? null,
     [catalog, previewId],
   );
 
-  function toggleSelect(bouquet: Bouquet) {
-    setSelectedIds((prev) =>
-      prev.includes(bouquet.id) ? prev : [...prev, bouquet.id],
-    );
+  function openPreview(bouquet: Bouquet) {
+    setPreviewId(bouquet.id);
   }
 
   const openCount = useMemo(
@@ -210,19 +198,12 @@ function App() {
     if (cart.length === 0) return;
     setError('');
     try {
-      const order = await createOrder(cart);
+      await createOrder(cart);
       const nextOrders = await fetchOrders();
       setOrders(nextOrders);
-      setLastOrder(order);
       setCart([]);
-      setSelectedIds([]);
-      setInvoiceReturnView('vanzare');
-      downloadInvoice(
-        order,
-        catalog,
-        order.dailyNumber ?? getDailyOrderNumber(order, nextOrders),
-      );
-      setView('factura');
+      setView('productie');
+      showToast('Comanda a fost adăugată la De făcut');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Nu am putut finaliza comanda');
     }
@@ -334,13 +315,6 @@ function App() {
           </button>
           <button
             type="button"
-            className={view === 'facturare' ? 'active' : ''}
-            onClick={() => goTo('facturare')}
-          >
-            Facturare
-          </button>
-          <button
-            type="button"
             className={view === 'productie' ? 'active' : ''}
             onClick={() => goTo('productie')}
           >
@@ -348,29 +322,10 @@ function App() {
           </button>
           <button
             type="button"
-            className={view === 'istoric' ? 'active' : ''}
-            onClick={() => goTo('istoric')}
-          >
-            Istoric
-          </button>
-          <button
-            type="button"
             className={view === 'admin' ? 'active' : ''}
             onClick={() => goTo('admin')}
           >
             Admin
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              logout();
-              setAuthed(false);
-              setCatalog([]);
-              setOrders([]);
-              setCart([]);
-            }}
-          >
-            Ieșire
           </button>
         </nav>
         {cartCount > 0 ? (
@@ -488,20 +443,11 @@ function App() {
             <div className="sales-main">
               <BouquetGrid
                 bouquets={catalog}
-                selectedIds={selectedIds}
-                onSelect={toggleSelect}
-                onViewDetails={(b) => setPreviewId(b.id)}
+                selectedIds={previewId ? [previewId] : []}
+                onSelect={openPreview}
+                onViewDetails={openPreview}
                 onAdd={askAddToCart}
               />
-              <div className="sales-detail-desktop">
-                <BouquetDetail
-                  bouquets={selectedBouquets}
-                  onAdd={askAddToCart}
-                  onRemove={(id) =>
-                    setSelectedIds((prev) => prev.filter((item) => item !== id))
-                  }
-                />
-              </div>
             </div>
             {previewBouquet ? (
               <BouquetPreview
@@ -627,7 +573,7 @@ function App() {
                   try {
                     await deleteBouquet(id);
                     setCatalog(await fetchCatalog());
-                    setSelectedIds((prev) => prev.filter((item) => item !== id));
+                    setPreviewId((prev) => (prev === id ? null : prev));
                     setCart((prev) => prev.filter((item) => item.bouquetId !== id));
                   } catch (err) {
                     setError(err instanceof Error ? err.message : 'Ștergere eșuată');
