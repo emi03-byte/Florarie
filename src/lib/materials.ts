@@ -1,4 +1,4 @@
-import { materialKey } from './ingredients';
+import { canonicalMaterialName, materialMatchKey } from './ingredients';
 import type { Bouquet, Order, OrderItem } from '../types';
 
 export type BouquetToMake = {
@@ -73,14 +73,14 @@ export function aggregateMaterialsNeeded(
       if (!bouquet) continue;
 
       for (const ingredient of bouquet.ingredients) {
-        const key = materialKey(ingredient.name, ingredient.unit);
+        const key = materialMatchKey(ingredient.name, ingredient.unit);
         const add = ingredient.quantity * remaining;
         const existing = map.get(key);
         if (existing) {
           existing.quantity += add;
         } else {
           map.set(key, {
-            name: ingredient.name,
+            name: canonicalMaterialName(ingredient.name),
             unit: ingredient.unit,
             quantity: add,
           });

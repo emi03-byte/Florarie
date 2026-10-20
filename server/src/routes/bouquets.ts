@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createId, getDb } from '../db.js';
+import { createId, runDb } from '../db.js';
 import type { Bouquet, Ingredient } from '../types.js';
 
 export const bouquetsRouter = Router();
@@ -19,8 +19,7 @@ function parseIngredients(raw: unknown): Ingredient[] | null {
 }
 
 bouquetsRouter.get('/', async (_req, res) => {
-  const db = await getDb();
-  res.json(await db.listBouquets());
+  res.json(await runDb((db) => db.listBouquets()));
 });
 
 bouquetsRouter.post('/', async (req, res) => {
@@ -37,8 +36,7 @@ bouquetsRouter.post('/', async (req, res) => {
   }
 
   const bouquet: Bouquet = { id, name, price, image, recipe, ingredients };
-  const db = await getDb();
-  res.status(201).json(await db.upsertBouquet(bouquet));
+  res.status(201).json(await runDb((db) => db.upsertBouquet(bouquet)));
 });
 
 bouquetsRouter.put('/:id', async (req, res) => {
@@ -54,20 +52,18 @@ bouquetsRouter.put('/:id', async (req, res) => {
     return;
   }
 
-  const db = await getDb();
-  const existing = await db.getBouquet(id);
+  const existing = await runDb((db) => db.getBouquet(id));
   if (!existing) {
     res.status(404).json({ error: 'Buchet inexistent' });
     return;
   }
 
   const bouquet: Bouquet = { id, name, price, image, recipe, ingredients };
-  res.json(await db.upsertBouquet(bouquet));
+  res.json(await runDb((db) => db.upsertBouquet(bouquet)));
 });
 
 bouquetsRouter.delete('/:id', async (req, res) => {
-  const db = await getDb();
-  const ok = await db.deleteBouquet(req.params.id);
+  const ok = await runDb((db) => db.deleteBouquet(req.params.id));
   if (!ok) {
     res.status(404).json({ error: 'Buchet inexistent' });
     return;

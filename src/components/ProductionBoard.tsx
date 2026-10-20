@@ -2,7 +2,10 @@ import { useMemo, useState } from 'react';
 import type { Bouquet, Order } from '../types';
 import { aggregateBouquetsToMake, aggregateMaterialsNeeded } from '../lib/materials';
 import type { BouquetToMake } from '../lib/materials';
+import { useRevealOnScroll } from '../lib/useRevealOnScroll';
 import { BouquetImage } from './BouquetImage';
+import { ConfirmDialog } from './ConfirmDialog';
+import { QuantityDialog } from './QuantityDialog';
 import styles from './ProductionBoard.module.css';
 
 type Props = {
@@ -10,6 +13,7 @@ type Props = {
   catalog: Bouquet[];
   onMarkMade: (bouquetId: string, count: number) => Promise<void>;
   onAddToMake: (bouquetId: string, count: number) => Promise<void>;
+  onToast?: (message: string) => void;
 };
 
 type ModelGroup = {
@@ -18,6 +22,13 @@ type ModelGroup = {
   made: number;
   ordered: number;
   items: Array<BouquetToMake & { variant: string }>;
+};
+
+type ConfirmAsk = {
+  bouquetId: string;
+  variant: string;
+  count: number;
+  mode: 'partial' | 'all';
 };
 
 function parseName(name: string): { model: string; variant: string } {
@@ -60,7 +71,31 @@ function groupByModel(rows: BouquetToMake[]): ModelGroup[] {
     .sort((a, b) => a.model.localeCompare(b.model, 'ro'));
 }
 
-export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Props) {
+function takeVisibleGroups(groups: ModelGroup[], visibleCount: number): ModelGroup[] {
+  let left = visibleCount;
+  const out: ModelGroup[] = [];
+  for (const group of groups) {
+    if (left <= 0) break;
+    const items = group.items.slice(0, left);
+    left -= items.length;
+    out.push({
+      ...group,
+      items,
+      remaining: items.reduce((s, i) => s + i.remaining, 0),
+      made: items.reduce((s, i) => s + i.made, 0),
+      ordered: items.reduce((s, i) => s + i.ordered, 0),
+    });
+  }
+  return out;
+}
+
+export function ProductionBoard({
+  orders,
+  catalog,
+  onMarkMade,
+  onAddToMake,
+  onToast,
+}: Props) {
   const bouquets = useMemo(
     () => aggregateBouquetsToMake(orders, catalog),
     [orders, catalog],
@@ -75,9 +110,21 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
     [bouquets],
   );
 
+  const resetKey = bouquets.map((b) => b.bouquetId).join('|');
+  const { visibleCount, sentinelRef, hasMore } = useRevealOnScroll(
+    bouquets.length,
+    resetKey,
+  );
+  const visibleGroups = useMemo(
+    () => takeVisibleGroups(groups, visibleCount),
+    [groups, visibleCount],
+  );
+
   const [markAmounts, setMarkAmounts] = useState<Record<string, string>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [addAsk, setAddAsk] = useState<BouquetToMake | null>(null);
+  const [confirmAsk, setConfirmAsk] = useState<ConfirmAsk | null>(null);
 
   function getAmount(bouquetId: string, remaining: number): number {
     if (remaining <= 0) return 1;
@@ -93,13 +140,18 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
     setMarkAmounts((prev) => ({ ...prev, [bouquetId]: String(next) }));
   }
 
-  async function markMade(bouquetId: string, count: number) {
+  async function markMade(bouquetId: string, count: number, variant: string) {
     if (count <= 0) return;
     setError('');
     setBusyId(bouquetId);
     try {
       await onMarkMade(bouquetId, count);
       setMarkAmounts((prev) => ({ ...prev, [bouquetId]: '1' }));
+      onToast?.(
+        count === 1
+          ? `Marcat ca făcut: ${variant}`
+          : `Marcate ca făcute: ${count} × ${variant}`,
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Nu am putut marca buchetul');
     } finally {
@@ -107,12 +159,17 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
     }
   }
 
-  async function addToMake(bouquetId: string, count: number) {
+  async function addToMake(bouquetId: string, count: number, name: string) {
     if (count <= 0) return;
     setError('');
     setBusyId(bouquetId);
     try {
       await onAddToMake(bouquetId, count);
+      onToast?.(
+        count === 1
+          ? `Adăugat 1 la De făcut: ${name}`
+          : `Adăugat ${count} la De făcut: ${name}`,
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Nu am putut adăuga');
     } finally {
@@ -143,7 +200,7 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
             </p>
           ) : (
             <div className={styles.groups}>
-              {groups.map((group) => (
+              {visibleGroups.map((group) => (
                 <article key={group.model} className={styles.group}>
                   <header className={styles.groupHead}>
                     <h3 className={styles.groupTitle}>{group.model}</h3>
@@ -168,20 +225,22 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
                           <div className={styles.thumb}>
                             <BouquetImage src={row.image} alt={row.name} />
                           </div>
-                          <p className={styles.variantName}>{row.variant}</p>
-                          <span
-                            className={styles.remainBadge}
-                            title={`Făcute ${row.made} din ${row.ordered}`}
-                          >
-                            {row.remaining}
-                          </span>
+                          <div className={styles.variantLabel}>
+                            <p className={styles.variantName}>{row.variant}</p>
+                            <span
+                              className={styles.remainBadge}
+                              title={`Făcute ${row.made} din ${row.ordered}`}
+                            >
+                              {row.remaining}
+                            </span>
+                          </div>
                           <div className={styles.actions}>
                             <button
                               type="button"
                               className={styles.btnAdd}
                               disabled={busy}
-                              title="Adaugă încă 1 la de făcut"
-                              onClick={() => addToMake(row.bouquetId, 1)}
+                              title="Adaugă la de făcut"
+                              onClick={() => setAddAsk(row)}
                             >
                               + Adaugă
                             </button>
@@ -227,7 +286,14 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
                               type="button"
                               className={styles.btnConfirm}
                               disabled={!canMark || busy}
-                              onClick={() => markMade(row.bouquetId, amount)}
+                              onClick={() =>
+                                setConfirmAsk({
+                                  bouquetId: row.bouquetId,
+                                  variant: row.variant,
+                                  count: amount,
+                                  mode: 'partial',
+                                })
+                              }
                             >
                               Am făcut
                             </button>
@@ -236,7 +302,14 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
                               className={styles.btnAll}
                               disabled={!canMark || busy}
                               title={`Marchează toate cele ${row.remaining} rămase ca făcute`}
-                              onClick={() => markMade(row.bouquetId, row.remaining)}
+                              onClick={() =>
+                                setConfirmAsk({
+                                  bouquetId: row.bouquetId,
+                                  variant: row.variant,
+                                  count: row.remaining,
+                                  mode: 'all',
+                                })
+                              }
                             >
                               Am făcut toate
                             </button>
@@ -247,10 +320,60 @@ export function ProductionBoard({ orders, catalog, onMarkMade, onAddToMake }: Pr
                   </ul>
                 </article>
               ))}
+              {hasMore ? (
+                <div
+                  ref={sentinelRef}
+                  className={styles.revealSentinel}
+                  aria-hidden="true"
+                />
+              ) : null}
             </div>
           )}
         </div>
       </section>
+
+      {addAsk ? (
+        <QuantityDialog
+          bouquet={{
+            id: addAsk.bouquetId,
+            name: addAsk.name,
+            price: 0,
+            image: addAsk.image,
+            recipe: '',
+            ingredients: [],
+          }}
+          showPrice={false}
+          confirmLabel={(qty) =>
+            qty === 1 ? 'Adaugă 1 la De făcut' : `Adaugă ${qty} la De făcut`
+          }
+          onCancel={() => setAddAsk(null)}
+          onConfirm={(quantity) => {
+            const target = addAsk;
+            setAddAsk(null);
+            void addToMake(target.bouquetId, quantity, target.name);
+          }}
+        />
+      ) : null}
+
+      {confirmAsk ? (
+        <ConfirmDialog
+          title="Confirmare"
+          message={
+            confirmAsk.mode === 'all'
+              ? `Marchezi toate cele ${confirmAsk.count} rămase (${confirmAsk.variant})?`
+              : confirmAsk.count === 1
+                ? `Marchezi 1 × ${confirmAsk.variant} ca făcute?`
+                : `Marchezi ${confirmAsk.count} × ${confirmAsk.variant} ca făcute?`
+          }
+          confirmLabel="Da, confirm"
+          onCancel={() => setConfirmAsk(null)}
+          onConfirm={() => {
+            const target = confirmAsk;
+            setConfirmAsk(null);
+            void markMade(target.bouquetId, target.count, target.variant);
+          }}
+        />
+      ) : null}
 
       <aside className={`${styles.panel} ${styles.materialsPanel}`}>
         <header className={styles.panelHead}>

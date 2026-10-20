@@ -5,10 +5,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireAuth } from './auth.js';
-import { getDb } from './db.js';
+import { getDb, isTransientDbError } from './db.js';
 import { authRouter } from './routes/auth.js';
 import { bouquetsRouter } from './routes/bouquets.js';
 import { ordersRouter } from './routes/orders.js';
+import type { NextFunction, Request, Response } from 'express';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const clientDir = path.join(__dirname, '..', 'public');
@@ -48,8 +49,37 @@ if (fs.existsSync(clientDir)) {
   });
 }
 
+app.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
+  console.error(err);
+  if (res.headersSent) {
+    next(err);
+    return;
+  }
+  const statusFromErr = Number((err as { status?: number })?.status);
+  if (statusFromErr >= 400 && statusFromErr < 500) {
+    res.status(statusFromErr).json({
+      error: err instanceof Error ? err.message : 'Cerere invalidă',
+    });
+    return;
+  }
+  if (isTransientDbError(err)) {
+    res.status(503).json({
+      error: 'Baza de date se trezește. Reîncearcă în câteva secunde.',
+    });
+    return;
+  }
+  res.status(500).json({
+    error: err instanceof Error ? err.message : 'Eroare server',
+  });
+});
+
 async function start() {
-  await getDb();
+  // Prefer connecting at boot, but don't crash forever if SQL is still waking.
+  try {
+    await getDb();
+  } catch (err) {
+    console.error('Initial DB connect failed (will retry on first request)', err);
+  }
   app.listen(listenPort, () => {
     console.log(`Florarie API listening on ${String(listenPort)}`);
   });

@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import type { Bouquet, Ingredient } from '../types';
 import { createId } from '../lib/id';
 import { formatEuro } from '../lib/money';
+import { useRevealOnScroll } from '../lib/useRevealOnScroll';
 import { BouquetImage } from './BouquetImage';
 import styles from './AdminForm.module.css';
 
@@ -35,6 +36,12 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(createEmptyForm);
   const [error, setError] = useState('');
+  const resetKey = bouquets.map((b) => b.id).join('|');
+  const { visibleCount, sentinelRef, hasMore } = useRevealOnScroll(
+    bouquets.length,
+    resetKey,
+  );
+  const visibleBouquets = bouquets.slice(0, visibleCount);
 
   useEffect(() => {
     if (!editingId) {
@@ -252,7 +259,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
             <p className={styles.empty}>Nu ai încă buchete în catalog.</p>
           ) : (
             <ul className={styles.list}>
-              {bouquets.map((bouquet) => (
+              {visibleBouquets.map((bouquet) => (
                 <li
                   key={bouquet.id}
                   className={`${styles.item}${editingId === bouquet.id ? ` ${styles.itemActive}` : ''}`}
@@ -281,6 +288,11 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                   </div>
                 </li>
               ))}
+              {hasMore ? (
+                <li className={styles.revealSentinel} aria-hidden="true">
+                  <div ref={sentinelRef} />
+                </li>
+              ) : null}
             </ul>
           )}
         </div>

@@ -387,3 +387,9 @@
     display: inline-block;
   }
 }
+
+.revealSentinel {
+  grid-column: 1 / -1;
+  height: 1px;
+  pointer-events: none;
+}

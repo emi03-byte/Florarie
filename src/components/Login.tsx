@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { login } from '../lib/api';
+import { login, wakeDatabase } from '../lib/api';
 import brandMark from '../assets/brand-mark.svg';
 import styles from './Login.module.css';
 
@@ -18,6 +18,7 @@ export function Login({ onSuccess }: Props) {
     setLoading(true);
     try {
       await login(password);
+      await wakeDatabase();
       onSuccess();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Autentificare eșuată');
@@ -49,11 +50,12 @@ export function Login({ onSuccess }: Props) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
+            disabled={loading}
           />
         </label>
         {error ? <p className={styles.error}>{error}</p> : null}
         <button type="submit" disabled={loading || !password.trim()}>
-          {loading ? 'Se verifică…' : 'Intră'}
+          {loading ? 'Se încarcă… te rugăm așteaptă' : 'Intră'}
         </button>
       </form>
     </div>

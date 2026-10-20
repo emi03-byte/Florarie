@@ -1,5 +1,6 @@
 import type { Bouquet } from '../types';
 import { formatEuro } from '../lib/money';
+import { useRevealOnScroll } from '../lib/useRevealOnScroll';
 import { BouquetImage } from './BouquetImage';
 import styles from './BouquetGrid.module.css';
 
@@ -18,9 +19,16 @@ export function BouquetGrid({
   onViewDetails,
   onAdd,
 }: Props) {
+  const resetKey = bouquets.map((b) => b.id).join('|');
+  const { visibleCount, sentinelRef, hasMore } = useRevealOnScroll(
+    bouquets.length,
+    resetKey,
+  );
+  const visible = bouquets.slice(0, visibleCount);
+
   return (
     <div className={styles.grid}>
-      {bouquets.map((bouquet) => {
+      {visible.map((bouquet) => {
         const selected = selectedIds.includes(bouquet.id);
         return (
           <article
@@ -78,6 +86,13 @@ export function BouquetGrid({
           </article>
         );
       })}
+      {hasMore ? (
+        <div
+          ref={sentinelRef}
+          className={styles.revealSentinel}
+          aria-hidden="true"
+        />
+      ) : null}
     </div>
   );
 }

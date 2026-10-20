@@ -1,3 +1,8 @@
+.revealSentinel {
+  height: 1px;
+  pointer-events: none;
+}
+
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) minmax(240px, 1fr);
@@ -191,11 +196,19 @@
 
 .variantRow {
   display: grid;
-  grid-template-columns: 32px minmax(5rem, 1fr) 2.1rem auto;
+  grid-template-columns: 32px minmax(5rem, 1fr) auto;
   gap: 0.35rem 0.45rem;
   align-items: center;
   padding: 0.35rem 0.45rem;
   border-bottom: 1px solid var(--line);
+}
+
+.variantLabel {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.4rem;
+  min-width: 0;
 }
 
 .variantRow:last-child {
@@ -227,15 +240,16 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex: 0 1 auto;
 }
 
 .remainBadge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  min-width: 2.5rem;
-  padding: 0.2rem 0.25rem;
+  flex: 0 0 auto;
+  min-width: 2rem;
+  padding: 0.2rem 0.4rem;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.65);
   border: 1px solid var(--line);
@@ -400,7 +414,7 @@
   }
 
   .variantRow {
-    grid-template-columns: 36px minmax(0, 1fr) 2.5rem;
+    grid-template-columns: 36px minmax(0, 1fr);
     grid-template-rows: auto auto;
   }
 

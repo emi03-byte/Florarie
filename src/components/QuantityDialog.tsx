@@ -7,9 +7,18 @@ type Props = {
   bouquet: Bouquet;
   onConfirm: (quantity: number) => void;
   onCancel: () => void;
+  /** Override confirm button text. Receives the chosen quantity. */
+  confirmLabel?: (quantity: number) => string;
+  showPrice?: boolean;
 };
 
-export function QuantityDialog({ bouquet, onConfirm, onCancel }: Props) {
+export function QuantityDialog({
+  bouquet,
+  onConfirm,
+  onCancel,
+  confirmLabel,
+  showPrice = true,
+}: Props) {
   const [qty, setQty] = useState(1);
 
   useEffect(() => {
@@ -41,7 +50,9 @@ export function QuantityDialog({ bouquet, onConfirm, onCancel }: Props) {
         <h2 id="qty-dialog-title" className={styles.title}>
           {bouquet.name}
         </h2>
-        <p className={styles.price}>{formatEuro(bouquet.price)} / buc</p>
+        {showPrice ? (
+          <p className={styles.price}>{formatEuro(bouquet.price)} / buc</p>
+        ) : null}
 
         <div className={styles.qty}>
           <button
@@ -82,7 +93,9 @@ export function QuantityDialog({ bouquet, onConfirm, onCancel }: Props) {
             className={styles.confirm}
             onClick={() => onConfirm(qty)}
           >
-            Adaugă {qty > 1 ? `${qty} × ` : ''}în coș
+            {confirmLabel
+              ? confirmLabel(qty)
+              : `Adaugă ${qty > 1 ? `${qty} × ` : ''}în coș`}
           </button>
         </div>
       </div>

@@ -27,7 +27,7 @@ export function isLoggedIn(): boolean {
   return Boolean(getToken());
 }
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+async function requestOnce<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
   if (!headers.has('Content-Type') && init.body) {
     headers.set('Content-Type', 'application/json');
@@ -48,10 +48,24 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     } catch {
       /* ignore */
     }
+    if (response.status === 503) {
+      throw Object.assign(new Error(message), { retryable: true });
+    }
     throw new Error(message);
   }
   if (response.status === 204) return undefined as T;
   return (await response.json()) as T;
+}
+
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  try {
+    return await requestOnce<T>(path, init);
+  } catch (err) {
+    // One automatic retry after SQL wake / brief outage.
+    if (!(err as { retryable?: boolean })?.retryable) throw err;
+    await new Promise((r) => setTimeout(r, 2500));
+    return requestOnce<T>(path, init);
+  }
 }
 
 export async function login(password: string): Promise<void> {
@@ -60,6 +74,11 @@ export async function login(password: string): Promise<void> {
     body: JSON.stringify({ password }),
   });
   setToken(data.token);
+}
+
+/** Authenticated ping to wake Azure SQL after login (retries on 503). */
+export async function wakeDatabase(): Promise<void> {
+  await Promise.all([fetchCatalog(), fetchOrders()]);
 }
 
 export function logout(): void {

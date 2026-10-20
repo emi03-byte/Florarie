@@ -20,9 +20,53 @@ export type DbDriver = {
 };
 
 let driver: DbDriver | null = null;
+let mssqlPool: { close: () => Promise<void> } | null = null;
 
 function createId(prefix: string): string {
   return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+/** Azure SQL serverless often times out while waking from auto-pause. */
+export function isTransientDbError(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false;
+  const e = err as { name?: string; code?: string; message?: string };
+  const msg = String(e.message ?? '').toLowerCase();
+  return (
+    e.name === 'TimeoutError' ||
+    e.code === 'ETIMEOUT' ||
+    e.code === 'ESOCKET' ||
+    e.code === 'ECONNCLOSED' ||
+    e.code === 'ECONNRESET' ||
+    msg.includes('timed out') ||
+    msg.includes('timeout') ||
+    msg.includes('connection is closed') ||
+    msg.includes('failed to connect')
+  );
+}
+
+export async function resetDb(): Promise<void> {
+  driver = null;
+  const pool = mssqlPool;
+  mssqlPool = null;
+  if (pool) {
+    try {
+      await pool.close();
+    } catch {
+      /* ignore close errors */
+    }
+  }
+}
+
+/** Run a DB call; on SQL wake/timeout, reconnect once and retry. */
+export async function runDb<T>(fn: (db: DbDriver) => Promise<T>): Promise<T> {
+  try {
+    return await fn(await getDb());
+  } catch (err) {
+    if (!isTransientDbError(err)) throw err;
+    console.warn('Transient DB error — reconnecting once', err);
+    await resetDb();
+    return await fn(await getDb());
+  }
 }
 
 /* ---------------- SQLite (local default) ---------------- */
@@ -389,7 +433,18 @@ async function initSqlite(): Promise<DbDriver> {
 
 async function initMssql(connectionString: string): Promise<DbDriver> {
   const sql = (await import('mssql')).default;
-  const pool = await sql.connect(connectionString);
+  // Longer timeouts: Azure SQL serverless can take 30–60s to wake after auto-pause.
+  // Pass ADO connection string directly (object form without `server` breaks tedious).
+  let cs = connectionString.trim();
+  if (!/Connection Timeout=/i.test(cs)) {
+    cs = `${cs.replace(/;?\s*$/, '')};Connection Timeout=90`;
+  }
+  const pool = new sql.ConnectionPool(cs);
+  pool.on('error', (err: Error) => {
+    console.error('mssql pool error', err);
+  });
+  await pool.connect();
+  mssqlPool = pool;
 
   async function ensureSchema() {
     await pool.request().query(`

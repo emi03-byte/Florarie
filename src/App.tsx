@@ -108,8 +108,12 @@ function App() {
       setOrders(nextOrders);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Nu am putut încărca datele';
-      setError(message);
-      if (message === 'Neautentificat') setAuthed(false);
+      if (message === 'Neautentificat') {
+        setAuthed(false);
+        setError('Sesiunea a expirat. Intră din nou cu parola.');
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
@@ -118,6 +122,49 @@ function App() {
   useEffect(() => {
     if (authed) void loadData();
   }, [authed, loadData]);
+
+  // Auto-logout after 2 hours with no user interaction.
+  useEffect(() => {
+    if (!authed) return;
+
+    const IDLE_MS = 2 * 60 * 60 * 1000;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    function clearSession() {
+      logout();
+      setAuthed(false);
+      setCatalog([]);
+      setOrders([]);
+      setCart([]);
+      setPreviewId(null);
+      setLastOrder(null);
+      setView('vanzare');
+      setError('');
+    }
+
+    function resetTimer() {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(clearSession, IDLE_MS);
+    }
+
+    const events: Array<keyof WindowEventMap> = [
+      'pointerdown',
+      'keydown',
+      'scroll',
+      'touchstart',
+    ];
+    for (const event of events) {
+      window.addEventListener(event, resetTimer, { passive: true });
+    }
+    resetTimer();
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      for (const event of events) {
+        window.removeEventListener(event, resetTimer);
+      }
+    };
+  }, [authed]);
 
   const previewBouquet = useMemo(
     () => catalog.find((b) => b.id === previewId) ?? null,
@@ -514,6 +561,7 @@ function App() {
             <ProductionBoard
               orders={orders}
               catalog={catalog}
+              onToast={showToast}
               onMarkMade={async (bouquetId, count) => {
                 const next = await markBouquetMade(bouquetId, count);
                 setOrders(next);

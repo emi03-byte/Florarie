@@ -223,6 +223,15 @@
   padding: 0;
 }
 
+.revealSentinel {
+  list-style: none;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  pointer-events: none;
+}
+
 .item {
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr) 3.75rem auto;

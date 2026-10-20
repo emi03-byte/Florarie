@@ -1,7 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const TOKEN_TTL = '12h';
+/** Keep sellers signed in for a work week; closing the tab still clears sessionStorage. */
+const TOKEN_TTL = '7d';
 
 export function getAppPassword(): string {
   return process.env.APP_PASSWORD || 'florarie';

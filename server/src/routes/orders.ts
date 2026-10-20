@@ -1,13 +1,12 @@
 import { Router } from 'express';
 import { nextDailyOrderNumber } from '../dailyOrderNumber.js';
-import { createId, getDb } from '../db.js';
+import { createId, runDb } from '../db.js';
 import type { Order, OrderItem } from '../types.js';
 
 export const ordersRouter = Router();
 
 ordersRouter.get('/', async (_req, res) => {
-  const db = await getDb();
-  res.json(await db.listOrders());
+  res.json(await runDb((db) => db.listOrders()));
 });
 
 ordersRouter.post('/', async (req, res) => {
@@ -18,45 +17,46 @@ ordersRouter.post('/', async (req, res) => {
     return;
   }
 
-  const db = await getDb();
-  const catalog = await db.listBouquets();
-  const items: OrderItem[] = [];
-  let total = 0;
+  const order = await runDb(async (db) => {
+    const catalog = await db.listBouquets();
+    const items: OrderItem[] = [];
+    let total = 0;
 
-  for (const raw of itemsRaw) {
-    const bouquetId = String(raw?.bouquetId ?? '');
-    const quantity = Number(raw?.quantity);
-    if (!bouquetId || !Number.isFinite(quantity) || quantity <= 0) {
-      res.status(400).json({ error: 'Linii comandă invalide' });
-      return;
+    for (const raw of itemsRaw) {
+      const bouquetId = String(raw?.bouquetId ?? '');
+      const quantity = Number(raw?.quantity);
+      if (!bouquetId || !Number.isFinite(quantity) || quantity <= 0) {
+        throw Object.assign(new Error('Linii comandă invalide'), { status: 400 });
+      }
+      const bouquet = catalog.find((b) => b.id === bouquetId);
+      if (!bouquet) {
+        throw Object.assign(new Error(`Buchet necunoscut: ${bouquetId}`), { status: 400 });
+      }
+      const qty = Math.floor(quantity);
+      items.push({
+        bouquetId,
+        quantity: qty,
+        // Invoice-only sales are already complete — they must not appear in De făcut.
+        madeQuantity: invoiceOnly ? qty : 0,
+      });
+      total += bouquet.price * qty;
     }
-    const bouquet = catalog.find((b) => b.id === bouquetId);
-    if (!bouquet) {
-      res.status(400).json({ error: `Buchet necunoscut: ${bouquetId}` });
-      return;
-    }
-    const qty = Math.floor(quantity);
-    items.push({
-      bouquetId,
-      quantity: qty,
-      // Invoice-only sales are already complete — they must not appear in De făcut.
-      madeQuantity: invoiceOnly ? qty : 0,
-    });
-    total += bouquet.price * qty;
-  }
 
-  const createdAt = new Date().toISOString();
-  const existing = await db.listOrders();
-  const order: Order = {
-    id: createId('cmd'),
-    items,
-    createdAt,
-    total,
-    status: invoiceOnly ? 'done' : 'open',
-    dailyNumber: nextDailyOrderNumber(existing, createdAt),
-  };
+    const createdAt = new Date().toISOString();
+    const existing = await db.listOrders();
+    const next: Order = {
+      id: createId('cmd'),
+      items,
+      createdAt,
+      total,
+      status: invoiceOnly ? 'done' : 'open',
+      dailyNumber: nextDailyOrderNumber(existing, createdAt),
+    };
 
-  await db.createOrder(order);
+    await db.createOrder(next);
+    return next;
+  });
+
   res.status(201).json(order);
 });
 
@@ -67,8 +67,7 @@ ordersRouter.post('/mark-made', async (req, res) => {
     res.status(400).json({ error: 'bouquetId și count sunt obligatorii' });
     return;
   }
-  const db = await getDb();
-  const orders = await db.markBouquetMade(bouquetId, count);
+  const orders = await runDb((db) => db.markBouquetMade(bouquetId, count));
   res.json(orders);
 });
 
@@ -80,16 +79,26 @@ ordersRouter.post('/add-to-make', async (req, res) => {
     return;
   }
   try {
-    const db = await getDb();
-    const bouquet = await db.getBouquet(bouquetId);
-    if (!bouquet) {
+    const orders = await runDb(async (db) => {
+      const bouquet = await db.getBouquet(bouquetId);
+      if (!bouquet) {
+        throw Object.assign(new Error('Buchet inexistent'), { status: 404 });
+      }
+      return db.addBouquetToMake(bouquetId, count);
+    });
+    res.json(orders);
+  } catch (error) {
+    const status = Number((error as { status?: number })?.status);
+    if (status === 404) {
       res.status(404).json({ error: 'Buchet inexistent' });
       return;
     }
-    const orders = await db.addBouquetToMake(bouquetId, count);
-    res.json(orders);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Nu am putut adăuga';
-    res.status(400).json({ error: message });
+    if (status === 400) {
+      res.status(400).json({
+        error: error instanceof Error ? error.message : 'Nu am putut adăuga',
+      });
+      return;
+    }
+    throw error;
   }
 });
