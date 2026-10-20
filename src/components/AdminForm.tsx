@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import type { Bouquet, Ingredient } from '../types';
+import { formatBouquetDisplayName } from '../lib/bouquetName';
 import { createId } from '../lib/id';
 import { formatEuro } from '../lib/money';
 import { useRevealOnScroll } from '../lib/useRevealOnScroll';
@@ -79,7 +80,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
     e.preventDefault();
     setError('');
 
-    const name = form.name.trim();
+    const name = formatBouquetDisplayName(form.name);
     const price = Number(form.price.replace(',', '.'));
     const image = form.image.trim() || '/bouquets/placeholder.svg';
     const recipe = form.recipe.trim();

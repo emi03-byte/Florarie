@@ -9,6 +9,7 @@ import { Login } from './components/Login';
 import { OrderHistory } from './components/OrderHistory';
 import { ProductionBoard } from './components/ProductionBoard';
 import { QuantityDialog } from './components/QuantityDialog';
+import { SalesSortSelect } from './components/SalesSortSelect';
 import {
   createOrder,
   deleteBouquet,
@@ -25,6 +26,12 @@ import { getDailyOrderNumber } from './lib/dailyOrderNumber';
 import { downloadInvoice } from './lib/invoiceDownload';
 import { getOpenOrders } from './lib/materials';
 import { formatEuro } from './lib/money';
+import {
+  POPULAR_WINDOW_DAYS,
+  soldQuantities,
+  sortCatalog,
+  type SalesSort,
+} from './lib/salesSort';
 import type { Bouquet, CartItem, Order } from './types';
 import './App.css';
 
@@ -55,6 +62,7 @@ function App() {
   const [qtyAsk, setQtyAsk] = useState<Bouquet | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
+  const [salesSort, setSalesSort] = useState<SalesSort>('name');
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const toastId = useRef(0);
   const searchRef = useRef<HTMLDivElement | null>(null);
@@ -79,6 +87,16 @@ function App() {
       .filter((b) => normalizeSearch(b.name).includes(q))
       .slice(0, 8);
   }, [catalog, searchQuery]);
+
+  const soldLastDays = useMemo(
+    () => soldQuantities(orders, POPULAR_WINDOW_DAYS),
+    [orders],
+  );
+
+  const sortedCatalog = useMemo(
+    () => sortCatalog(catalog, salesSort, soldLastDays),
+    [catalog, salesSort, soldLastDays],
+  );
 
   useEffect(() => {
     function onPointerDown(event: MouseEvent | TouchEvent) {
@@ -488,8 +506,14 @@ function App() {
         {view === 'vanzare' && (
           <section className="sales-shop">
             <div className="sales-main">
+              <div className="sales-sort-bar no-print">
+                <label className="sales-sort-label" htmlFor="sales-sort">
+                  Sortare
+                </label>
+                <SalesSortSelect value={salesSort} onChange={setSalesSort} />
+              </div>
               <BouquetGrid
-                bouquets={catalog}
+                bouquets={sortedCatalog}
                 selectedIds={previewId ? [previewId] : []}
                 onSelect={openPreview}
                 onViewDetails={openPreview}
