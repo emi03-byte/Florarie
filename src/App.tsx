@@ -58,17 +58,19 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
-  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [qtyAsk, setQtyAsk] = useState<Bouquet | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchFabVisible, setSearchFabVisible] = useState(false);
+  const [floatingSearchOpen, setFloatingSearchOpen] = useState(false);
   const [salesSort, setSalesSort] = useState<SalesSort>('name');
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const toastId = useRef(0);
   const searchRef = useRef<HTMLDivElement | null>(null);
+  const floatingSearchRef = useRef<HTMLDivElement | null>(null);
+  const floatingSearchInputRef = useRef<HTMLInputElement | null>(null);
 
   function goTo(next: View) {
-    setMobileMoreOpen(false);
     setView(next);
   }
 
@@ -100,12 +102,22 @@ function App() {
 
   useEffect(() => {
     function onPointerDown(event: MouseEvent | TouchEvent) {
-      const el = searchRef.current;
-      if (!el || !(event.target instanceof Node) || el.contains(event.target)) return;
-      setSearchOpen(false);
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      const topSearch = searchRef.current;
+      const floatSearch = floatingSearchRef.current;
+      const inTop = topSearch?.contains(target);
+      const inFloat = floatSearch?.contains(target);
+      if (!inTop && !inFloat) {
+        setSearchOpen(false);
+        setFloatingSearchOpen(false);
+      }
     }
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setSearchOpen(false);
+      if (event.key === 'Escape') {
+        setSearchOpen(false);
+        setFloatingSearchOpen(false);
+      }
     }
     document.addEventListener('mousedown', onPointerDown);
     document.addEventListener('touchstart', onPointerDown);
@@ -116,6 +128,39 @@ function App() {
       document.removeEventListener('keydown', onKeyDown);
     };
   }, []);
+
+  useEffect(() => {
+    if (view === 'cos' || view === 'productie' || view === 'admin') {
+      setSearchFabVisible(false);
+      setFloatingSearchOpen(false);
+      return;
+    }
+    const el = searchRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const hidden = !entry.isIntersecting;
+        setSearchFabVisible(hidden);
+        if (!hidden) setFloatingSearchOpen(false);
+      },
+      { threshold: 0.15 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [authed, view]);
+
+  useEffect(() => {
+    if (!floatingSearchOpen) return;
+    floatingSearchInputRef.current?.focus();
+  }, [floatingSearchOpen]);
+
+  function pickSearchResult(bouquet: Bouquet) {
+    setSearchQuery('');
+    setSearchOpen(false);
+    setFloatingSearchOpen(false);
+    setPreviewId(bouquet.id);
+    goTo('vanzare');
+  }
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -249,16 +294,6 @@ function App() {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  function changeQty(bouquetId: string, quantity: number) {
-    if (quantity <= 0) {
-      setCart((prev) => prev.filter((item) => item.bouquetId !== bouquetId));
-      return;
-    }
-    setCart((prev) =>
-      prev.map((item) => (item.bouquetId === bouquetId ? { ...item, quantity } : item)),
-    );
-  }
-
   async function checkout() {
     if (cart.length === 0) return;
     setError('');
@@ -299,70 +334,78 @@ function App() {
     );
   }
 
-  const moreActive = view === 'istoric' || view === 'admin';
+  const showBrandSearch =
+    view !== 'cos' && view !== 'productie' && view !== 'admin';
 
   return (
     <div
-      className={`app${view === 'productie' || view === 'admin' || view === 'cos' || view === 'facturare' || view === 'istoric' ? ' app-fill' : ''}${mobileMoreOpen ? ' mobile-more-open' : ''}`}
+      className={`app${view === 'productie' || view === 'admin' || view === 'cos' || view === 'facturare' || view === 'istoric' ? ' app-fill' : ''}`}
     >
       <div className="bg-wash" aria-hidden="true" />
 
-      <header className="topbar no-print">
-        <button
-          type="button"
-          className="brand-block"
-          onClick={() => goTo('vanzare')}
-          aria-label="Mergi la produse"
-        >
-          <span className="brand">Florarie</span>
-          <span className="tagline">Punct de vânzare</span>
-        </button>
-        <div className="topbar-search" ref={searchRef}>
-          <label className="topbar-search-label" htmlFor="product-search">
-            Caută produs
-          </label>
-          <input
-            id="product-search"
-            className="topbar-search-input"
-            type="search"
-            enterKeyHint="search"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
-            placeholder="Caută produs…"
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setSearchOpen(true);
-            }}
-            onFocus={() => setSearchOpen(true)}
-          />
-          {searchOpen && searchQuery.trim().length >= 3 ? (
-            <ul className="topbar-search-suggestions" role="listbox" aria-label="Sugestii produse">
-              {searchSuggestions.length === 0 ? (
-                <li className="topbar-search-empty">Niciun produs găsit</li>
-              ) : (
-                searchSuggestions.map((bouquet) => (
-                  <li key={bouquet.id} role="option">
-                    <button
-                      type="button"
-                      className="topbar-search-suggestion"
-                      onClick={() => {
-                        setSearchQuery('');
-                        setSearchOpen(false);
-                        setPreviewId(bouquet.id);
-                        goTo('vanzare');
-                      }}
-                    >
-                      <span className="topbar-search-name">{bouquet.name}</span>
-                      <span className="topbar-search-price">{formatEuro(bouquet.price)}</span>
-                    </button>
-                  </li>
-                ))
-              )}
-            </ul>
-          ) : null}
-        </div>
+      <header
+        className={`topbar no-print${showBrandSearch ? '' : ' topbar-compact'}`}
+      >
+        {showBrandSearch ? (
+          <>
+            <button
+              type="button"
+              className="brand-block"
+              onClick={() => goTo('vanzare')}
+              aria-label="Mergi la produse"
+            >
+              <span className="brand">Florarie</span>
+              <span className="tagline">Punct de vânzare</span>
+            </button>
+            <div className="topbar-search" ref={searchRef}>
+              <label className="topbar-search-label" htmlFor="product-search">
+                Caută produs
+              </label>
+              <input
+                id="product-search"
+                className="topbar-search-input"
+                type="search"
+                enterKeyHint="search"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
+                placeholder="Caută produs…"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setSearchOpen(true);
+                }}
+                onFocus={() => setSearchOpen(true)}
+              />
+              {searchOpen && searchQuery.trim().length >= 3 ? (
+                <ul
+                  className="topbar-search-suggestions"
+                  role="listbox"
+                  aria-label="Sugestii produse"
+                >
+                  {searchSuggestions.length === 0 ? (
+                    <li className="topbar-search-empty">Niciun produs găsit</li>
+                  ) : (
+                    searchSuggestions.map((bouquet) => (
+                      <li key={bouquet.id} role="option">
+                        <button
+                          type="button"
+                          className="topbar-search-suggestion"
+                          onClick={() => pickSearchResult(bouquet)}
+                        >
+                          <span className="topbar-search-name">{bouquet.name}</span>
+                          <span className="topbar-search-price">
+                            {formatEuro(bouquet.price)}
+                          </span>
+                        </button>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              ) : null}
+            </div>
+          </>
+        ) : null}
         <nav className="nav nav-desktop" aria-label="Navigare principală">
           <button
             type="button"
@@ -404,6 +447,79 @@ function App() {
         ) : null}
       </header>
 
+      {showBrandSearch && searchFabVisible ? (
+        <div
+          className={`mobile-search-fab no-print${floatingSearchOpen ? ' is-open' : ''}`}
+          ref={floatingSearchRef}
+        >
+          {floatingSearchOpen ? (
+            <div className="mobile-search-fab-panel">
+              <input
+                ref={floatingSearchInputRef}
+                className="mobile-search-fab-input"
+                type="search"
+                enterKeyHint="search"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
+                placeholder="Caută produs…"
+                value={searchQuery}
+                aria-label="Caută produs"
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setSearchOpen(true);
+                }}
+              />
+              {searchQuery.trim().length >= 3 ? (
+                <ul className="mobile-search-fab-suggestions" role="listbox">
+                  {searchSuggestions.length === 0 ? (
+                    <li className="topbar-search-empty">Niciun produs găsit</li>
+                  ) : (
+                    searchSuggestions.map((bouquet) => (
+                      <li key={bouquet.id} role="option">
+                        <button
+                          type="button"
+                          className="topbar-search-suggestion"
+                          onClick={() => pickSearchResult(bouquet)}
+                        >
+                          <span className="topbar-search-name">{bouquet.name}</span>
+                          <span className="topbar-search-price">
+                            {formatEuro(bouquet.price)}
+                          </span>
+                        </button>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              ) : null}
+            </div>
+          ) : null}
+          <button
+            type="button"
+            className="mobile-search-fab-btn"
+            aria-label={floatingSearchOpen ? 'Închide căutarea' : 'Caută produs'}
+            aria-expanded={floatingSearchOpen}
+            onClick={() => setFloatingSearchOpen((open) => !open)}
+          >
+            {floatingSearchOpen ? (
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M18.3 5.7a1 1 0 0 0-1.4-1.4L12 9.17 7.1 4.3A1 1 0 0 0 5.7 5.7L10.59 10.6 5.7 15.49a1 1 0 1 0 1.4 1.42L12 12l4.9 4.9a1 1 0 0 0 1.4-1.4L13.41 10.6z"
+                />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M10.5 3a7.5 7.5 0 0 1 5.95 12.1l3.72 3.73a1 1 0 0 1-1.41 1.41l-3.73-3.72A7.5 7.5 0 1 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z"
+                />
+              </svg>
+            )}
+          </button>
+        </div>
+      ) : null}
+
       <nav className="nav-mobile no-print" aria-label="Navigare telefon">
         <button
           type="button"
@@ -423,13 +539,6 @@ function App() {
         </button>
         <button
           type="button"
-          className={view === 'facturare' ? 'active' : ''}
-          onClick={() => goTo('facturare')}
-        >
-          <span className="nav-mobile-label">Factură</span>
-        </button>
-        <button
-          type="button"
           className={view === 'productie' ? 'active' : ''}
           onClick={() => goTo('productie')}
         >
@@ -439,54 +548,12 @@ function App() {
         </button>
         <button
           type="button"
-          className={moreActive || mobileMoreOpen ? 'active' : ''}
-          aria-expanded={mobileMoreOpen}
-          onClick={() => setMobileMoreOpen((open) => !open)}
+          className={view === 'admin' ? 'active' : ''}
+          onClick={() => goTo('admin')}
         >
-          <span className="nav-mobile-label">Mai mult</span>
+          <span className="nav-mobile-label">Admin</span>
         </button>
       </nav>
-
-      {mobileMoreOpen ? (
-        <div className="nav-more no-print">
-          <button
-            type="button"
-            className="nav-more-backdrop"
-            aria-label="Închide meniul"
-            onClick={() => setMobileMoreOpen(false)}
-          />
-          <div className="nav-more-sheet" role="dialog" aria-label="Mai multe opțiuni">
-            <button
-              type="button"
-              className={view === 'istoric' ? 'active' : ''}
-              onClick={() => goTo('istoric')}
-            >
-              Istoric comenzi
-            </button>
-            <button
-              type="button"
-              className={view === 'admin' ? 'active' : ''}
-              onClick={() => goTo('admin')}
-            >
-              Admin catalog
-            </button>
-            <button
-              type="button"
-              className="nav-more-danger"
-              onClick={() => {
-                setMobileMoreOpen(false);
-                logout();
-                setAuthed(false);
-                setCatalog([]);
-                setOrders([]);
-                setCart([]);
-              }}
-            >
-              Ieșire
-            </button>
-          </div>
-        </div>
-      ) : null}
 
       {toast ? (
         <div
@@ -547,7 +614,6 @@ function App() {
             <Cart
               items={cart}
               catalog={catalog}
-              onChangeQty={changeQty}
               onRemove={(id) => setCart((prev) => prev.filter((i) => i.bouquetId !== id))}
               onCheckout={() => void checkout()}
               onContinueShopping={() => goTo('vanzare')}

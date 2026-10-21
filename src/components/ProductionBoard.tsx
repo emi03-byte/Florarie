@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Bouquet, Order } from '../types';
 import { aggregateBouquetsToMake, aggregateMaterialsNeeded } from '../lib/materials';
 import type { BouquetToMake } from '../lib/materials';
@@ -121,25 +121,25 @@ export function ProductionBoard({
     [groups, visibleCount],
   );
 
-  const [markAmounts, setMarkAmounts] = useState<Record<string, string>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [addAsk, setAddAsk] = useState<BouquetToMake | null>(null);
   const [confirmAsk, setConfirmAsk] = useState<ConfirmAsk | null>(null);
+  const [materialsOpen, setMaterialsOpen] = useState(false);
 
-  function getAmount(bouquetId: string, remaining: number): number {
-    if (remaining <= 0) return 1;
-    const raw = markAmounts[bouquetId];
-    const n = raw === undefined ? 1 : Number(raw);
-    if (!Number.isFinite(n)) return 1;
-    return Math.min(Math.max(1, Math.floor(n)), remaining);
-  }
-
-  function setAmount(bouquetId: string, value: number, remaining: number) {
-    if (remaining <= 0) return;
-    const next = Math.min(Math.max(1, value), remaining);
-    setMarkAmounts((prev) => ({ ...prev, [bouquetId]: String(next) }));
-  }
+  useEffect(() => {
+    if (!materialsOpen) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setMaterialsOpen(false);
+    }
+    document.addEventListener('keydown', onKeyDown);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = prev;
+    };
+  }, [materialsOpen]);
 
   async function markMade(bouquetId: string, count: number, variant: string) {
     if (count <= 0) return;
@@ -147,7 +147,6 @@ export function ProductionBoard({
     setBusyId(bouquetId);
     try {
       await onMarkMade(bouquetId, count);
-      setMarkAmounts((prev) => ({ ...prev, [bouquetId]: '1' }));
       onToast?.(
         count === 1
           ? `Marcat ca făcut: ${variant}`
@@ -184,35 +183,33 @@ export function ProductionBoard({
         <header className={styles.panelHead}>
           <div className={styles.headRow}>
             <h2>Buchete de făcut</h2>
-            <div className={styles.headActions}>
-              {bouquets.length > 0 ? (
-                <p className={styles.summary}>
-                  <strong>{totalRemaining}</strong> de făcut · {bouquets.length} tipuri
-                </p>
-              ) : null}
-              <button
-                type="button"
-                className={styles.downloadBtn}
-                disabled={bouquets.length === 0 && materials.length === 0}
-                aria-label="Descarcă pentru print"
-                title="Descarcă pentru print"
-                onClick={() => downloadProductionList(bouquets, materials)}
+            {bouquets.length > 0 ? (
+              <p className={styles.summary}>
+                <strong>{totalRemaining}</strong> de făcut · {bouquets.length} tipuri
+              </p>
+            ) : null}
+            <button
+              type="button"
+              className={styles.downloadBtn}
+              disabled={bouquets.length === 0 && materials.length === 0}
+              aria-label="Descarcă pentru print"
+              title="Descarcă pentru print"
+              onClick={() => downloadProductionList(bouquets, materials)}
+            >
+              <svg
+                className={styles.downloadIcon}
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                aria-hidden="true"
+                focusable="false"
               >
-                <svg
-                  className={styles.downloadIcon}
-                  viewBox="0 0 24 24"
-                  width="18"
-                  height="18"
-                  aria-hidden="true"
-                  focusable="false"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M6 9V3h12v6h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2v4H6v-4H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zm2 0h8V5H8zm0 10v2h8v-2zm-2-2h12v-4H6z"
-                  />
-                </svg>
-              </button>
-            </div>
+                <path
+                  fill="currentColor"
+                  d="M6 9V3h12v6h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2v4H6v-4H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zm2 0h8V5H8zm0 10v2h8v-2zm-2-2h12v-4H6z"
+                />
+              </svg>
+            </button>
           </div>
         </header>
 
@@ -243,22 +240,22 @@ export function ProductionBoard({
                   <ul className={styles.variantList}>
                     {group.items.map((row) => {
                       const busy = busyId === row.bouquetId;
-                      const amount = getAmount(row.bouquetId, row.remaining);
                       const canMark = row.remaining > 0;
                       return (
                         <li key={row.bouquetId} className={styles.variantRow}>
                           <div className={styles.thumb}>
                             <BouquetImage src={row.image} alt={row.name} />
                           </div>
-                          <div className={styles.variantLabel}>
-                            <p className={styles.variantName}>{row.variant}</p>
+                          <span className={styles.variantName}>
+                            {row.variant}
                             <span
-                              className={styles.remainBadge}
+                              className={styles.qtyInline}
                               title={`Făcute ${row.made} din ${row.ordered}`}
                             >
-                              {row.remaining}
+                              {' '}
+                              × {row.remaining}
                             </span>
-                          </div>
+                          </span>
                           <div className={styles.actions}>
                             <button
                               type="button"
@@ -269,44 +266,6 @@ export function ProductionBoard({
                             >
                               + Adaugă
                             </button>
-                            <div className={styles.qtyGroup}>
-                              <button
-                                type="button"
-                                className={styles.btnIcon}
-                                disabled={!canMark || busy || amount <= 1}
-                                aria-label="Scade cantitatea făcută"
-                                onClick={() =>
-                                  setAmount(row.bouquetId, amount - 1, row.remaining)
-                                }
-                              >
-                                −
-                              </button>
-                              <input
-                                type="number"
-                                min={1}
-                                max={Math.max(1, row.remaining)}
-                                value={markAmounts[row.bouquetId] ?? '1'}
-                                disabled={!canMark || busy}
-                                aria-label={`Câte ${row.variant} am făcut`}
-                                onChange={(e) =>
-                                  setMarkAmounts((prev) => ({
-                                    ...prev,
-                                    [row.bouquetId]: e.target.value,
-                                  }))
-                                }
-                              />
-                              <button
-                                type="button"
-                                className={styles.btnIcon}
-                                disabled={!canMark || busy || amount >= row.remaining}
-                                aria-label="Crește cantitatea făcută"
-                                onClick={() =>
-                                  setAmount(row.bouquetId, amount + 1, row.remaining)
-                                }
-                              >
-                                +
-                              </button>
-                            </div>
                             <button
                               type="button"
                               className={styles.btnConfirm}
@@ -315,7 +274,7 @@ export function ProductionBoard({
                                 setConfirmAsk({
                                   bouquetId: row.bouquetId,
                                   variant: row.variant,
-                                  count: amount,
+                                  count: 1,
                                   mode: 'partial',
                                 })
                               }
@@ -336,7 +295,7 @@ export function ProductionBoard({
                                 })
                               }
                             >
-                              Am făcut toate
+                              Toate
                             </button>
                           </div>
                         </li>
@@ -400,12 +359,55 @@ export function ProductionBoard({
         />
       ) : null}
 
-      <aside className={`${styles.panel} ${styles.materialsPanel}`}>
-        <header className={styles.panelHead}>
-          <h2>Materiales</h2>
-        </header>
+      <button
+        type="button"
+        className={`${styles.materialsBackdrop}${materialsOpen ? ` ${styles.materialsBackdropOpen}` : ''}`}
+        tabIndex={materialsOpen ? 0 : -1}
+        aria-label="Coboară materiales"
+        aria-hidden={!materialsOpen}
+        onClick={() => setMaterialsOpen(false)}
+      />
 
-        <div className={styles.panelScroll}>
+      <aside
+        id="materials-sheet"
+        className={`${styles.materialsSheet}${materialsOpen ? ` ${styles.materialsSheetOpen}` : ''}`}
+        role="dialog"
+        aria-modal={materialsOpen}
+        aria-label="Materiales"
+      >
+        <button
+          type="button"
+          className={styles.materialsPull}
+          aria-expanded={materialsOpen}
+          aria-controls="materials-sheet"
+          aria-label={materialsOpen ? 'Coboară materiales' : 'Deschide materiales'}
+          onClick={() => setMaterialsOpen((open) => !open)}
+        >
+          <span className={styles.materialsArrow} aria-hidden="true">
+            {materialsOpen ? (
+              <svg viewBox="0 0 24 24" width="18" height="18" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M12 16.5 18.5 10a1 1 0 0 0-1.4-1.4L12 13.7 6.9 8.6A1 1 0 0 0 5.5 10z"
+                />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="18" height="18" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M12 7.5 5.5 14a1 1 0 0 0 1.4 1.4L12 10.3l5.1 5.1a1 1 0 0 0 1.4-1.4z"
+                />
+              </svg>
+            )}
+          </span>
+          <span className={styles.materialsTabLabel}>
+            Materiales
+            {materials.length > 0 ? (
+              <span className={styles.materialsTabCount}>{materials.length}</span>
+            ) : null}
+          </span>
+        </button>
+        <div className={styles.materialsSheetBody}>
           {materials.length === 0 ? (
             <p className={styles.empty}>Nu ai materiale de pregătit momentan.</p>
           ) : (
