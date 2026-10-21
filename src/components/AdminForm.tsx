@@ -5,6 +5,7 @@ import { createId } from '../lib/id';
 import { formatEuro } from '../lib/money';
 import { useRevealOnScroll } from '../lib/useRevealOnScroll';
 import { BouquetImage } from './BouquetImage';
+import { ConfirmDialog } from './ConfirmDialog';
 import styles from './AdminForm.module.css';
 
 type Props = {
@@ -37,6 +38,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(createEmptyForm);
   const [error, setError] = useState('');
+  const [deleteAsk, setDeleteAsk] = useState<Bouquet | null>(null);
   const resetKey = bouquets.map((b) => b.id).join('|');
   const { visibleCount, sentinelRef, hasMore } = useRevealOnScroll(
     bouquets.length,
@@ -277,12 +279,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                     <button
                       type="button"
                       className={styles.delete}
-                      onClick={() => {
-                        if (window.confirm(`Ștergi „${bouquet.name}”?`)) {
-                          onDelete(bouquet.id);
-                          if (editingId === bouquet.id) setEditingId(null);
-                        }
-                      }}
+                      onClick={() => setDeleteAsk(bouquet)}
                     >
                       Șterge
                     </button>
@@ -298,6 +295,22 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
           )}
         </div>
       </aside>
+
+      {deleteAsk ? (
+        <ConfirmDialog
+          title="Ștergere produs"
+          message={`Ești sigur că vrei să ștergi „${deleteAsk.name}”?`}
+          confirmLabel="Șterge"
+          cancelLabel="Anulează"
+          onCancel={() => setDeleteAsk(null)}
+          onConfirm={() => {
+            const id = deleteAsk.id;
+            onDelete(id);
+            if (editingId === id) setEditingId(null);
+            setDeleteAsk(null);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

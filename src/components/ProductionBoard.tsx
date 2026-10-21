@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { Bouquet, Order } from '../types';
 import { aggregateBouquetsToMake, aggregateMaterialsNeeded } from '../lib/materials';
 import type { BouquetToMake } from '../lib/materials';
+import { downloadProductionList } from '../lib/productionDownload';
 import { useRevealOnScroll } from '../lib/useRevealOnScroll';
 import { BouquetImage } from './BouquetImage';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -183,11 +184,35 @@ export function ProductionBoard({
         <header className={styles.panelHead}>
           <div className={styles.headRow}>
             <h2>Buchete de făcut</h2>
-            {bouquets.length > 0 ? (
-              <p className={styles.summary}>
-                <strong>{totalRemaining}</strong> de făcut · {bouquets.length} tipuri
-              </p>
-            ) : null}
+            <div className={styles.headActions}>
+              {bouquets.length > 0 ? (
+                <p className={styles.summary}>
+                  <strong>{totalRemaining}</strong> de făcut · {bouquets.length} tipuri
+                </p>
+              ) : null}
+              <button
+                type="button"
+                className={styles.downloadBtn}
+                disabled={bouquets.length === 0 && materials.length === 0}
+                aria-label="Descarcă pentru print"
+                title="Descarcă pentru print"
+                onClick={() => downloadProductionList(bouquets, materials)}
+              >
+                <svg
+                  className={styles.downloadIcon}
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M6 9V3h12v6h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2v4H6v-4H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zm2 0h8V5H8zm0 10v2h8v-2zm-2-2h12v-4H6z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </header>
 
