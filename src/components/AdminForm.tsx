@@ -40,6 +40,11 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
   const [error, setError] = useState('');
   const [deleteAsk, setDeleteAsk] = useState<Bouquet | null>(null);
   const [catalogOpen, setCatalogOpen] = useState(false);
+  const [isPhone, setIsPhone] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(max-width: 900px)').matches,
+  );
   const resetKey = bouquets.map((b) => b.id).join('|');
   const { visibleCount, sentinelRef, hasMore } = useRevealOnScroll(
     bouquets.length,
@@ -71,6 +76,17 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
           : [emptyIngredient()],
     });
   }, [editingId, bouquets]);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 900px)');
+    function onChange() {
+      setIsPhone(mq.matches);
+      if (!mq.matches) setCatalogOpen(false);
+    }
+    onChange();
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
   useEffect(() => {
     if (!catalogOpen) return;
@@ -271,6 +287,56 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
         </form>
       </section>
 
+      <aside className={`${styles.panel} ${styles.catalogDesktop}`}>
+        <header className={styles.panelHead}>
+          <div className={styles.headRow}>
+            <h2>Catalog</h2>
+            <p className={styles.summary}>
+              <strong>{bouquets.length}</strong> tipuri
+            </p>
+          </div>
+        </header>
+        <div className={styles.panelScroll}>
+          {bouquets.length === 0 ? (
+            <p className={styles.empty}>Nu ai încă buchete în catalog.</p>
+          ) : (
+            <ul className={styles.list}>
+              {visibleBouquets.map((bouquet) => (
+                <li
+                  key={bouquet.id}
+                  className={`${styles.item}${editingId === bouquet.id ? ` ${styles.itemActive}` : ''}`}
+                >
+                  <div className={styles.itemThumb}>
+                    <BouquetImage src={bouquet.image} alt={bouquet.name} />
+                  </div>
+                  <span className={styles.itemName}>
+                    {bouquet.name}
+                    <span className={styles.priceInline}> · {formatEuro(bouquet.price)}</span>
+                  </span>
+                  <div className={styles.itemActions}>
+                    <button type="button" onClick={() => openEdit(bouquet.id)}>
+                      Editează
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.delete}
+                      onClick={() => setDeleteAsk(bouquet)}
+                    >
+                      Șterge
+                    </button>
+                  </div>
+                </li>
+              ))}
+              {hasMore && !isPhone ? (
+                <li className={styles.revealSentinel} aria-hidden="true">
+                  <div ref={sentinelRef} />
+                </li>
+              ) : null}
+            </ul>
+          )}
+        </div>
+      </aside>
+
       <button
         type="button"
         className={`${styles.formBackdrop}${catalogOpen ? ` ${styles.formBackdropOpen}` : ''}`}
@@ -327,7 +393,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
             <ul className={styles.list}>
               {visibleBouquets.map((bouquet) => (
                 <li
-                  key={bouquet.id}
+                  key={`sheet-${bouquet.id}`}
                   className={`${styles.item}${editingId === bouquet.id ? ` ${styles.itemActive}` : ''}`}
                 >
                   <div className={styles.itemThumb}>
@@ -351,7 +417,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                   </div>
                 </li>
               ))}
-              {hasMore ? (
+              {hasMore && isPhone ? (
                 <li className={styles.revealSentinel} aria-hidden="true">
                   <div ref={sentinelRef} />
                 </li>

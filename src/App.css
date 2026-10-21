@@ -69,9 +69,6 @@
   animation: barIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.topbar-compact {
-  justify-content: flex-end;
-}
 
 @keyframes barIn {
   from {
@@ -581,7 +578,12 @@
     position: relative;
   }
 
-  .topbar-compact {
+  .topbar-mobile-hide-brand .brand-block,
+  .topbar-mobile-hide-brand .topbar-search {
+    display: none;
+  }
+
+  .topbar-mobile-hide-brand {
     display: none;
   }
 

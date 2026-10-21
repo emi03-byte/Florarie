@@ -7,6 +7,7 @@ import styles from './Cart.module.css';
 type Props = {
   items: CartItem[];
   catalog: Bouquet[];
+  onChangeQty: (bouquetId: string, quantity: number) => void;
   onRemove: (bouquetId: string) => void;
   onCheckout: () => void;
   onContinueShopping?: () => void;
@@ -15,6 +16,7 @@ type Props = {
 export function Cart({
   items,
   catalog,
+  onChangeQty,
   onRemove,
   onCheckout,
   onContinueShopping,
@@ -74,6 +76,23 @@ export function Cart({
                   </button>
                 </div>
                 <div className={styles.lineBottom}>
+                  <div className={styles.qty}>
+                    <button
+                      type="button"
+                      onClick={() => onChangeQty(item.bouquetId, item.quantity - 1)}
+                      aria-label="Scade cantitatea"
+                    >
+                      −
+                    </button>
+                    <span>{item.quantity}</span>
+                    <button
+                      type="button"
+                      onClick={() => onChangeQty(item.bouquetId, item.quantity + 1)}
+                      aria-label="Crește cantitatea"
+                    >
+                      +
+                    </button>
+                  </div>
                   <p className={styles.needs}>
                     {bouquet.ingredients
                       .map((ing) =>

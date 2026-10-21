@@ -59,6 +59,7 @@ function App() {
   const [error, setError] = useState('');
   const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
   const [qtyAsk, setQtyAsk] = useState<Bouquet | null>(null);
+  const [qtyAskKey, setQtyAskKey] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchFabVisible, setSearchFabVisible] = useState(false);
@@ -130,7 +131,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (view === 'cos' || view === 'productie' || view === 'admin') {
+    const hideFabOnPhone =
+      view === 'cos' || view === 'productie' || view === 'admin';
+    const mq = window.matchMedia('(max-width: 900px)');
+    if (hideFabOnPhone && mq.matches) {
       setSearchFabVisible(false);
       setFloatingSearchOpen(false);
       return;
@@ -269,6 +273,7 @@ function App() {
   }, []);
 
   function askAddToCart(bouquet: Bouquet) {
+    setQtyAskKey((key) => key + 1);
     setQtyAsk(bouquet);
   }
 
@@ -334,8 +339,8 @@ function App() {
     );
   }
 
-  const showBrandSearch =
-    view !== 'cos' && view !== 'productie' && view !== 'admin';
+  const hideBrandSearchOnMobile =
+    view === 'cos' || view === 'productie' || view === 'admin';
 
   return (
     <div
@@ -344,68 +349,64 @@ function App() {
       <div className="bg-wash" aria-hidden="true" />
 
       <header
-        className={`topbar no-print${showBrandSearch ? '' : ' topbar-compact'}`}
+        className={`topbar no-print${hideBrandSearchOnMobile ? ' topbar-mobile-hide-brand' : ''}`}
       >
-        {showBrandSearch ? (
-          <>
-            <button
-              type="button"
-              className="brand-block"
-              onClick={() => goTo('vanzare')}
-              aria-label="Mergi la produse"
+        <button
+          type="button"
+          className="brand-block"
+          onClick={() => goTo('vanzare')}
+          aria-label="Mergi la produse"
+        >
+          <span className="brand">Florarie</span>
+          <span className="tagline">Punct de vânzare</span>
+        </button>
+        <div className="topbar-search" ref={searchRef}>
+          <label className="topbar-search-label" htmlFor="product-search">
+            Caută produs
+          </label>
+          <input
+            id="product-search"
+            className="topbar-search-input"
+            type="search"
+            enterKeyHint="search"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            placeholder="Caută produs…"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setSearchOpen(true);
+            }}
+            onFocus={() => setSearchOpen(true)}
+          />
+          {searchOpen && searchQuery.trim().length >= 3 ? (
+            <ul
+              className="topbar-search-suggestions"
+              role="listbox"
+              aria-label="Sugestii produse"
             >
-              <span className="brand">Florarie</span>
-              <span className="tagline">Punct de vânzare</span>
-            </button>
-            <div className="topbar-search" ref={searchRef}>
-              <label className="topbar-search-label" htmlFor="product-search">
-                Caută produs
-              </label>
-              <input
-                id="product-search"
-                className="topbar-search-input"
-                type="search"
-                enterKeyHint="search"
-                autoComplete="off"
-                autoCorrect="off"
-                spellCheck={false}
-                placeholder="Caută produs…"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setSearchOpen(true);
-                }}
-                onFocus={() => setSearchOpen(true)}
-              />
-              {searchOpen && searchQuery.trim().length >= 3 ? (
-                <ul
-                  className="topbar-search-suggestions"
-                  role="listbox"
-                  aria-label="Sugestii produse"
-                >
-                  {searchSuggestions.length === 0 ? (
-                    <li className="topbar-search-empty">Niciun produs găsit</li>
-                  ) : (
-                    searchSuggestions.map((bouquet) => (
-                      <li key={bouquet.id} role="option">
-                        <button
-                          type="button"
-                          className="topbar-search-suggestion"
-                          onClick={() => pickSearchResult(bouquet)}
-                        >
-                          <span className="topbar-search-name">{bouquet.name}</span>
-                          <span className="topbar-search-price">
-                            {formatEuro(bouquet.price)}
-                          </span>
-                        </button>
-                      </li>
-                    ))
-                  )}
-                </ul>
-              ) : null}
-            </div>
-          </>
-        ) : null}
+              {searchSuggestions.length === 0 ? (
+                <li className="topbar-search-empty">Niciun produs găsit</li>
+              ) : (
+                searchSuggestions.map((bouquet) => (
+                  <li key={bouquet.id} role="option">
+                    <button
+                      type="button"
+                      className="topbar-search-suggestion"
+                      onClick={() => pickSearchResult(bouquet)}
+                    >
+                      <span className="topbar-search-name">{bouquet.name}</span>
+                      <span className="topbar-search-price">
+                        {formatEuro(bouquet.price)}
+                      </span>
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
+          ) : null}
+        </div>
         <nav className="nav nav-desktop" aria-label="Navigare principală">
           <button
             type="button"
@@ -447,7 +448,7 @@ function App() {
         ) : null}
       </header>
 
-      {showBrandSearch && searchFabVisible ? (
+      {!hideBrandSearchOnMobile && searchFabVisible ? (
         <div
           className={`mobile-search-fab no-print${floatingSearchOpen ? ' is-open' : ''}`}
           ref={floatingSearchRef}
@@ -599,6 +600,7 @@ function App() {
 
         {qtyAsk ? (
           <QuantityDialog
+            key={qtyAskKey}
             bouquet={qtyAsk}
             onCancel={() => setQtyAsk(null)}
             onConfirm={(quantity) => {
@@ -614,6 +616,19 @@ function App() {
             <Cart
               items={cart}
               catalog={catalog}
+              onChangeQty={(id, quantity) => {
+                if (quantity <= 0) {
+                  setCart((prev) => prev.filter((i) => i.bouquetId !== id));
+                  return;
+                }
+                setCart((prev) =>
+                  prev.map((item) =>
+                    item.bouquetId === id
+                      ? { ...item, quantity: Math.min(99, quantity) }
+                      : item,
+                  ),
+                );
+              }}
               onRemove={(id) => setCart((prev) => prev.filter((i) => i.bouquetId !== id))}
               onCheckout={() => void checkout()}
               onContinueShopping={() => goTo('vanzare')}

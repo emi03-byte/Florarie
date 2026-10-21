@@ -21,6 +21,7 @@ export function QuantityDialog({
 }: Props) {
   const [qty, setQty] = useState(1);
 
+  // Quantity to add — always starts at 1 (not the amount already in cart).
   useEffect(() => {
     setQty(1);
   }, [bouquet.id]);
