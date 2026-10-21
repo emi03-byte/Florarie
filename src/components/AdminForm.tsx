@@ -39,6 +39,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
   const [form, setForm] = useState(createEmptyForm);
   const [error, setError] = useState('');
   const [deleteAsk, setDeleteAsk] = useState<Bouquet | null>(null);
+  const [catalogOpen, setCatalogOpen] = useState(false);
   const resetKey = bouquets.map((b) => b.id).join('|');
   const { visibleCount, sentinelRef, hasMore } = useRevealOnScroll(
     bouquets.length,
@@ -71,11 +72,37 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
     });
   }, [editingId, bouquets]);
 
+  useEffect(() => {
+    if (!catalogOpen) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setCatalogOpen(false);
+    }
+    document.addEventListener('keydown', onKeyDown);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = prev;
+    };
+  }, [catalogOpen]);
+
   function updateIngredient(index: number, patch: Partial<IngredientRow>) {
     setForm((f) => ({
       ...f,
       ingredients: f.ingredients.map((row, i) => (i === index ? { ...row, ...patch } : row)),
     }));
+  }
+
+  function resetForm() {
+    setEditingId(null);
+    setForm(createEmptyForm());
+    setError('');
+  }
+
+  function openEdit(id: string) {
+    setEditingId(id);
+    setError('');
+    setCatalogOpen(false);
   }
 
   function handleSubmit(e: FormEvent) {
@@ -121,21 +148,19 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
       ingredients,
     });
 
-    setEditingId(null);
-    setForm(createEmptyForm());
+    resetForm();
   }
 
   return (
     <div className={styles.layout}>
       <section className={styles.panel}>
         <header className={styles.panelHead}>
-          <div className={styles.headText}>
-            <h2>{editingId ? 'Editează buchet' : 'Adaugă buchet'}</h2>
-            <p className={styles.hint}>
-              Aici gestionezi catalogul: denumire, preț, poză, ingrediente și rețetă.
+          <div className={styles.headRow}>
+            <h2>{editingId ? 'Editează aranjament' : 'Adaugă aranjament'}</h2>
+            <p className={styles.summary}>
+              <strong>{bouquets.length}</strong> în catalog
             </p>
           </div>
-          <p className={styles.summary}>{bouquets.length} în catalog</p>
         </header>
 
         <form className={`${styles.form} ${styles.panelScroll}`} onSubmit={handleSubmit}>
@@ -175,20 +200,20 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
           <div className={styles.ingBlock}>
             <p className={styles.ingLabel}>Ingredientes</p>
             {form.ingredients.map((row, index) => (
-            <div key={index} className={styles.ingRow}>
-              <input
-                value={row.quantity}
-                onChange={(e) => updateIngredient(index, { quantity: e.target.value })}
-                placeholder="11"
-                inputMode="decimal"
-                aria-label="Cantitate"
-              />
-              <input
-                value={row.name}
-                onChange={(e) => updateIngredient(index, { name: e.target.value })}
-                placeholder="clavel rosa"
-                aria-label="Denumire material"
-              />
+              <div key={index} className={styles.ingRow}>
+                <input
+                  value={row.quantity}
+                  onChange={(e) => updateIngredient(index, { quantity: e.target.value })}
+                  placeholder="11"
+                  inputMode="decimal"
+                  aria-label="Cantitate"
+                />
+                <input
+                  value={row.name}
+                  onChange={(e) => updateIngredient(index, { name: e.target.value })}
+                  placeholder="clavel rosa"
+                  aria-label="Denumire material"
+                />
                 <button
                   type="button"
                   className={styles.ingRemove}
@@ -211,7 +236,10 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
               type="button"
               className={styles.ingAdd}
               onClick={() =>
-                setForm((f) => ({ ...f, ingredients: [...f.ingredients, emptyIngredient()] }))
+                setForm((f) => ({
+                  ...f,
+                  ingredients: [...f.ingredients, emptyIngredient()],
+                }))
               }
             >
               + Adaugă ingredient
@@ -235,15 +263,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
               {editingId ? 'Salvează' : 'Adaugă în catalog'}
             </button>
             {editingId ? (
-              <button
-                type="button"
-                className={styles.cancel}
-                onClick={() => {
-                  setEditingId(null);
-                  setForm(createEmptyForm());
-                  setError('');
-                }}
-              >
+              <button type="button" className={styles.cancel} onClick={resetForm}>
                 Anulează
               </button>
             ) : null}
@@ -251,13 +271,56 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
         </form>
       </section>
 
-      <aside className={styles.panel}>
-        <header className={styles.panelHead}>
-          <h2>Catalog</h2>
-          <p className={styles.summary}>{bouquets.length} tipos</p>
-        </header>
+      <button
+        type="button"
+        className={`${styles.formBackdrop}${catalogOpen ? ` ${styles.formBackdropOpen}` : ''}`}
+        tabIndex={catalogOpen ? 0 : -1}
+        aria-label="Coboară catalogul"
+        aria-hidden={!catalogOpen}
+        onClick={() => setCatalogOpen(false)}
+      />
 
-        <div className={styles.panelScroll}>
+      <aside
+        id="admin-catalog-sheet"
+        className={`${styles.formSheet}${catalogOpen ? ` ${styles.formSheetOpen}` : ''}`}
+        role="dialog"
+        aria-modal={catalogOpen}
+        aria-label="Catalog"
+      >
+        <button
+          type="button"
+          className={styles.formPull}
+          aria-expanded={catalogOpen}
+          aria-controls="admin-catalog-sheet"
+          aria-label={catalogOpen ? 'Coboară catalogul' : 'Deschide catalogul'}
+          onClick={() => setCatalogOpen((open) => !open)}
+        >
+          <span className={styles.formArrow} aria-hidden="true">
+            {catalogOpen ? (
+              <svg viewBox="0 0 24 24" width="18" height="18" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M12 16.5 18.5 10a1 1 0 0 0-1.4-1.4L12 13.7 6.9 8.6A1 1 0 0 0 5.5 10z"
+                />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="18" height="18" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M12 7.5 5.5 14a1 1 0 0 0 1.4 1.4L12 10.3l5.1 5.1a1 1 0 0 0 1.4-1.4z"
+                />
+              </svg>
+            )}
+          </span>
+          <span className={styles.formPullLabel}>
+            Catalog
+            {bouquets.length > 0 ? (
+              <span className={styles.formPullCount}>{bouquets.length}</span>
+            ) : null}
+          </span>
+        </button>
+
+        <div className={styles.catalogSheetBody}>
           {bouquets.length === 0 ? (
             <p className={styles.empty}>Nu ai încă buchete în catalog.</p>
           ) : (
@@ -270,10 +333,12 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                   <div className={styles.itemThumb}>
                     <BouquetImage src={bouquet.image} alt={bouquet.name} />
                   </div>
-                  <p className={styles.itemName}>{bouquet.name}</p>
-                  <span className={styles.itemPrice}>{formatEuro(bouquet.price)}</span>
+                  <span className={styles.itemName}>
+                    {bouquet.name}
+                    <span className={styles.priceInline}> · {formatEuro(bouquet.price)}</span>
+                  </span>
                   <div className={styles.itemActions}>
-                    <button type="button" onClick={() => setEditingId(bouquet.id)}>
+                    <button type="button" onClick={() => openEdit(bouquet.id)}>
                       Editează
                     </button>
                     <button
@@ -306,7 +371,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
           onConfirm={() => {
             const id = deleteAsk.id;
             onDelete(id);
-            if (editingId === id) setEditingId(null);
+            if (editingId === id) resetForm();
             setDeleteAsk(null);
           }}
         />
