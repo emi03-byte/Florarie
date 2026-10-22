@@ -173,8 +173,16 @@
   font-weight: 800;
 }
 
-.confirm:hover {
+.confirm:hover:not(:disabled) {
   background: var(--sera-pressed);
+}
+
+/* Empty / invalid qty — same muted look as disabled „Vezi coșul” */
+.confirm:disabled {
+  opacity: 1;
+  cursor: default;
+  background: var(--sera-line);
+  color: var(--sera-muted);
 }
 
 /* Destructive confirm (e.g. „Șterge”) */

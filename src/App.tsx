@@ -381,13 +381,16 @@ function App() {
           type="button"
           className="brand-block"
           onClick={() => goTo('vanzare')}
-          aria-label="Mergi la produse"
+          aria-label="El Jardín de Aliss — mergi la produse"
         >
-          <span className="brand-mark" aria-hidden="true">
-            <SeraIcon name="flower" size={22} />
-          </span>
-          <span className="brand">Florărie</span>
-          <span className="tagline">Punct de vânzare</span>
+          <img
+            className="brand-logo"
+            src="/logo-jardin.png"
+            alt=""
+            width={140}
+            height={109}
+            decoding="async"
+          />
         </button>
         <div className="topbar-search" ref={searchRef}>
           <label className="topbar-search-label" htmlFor="product-search">
@@ -658,6 +661,7 @@ function App() {
                 onChangeQty={changeCartQty}
                 onRemove={removeFromCart}
                 onCheckout={() => void checkout()}
+                onViewCart={() => goTo('cos')}
               />
             </div>
             {cartCount > 0 ? (

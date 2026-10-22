@@ -288,6 +288,21 @@
   flex: 0 1 auto;
 }
 
+.variantPrice {
+  margin-left: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted, #6f656c);
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  .variantPrice,
+  .no-print {
+    display: none !important;
+  }
+}
+
 .remainBadge {
   display: inline-flex;
   align-items: center;

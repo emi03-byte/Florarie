@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react';
 import { login, wakeDatabase } from '../lib/api';
-import { SeraIcon } from './SeraIcon';
 import styles from './Login.module.css';
 
 type Props = {
@@ -30,14 +29,14 @@ export function Login({ onSuccess }: Props) {
   return (
     <div className={styles.page}>
       <form className={styles.card} onSubmit={handleSubmit}>
-        <span className={styles.logo} aria-hidden="true">
-          <SeraIcon name="flower" size={30} />
-        </span>
-        <p className={styles.brand}>Florărie</p>
+        <img
+          className={styles.brandLogo}
+          src="/logo-jardin.png"
+          alt="El Jardín de Aliss — Floristería"
+          width={280}
+          height={219}
+        />
         <h1>Punct de vânzare</h1>
-        <p className={styles.hint}>
-          Introdu parola magazinului pentru a continua.
-        </p>
         <label>
           Parolă
           <input
@@ -47,6 +46,7 @@ export function Login({ onSuccess }: Props) {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             disabled={loading}
+            aria-label="Parolă"
           />
         </label>
         {error ? <p className={styles.error}>{error}</p> : null}

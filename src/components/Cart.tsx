@@ -10,6 +10,8 @@ type Props = {
   onChangeQty: (bouquetId: string, quantity: number) => void;
   onRemove: (bouquetId: string) => void;
   onCheckout: () => void;
+  /** On the sale-page panel: open full cart instead of finishing the order. */
+  onViewCart?: () => void;
   onContinueShopping?: () => void;
   /** 'panel' = always-visible side panel on the sale page (visual only). */
   variant?: 'page' | 'panel';
@@ -21,6 +23,7 @@ export function Cart({
   onChangeQty,
   onRemove,
   onCheckout,
+  onViewCart,
   onContinueShopping,
   variant = 'page',
 }: Props) {
@@ -56,7 +59,7 @@ export function Cart({
 
       {lines.length === 0 ? (
         <p className={styles.empty}>
-          Coșul e gol. Continuă cumpărăturile și adaugă buchete.
+          Coșul e gol. Continuă cumpărăturile și adaugă buchete/aranjamente.
         </p>
       ) : (
         <ul className={styles.list}>
@@ -121,14 +124,25 @@ export function Cart({
           <span>Total de plată</span>
           <strong>{formatEuro(total)}</strong>
         </div>
-        <button
-          type="button"
-          className={styles.checkout}
-          disabled={lines.length === 0}
-          onClick={onCheckout}
-        >
-          Finalizează comanda
-        </button>
+        {variant === 'panel' && onViewCart ? (
+          <button
+            type="button"
+            className={styles.checkout}
+            disabled={lines.length === 0}
+            onClick={onViewCart}
+          >
+            Vezi coșul
+          </button>
+        ) : (
+          <button
+            type="button"
+            className={styles.checkout}
+            disabled={lines.length === 0}
+            onClick={onCheckout}
+          >
+            Finalizează comanda
+          </button>
+        )}
       </div>
     </aside>
   );

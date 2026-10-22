@@ -32,7 +32,7 @@
      Every page, dialog and button reads its sizes from here.
      Tweak a value below to resize that kind of element everywhere. */
   /* control heights */
-  --sz-topbar: 60px;      /* top bar */
+  --sz-topbar: 64px;      /* top bar */
   --sz-logo: 30px;        /* logo mark */
   --sz-search: 40px;      /* top-bar search */
   --sz-btn: 42px;         /* primary actions: Finalizează, Salvează, Intră, Am făcut toate… */
@@ -128,8 +128,12 @@
 .topbar {
   min-height: var(--sera-topbar-h);
   gap: var(--sp-7);
+  width: 100%;
+  margin: 0;
   padding: 0 var(--sp-7);
+  border-radius: 0 0 14px 14px;
   background: var(--sera-card);
+  border: none;
   border-bottom: 1px solid var(--sera-line);
   box-shadow: none;
   font-family: var(--sera-font-body);
@@ -139,30 +143,22 @@
   flex-direction: row;
   align-items: center;
   gap: var(--sp-3);
+  padding: 2px 0;
 }
 
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: var(--sz-logo);
-  height: var(--sz-logo);
-  flex: none;
-  border-radius: var(--r-sm);
-  background: var(--sera-mint);
-  color: var(--sera-primary);
+.brand-logo {
+  display: block;
+  height: 52px;
+  width: auto;
+  max-width: min(190px, 44vw);
+  object-fit: contain;
+  object-position: left center;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-.brand {
-  font-family: var(--sera-font-display);
-  font-variation-settings: 'SOFT' 100;
-  font-size: var(--fs-brand);
-  font-weight: 600;
-  letter-spacing: 0;
-  color: var(--sera-primary);
-}
-
-.brand-block:hover .brand {
-  color: var(--sera-pressed);
+.brand-block:hover .brand-logo {
+  opacity: 0.92;
 }
 
 .brand-block:focus-visible {
@@ -171,6 +167,8 @@
   border-radius: var(--r-sm);
 }
 
+.brand-mark,
+.brand,
 .tagline {
   display: none;
 }
@@ -446,18 +444,16 @@
   .topbar {
     min-height: var(--sz-topbar);
     gap: var(--sp-3);
+    margin: 0;
     padding: 6px max(12px, env(safe-area-inset-right)) 6px max(12px, env(safe-area-inset-left));
+    border-radius: 0 0 12px 12px;
+    border: none;
     border-bottom: 1px solid var(--sera-line);
   }
 
-  .brand-mark {
-    width: var(--sz-logo);
-    height: var(--sz-logo);
-    border-radius: var(--r-xs);
-  }
-
-  .brand {
-    font-size: var(--fs-brand);
+  .brand-logo {
+    height: 44px;
+    max-width: min(155px, 50vw);
   }
 
   .topbar-search-input {

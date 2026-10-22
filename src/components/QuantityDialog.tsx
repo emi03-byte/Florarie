@@ -22,12 +22,21 @@ export function QuantityDialog({
   showPrice = true,
   max = 99,
 }: Props) {
-  const [qty, setQty] = useState(1);
+  /** String so the user can clear the field and type freely. */
+  const [qtyText, setQtyText] = useState('1');
   const maxQty = Math.max(1, Math.floor(max));
 
-  // Quantity to add — always starts at 1 (not the amount already in cart).
+  const parsed = Number(qtyText);
+  const qtyValid =
+    qtyText.trim() !== '' &&
+    Number.isFinite(parsed) &&
+    Number.isInteger(parsed) &&
+    parsed >= 1 &&
+    parsed <= maxQty;
+  const qty = qtyValid ? parsed : 0;
+
   useEffect(() => {
-    setQty(1);
+    setQtyText('1');
   }, [bouquet.id]);
 
   useEffect(() => {
@@ -39,7 +48,8 @@ export function QuantityDialog({
   }, [onCancel]);
 
   function changeQty(value: number) {
-    setQty(Math.max(1, Math.min(maxQty, value)));
+    const next = Math.max(1, Math.min(maxQty, value));
+    setQtyText(String(next));
   }
 
   return (
@@ -62,9 +72,9 @@ export function QuantityDialog({
         <div className={styles.qty}>
           <button
             type="button"
-            onClick={() => changeQty(qty - 1)}
+            onClick={() => changeQty((qtyValid ? qty : 1) - 1)}
             aria-label="Scade cantitatea"
-            disabled={qty <= 1}
+            disabled={!qtyValid || qty <= 1}
           >
             −
           </button>
@@ -72,19 +82,33 @@ export function QuantityDialog({
             type="number"
             min={1}
             max={maxQty}
-            value={qty}
+            value={qtyText}
             autoFocus
             onChange={(e) => {
-              const raw = Number(e.target.value);
-              changeQty(Number.isFinite(raw) ? raw : 1);
+              // Allow empty / partial typing; clamp only when a number is present.
+              const raw = e.target.value;
+              if (raw.trim() === '') {
+                setQtyText('');
+                return;
+              }
+              if (!/^\d+$/.test(raw.trim())) {
+                return;
+              }
+              const n = Number(raw);
+              if (!Number.isFinite(n)) return;
+              setQtyText(String(Math.min(maxQty, Math.max(0, Math.floor(n)))));
+            }}
+            onBlur={() => {
+              if (!qtyValid) return;
+              setQtyText(String(qty));
             }}
             aria-label={`Cantitate ${bouquet.name}`}
           />
           <button
             type="button"
-            onClick={() => changeQty(qty + 1)}
+            onClick={() => changeQty((qtyValid ? qty : 0) + 1)}
             aria-label="Crește cantitatea"
-            disabled={qty >= maxQty}
+            disabled={qtyValid ? qty >= maxQty : false}
           >
             +
           </button>
@@ -97,11 +121,15 @@ export function QuantityDialog({
           <button
             type="button"
             className={styles.confirm}
-            onClick={() => onConfirm(qty)}
+            disabled={!qtyValid}
+            onClick={() => {
+              if (!qtyValid) return;
+              onConfirm(qty);
+            }}
           >
             {confirmLabel
-              ? confirmLabel(qty)
-              : `Adaugă ${qty > 1 ? `${qty} × ` : ''}în coș`}
+              ? confirmLabel(qtyValid ? qty : 1)
+              : `Adaugă ${qtyValid && qty > 1 ? `${qty} × ` : ''}în coș`}
           </button>
         </div>
       </div>

@@ -5,6 +5,7 @@ export type BouquetToMake = {
   bouquetId: string;
   name: string;
   image: string;
+  price: number;
   remaining: number;
   ordered: number;
   made: number;
@@ -45,6 +46,7 @@ export function aggregateBouquetsToMake(
           bouquetId: item.bouquetId,
           name: bouquet?.name ?? 'Buchet necunoscut',
           image: bouquet?.image ?? '/bouquets/placeholder.svg',
+          price: bouquet?.price ?? 0,
           remaining,
           ordered: item.quantity,
           made: item.madeQuantity,

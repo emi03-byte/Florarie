@@ -56,11 +56,11 @@
   width: 100%;
   margin: 0;
   padding: 0.55rem clamp(1rem, 3vw, 2rem);
-  border-radius: 0;
+  border-radius: 0 0 14px 14px;
   background: #ffffff;
   border: none;
   border-bottom: 1px solid rgba(23, 39, 30, 0.1);
-  box-shadow: 0 2px 12px rgba(23, 39, 30, 0.08);
+  box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   animation: barIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;

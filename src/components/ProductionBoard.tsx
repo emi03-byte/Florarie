@@ -8,6 +8,7 @@ import {
   preferModelLabel,
 } from '../lib/bouquetName';
 import { downloadProductionList } from '../lib/productionDownload';
+import { formatEuro } from '../lib/money';
 import { useRevealOnScroll } from '../lib/useRevealOnScroll';
 import { BouquetImage } from './BouquetImage';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -257,7 +258,17 @@ export function ProductionBoard({
                             <BouquetImage src={row.image} alt={row.name} />
                           </div>
                           <div className={styles.variantLabel}>
-                            <p className={styles.variantName}>{row.variant}</p>
+                            <p className={styles.variantName}>
+                              {row.variant}
+                              {row.price > 0 ? (
+                                <span
+                                  className={`${styles.variantPrice} no-print`}
+                                  title="Preț unitar"
+                                >
+                                  {formatEuro(row.price)}
+                                </span>
+                              ) : null}
+                            </p>
                             <span
                               className={styles.remainBadge}
                               title={`Făcute ${row.made} din ${row.ordered}`}

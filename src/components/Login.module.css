@@ -33,31 +33,18 @@
   }
 }
 
-.logo {
-  display: grid;
-  place-items: center;
-  width: var(--sz-thumb);
-  height: var(--sz-thumb);
-  margin: 0 auto 2px;
-  border-radius: 17px;
-  background: var(--sera-mint);
-  color: var(--sera-primary);
-  flex-shrink: 0;
-}
-
-.brand {
-  margin: 0;
-  font-family: var(--sera-font-display);
-  font-variation-settings: 'SOFT' 100;
-  font-size: var(--fs-hero);
-  font-weight: 600;
-  line-height: 1.1;
-  text-align: center;
-  color: var(--sera-primary);
+.brandLogo {
+  display: block;
+  width: min(280px, 78%);
+  height: auto;
+  margin: 0 auto 4px;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .card h1 {
-  margin: -4px 0 0;
+  margin: 2px 0 0;
   text-align: center;
   font-size: var(--fs-body);
   font-weight: 700;
