@@ -27,9 +27,11 @@ export function formatBouquetDisplayName(raw: string): string {
   const sepMatch = name.match(/\s*[—–-]\s*/);
   if (sepMatch && sepMatch.index != null && sepMatch.index > 0) {
     const model = titleModel(name.slice(0, sepMatch.index).trim());
-    const variant = normalizeVariant(
+    let variant = normalizeVariant(
       titleVariant(name.slice(sepMatch.index + sepMatch[0].length).trim()),
     );
+    // "… 18 rosas — rojas" → "… 18 rosas — Rosas rojas"
+    variant = expandBareColorVariant(model, variant);
     return variant ? `${model}${NAME_SEP}${variant}` : model;
   }
 
@@ -87,6 +89,17 @@ function normalizeVariant(variant: string): string {
     return `Rosas ${color}`;
   }
   return variant;
+}
+
+/** If model ends with "N rosas" and variant is only a color, prefix with Rosas/Rosa. */
+function expandBareColorVariant(model: string, variant: string): string {
+  if (!variant) return variant;
+  const colorOnly = new RegExp(`^(?:${COLOR})$`, 'i');
+  if (!colorOnly.test(variant)) return variant;
+  if (!/\b\d+\s+rosas?\b/i.test(model)) return variant;
+  const plural = /\brosas\b/i.test(model);
+  const flower = plural ? 'Rosas' : 'Rosa';
+  return `${flower} ${agreeColorWord(variant.toLowerCase(), plural)}`;
 }
 
 /**

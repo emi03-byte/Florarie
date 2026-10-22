@@ -79,6 +79,16 @@ function normalizeVariant(variant) {
   return variant;
 }
 
+function expandBareColorVariant(model, variant) {
+  if (!variant) return variant;
+  const colorOnly = new RegExp(`^(?:${COLOR})$`, 'i');
+  if (!colorOnly.test(variant)) return variant;
+  if (!/\b\d+\s+rosas?\b/i.test(model)) return variant;
+  const plural = /\brosas\b/i.test(model);
+  const flower = plural ? 'Rosas' : 'Rosa';
+  return `${flower} ${agreeColorWord(variant.toLowerCase(), plural)}`;
+}
+
 function formatBouquetDisplayName(raw) {
   let name = preNormalize(raw);
   if (!name) return name;
@@ -86,9 +96,10 @@ function formatBouquetDisplayName(raw) {
   const sepMatch = name.match(/\s*[—–-]\s*/);
   if (sepMatch && sepMatch.index != null && sepMatch.index > 0) {
     const model = titleModel(name.slice(0, sepMatch.index).trim());
-    const variant = normalizeVariant(
+    let variant = normalizeVariant(
       titleVariant(name.slice(sepMatch.index + sepMatch[0].length).trim()),
     );
+    variant = expandBareColorVariant(model, variant);
     return variant ? `${model}${NAME_SEP}${variant}` : model;
   }
 
