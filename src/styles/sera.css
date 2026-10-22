@@ -427,11 +427,6 @@
   animation: contentIn 0.45s ease both;
 }
 
-/* Phone "Vezi coșul" bar — hidden on desktop */
-.sera-cart-bar {
-  display: none;
-}
-
 @media (max-width: 1100px) {
   .sera-scope.sales-shop {
     grid-template-columns: minmax(0, 1fr) 320px;
@@ -466,177 +461,48 @@
     left: 13px;
   }
 
-  /* The green "Vezi coșul" bar replaces the small header cart chip on Vânzare. */
-  .topbar-on-sale .topbar-cart-mobile {
-    display: none;
-  }
-
-  .topbar-cart-mobile {
-    min-height: var(--sz-btn-sm);
-    padding: 0 var(--sp-4);
-    border-radius: 999px;
-    background: var(--sera-mint);
-    color: var(--sera-primary);
-    font-family: var(--sera-font-body);
-    font-size: var(--fs-sm);
-    letter-spacing: 0;
-    text-transform: none;
-  }
-
-  /* Bottom tab bar */
-  .nav-mobile {
-    gap: 6px;
-    padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
-    background: #fff;
-    border-top: 1px solid var(--sera-line);
-    box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  .nav-mobile button {
-    position: relative;
-    flex-direction: column;
-    gap: 3px;
-    min-height: var(--sz-tab);
-    padding: 5px 4px;
-    border-radius: var(--r-tile);
-    color: var(--sera-muted);
-    font-family: var(--sera-font-body);
-    font-size: var(--fs-xs);
-    font-weight: 700;
-    letter-spacing: 0;
-    text-transform: none;
-  }
-
-  .nav-mobile button.active {
-    background: var(--sera-mint);
-    color: var(--sera-primary);
-  }
-
-  .nav-mobile .nav-count {
-    position: absolute;
-    top: 4px;
-    left: calc(50% + 6px);
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    font-size: 11px;
-  }
-
-  .main {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom));
-  }
-
-  .app-fill .main {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom));
-  }
-
-  .mobile-search-fab {
-    bottom: calc(84px + env(safe-area-inset-bottom));
-  }
-
-  .app-sale-has-cart .mobile-search-fab {
-    bottom: calc(146px + env(safe-area-inset-bottom));
-  }
-
-  /* Vânzare */
-  .app-sale .main {
-    padding: 14px 14px calc(96px + env(safe-area-inset-bottom));
-  }
-
-  .app-sale-has-cart .main {
-    padding-bottom: calc(156px + env(safe-area-inset-bottom));
-  }
-
+  /* Phone keeps the pre-Seră chrome: compact topbar chip + text tab bar.
+     Seră sale panel / "Vezi coșul" bar stay desktop-only. */
   .sera-scope.sales-shop {
     display: block;
   }
 
   .sera-cart-panel {
-    display: none;
+    display: none !important;
   }
 
   .sera-sale-title {
-    font-size: var(--fs-h1);
+    display: none;
+  }
+
+  .sera-sale-head {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.45rem;
+    margin: 0 0 0.55rem;
   }
 
   .sera-scope .sales-sort-label {
-    font-size: var(--fs-sm);
+    font-size: 0.72rem;
   }
 
   .sera-scope .sales-sort-dropdown {
     min-width: 0;
-    max-width: 13rem;
+    max-width: 11.5rem;
   }
 
   .sera-scope .sales-sort-select {
-    min-height: var(--sz-input);
-    padding: 0 34px 0 var(--sp-4);
-    font-size: var(--fs-body);
-    border-radius: var(--r-sm);
-    background-position: right 12px center;
-    background-size: 12px 8px;
+    min-height: 1.65rem;
+    padding: 0.22rem 1.55rem 0.22rem 0.55rem;
+    font-size: 0.72rem;
+    border-radius: 6px;
+    background-position: right 0.5rem center;
+    background-size: 10px 7px;
   }
 
   .sera-scope .sales-sort-option {
-    font-size: var(--fs-body);
-  }
-
-  .sera-cart-bar {
-    position: fixed;
-    left: max(12px, env(safe-area-inset-left));
-    right: max(12px, env(safe-area-inset-right));
-    bottom: calc(var(--sz-tab) + 22px + env(safe-area-inset-bottom));
-    z-index: 49;
-    display: flex;
-    align-items: center;
-    gap: var(--sp-3);
-    height: var(--sz-cartbar);
-    padding: 0 5px 0 var(--sp-7);
-    border: none;
-    border-radius: 999px;
-    background: var(--sera-primary);
-    color: #fff;
-    font-family: var(--sera-font-body);
-    font-size: var(--fs-body);
-    font-weight: 800;
-    box-shadow: 0 10px 24px rgba(31, 81, 54, 0.35);
-    cursor: pointer;
-    animation: seraBarIn 0.22s ease both;
-  }
-
-  .sera-cart-bar svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .nav-mobile-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  .sera-cart-bar:active {
-    background: var(--sera-pressed);
-  }
-
-  .sera-cart-bar:focus-visible {
-    outline: 3px solid var(--sera-text);
-    outline-offset: 3px;
-  }
-
-  .sera-cart-bar-label {
-    flex: 1;
-    text-align: left;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .sera-cart-bar-total {
-    padding: 6px var(--sp-5);
-    border-radius: 999px;
-    background: #fff;
-    color: var(--sera-primary);
-    font-variant-numeric: tabular-nums;
+    font-size: 0.78rem;
   }
 }
 
@@ -646,29 +512,16 @@
   }
 }
 
-@keyframes seraBarIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .nav-desktop button,
-  .sera-cart-panel,
-  .sera-cart-bar {
+  .sera-cart-panel {
     transition: none;
     animation: none;
   }
 }
 
 @media print {
-  .sera-cart-panel,
-  .sera-cart-bar {
+  .sera-cart-panel {
     display: none !important;
   }
 }

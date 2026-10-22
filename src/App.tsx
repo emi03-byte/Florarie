@@ -301,13 +301,9 @@ function App() {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Display-only derivations for the Seră sale page (no state changes).
+  // Display-only: quantities already in the cart (Seră product cards).
   const cartQuantities: Record<string, number> = {};
   for (const item of cart) cartQuantities[item.bouquetId] = item.quantity;
-  const cartTotal = cart.reduce((sum, item) => {
-    const bouquet = catalog.find((b) => b.id === item.bouquetId);
-    return bouquet ? sum + bouquet.price * item.quantity : sum;
-  }, 0);
 
   function changeCartQty(id: string, quantity: number) {
     if (quantity <= 0) {
@@ -581,7 +577,6 @@ function App() {
           className={view === 'vanzare' || view === 'factura' ? 'active' : ''}
           onClick={() => goTo('vanzare')}
         >
-          <SeraIcon name="flower" size={24} className="nav-mobile-icon" />
           <span className="nav-mobile-label">Vânzare</span>
         </button>
         <button
@@ -589,25 +584,24 @@ function App() {
           className={view === 'cos' ? 'active' : ''}
           onClick={() => goTo('cos')}
         >
-          <SeraIcon name="bag" size={24} className="nav-mobile-icon" />
-          <span className="nav-mobile-label">Coș</span>
-          {cartCount > 0 ? <b className="nav-count">{cartCount}</b> : null}
+          <span className="nav-mobile-label">
+            Coș{cartCount > 0 ? ` ${cartCount}` : ''}
+          </span>
         </button>
         <button
           type="button"
           className={view === 'productie' ? 'active' : ''}
           onClick={() => goTo('productie')}
         >
-          <SeraIcon name="list" size={24} className="nav-mobile-icon" />
-          <span className="nav-mobile-label">De făcut</span>
-          {openCount > 0 ? <b className="nav-count">{openCount}</b> : null}
+          <span className="nav-mobile-label">
+            De făcut{openCount > 0 ? ` ${openCount}` : ''}
+          </span>
         </button>
         <button
           type="button"
           className={view === 'admin' ? 'active' : ''}
           onClick={() => goTo('admin')}
         >
-          <SeraIcon name="admin" size={24} className="nav-mobile-icon" />
           <span className="nav-mobile-label">Admin</span>
         </button>
       </nav>
@@ -664,17 +658,7 @@ function App() {
                 onViewCart={() => goTo('cos')}
               />
             </div>
-            {cartCount > 0 ? (
-              <button
-                type="button"
-                className="sera-cart-bar no-print"
-                onClick={() => goTo('cos')}
-              >
-                <SeraIcon name="bag" size={22} strokeWidth={2} />
-                <span className="sera-cart-bar-label">Vezi coșul · {cartCount}</span>
-                <span className="sera-cart-bar-total">{formatEuro(cartTotal)}</span>
-              </button>
-            ) : null}
+            {/* Phone uses topbar "Coș · N" chip (pre-Seră); desktop uses the side panel. */}
             {previewBouquet ? (
               <BouquetPreview
                 bouquet={previewBouquet}
