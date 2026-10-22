@@ -9,16 +9,27 @@ const COLOR =
  * Examples:
  *   "Centro redondo 18 rosas rojas" → "Centro redondo 18 rosas — Rosas rojas"
  *   "Centro redondo — Clavel rosa"  → unchanged (spacing/dash fixed)
+ *   "Centro redondo—Rosas blancas"  → "Centro redondo — Rosas blancas"
  */
+/** Fix frequent typos before pattern matching. */
+function preNormalize(raw: string): string {
+  return raw
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/\bnaraja(s)?\b/gi, (_m, s) => (s ? 'naranjas' : 'naranja'));
+}
+
 export function formatBouquetDisplayName(raw: string): string {
-  let name = raw.trim().replace(/\s+/g, ' ');
+  let name = preNormalize(raw);
   if (!name) return name;
 
-  // Already has a separator (em/en dash or " - ").
-  const sepMatch = name.match(/\s+[—–-]\s+/);
-  if (sepMatch && sepMatch.index != null) {
+  // Already has a separator (em/en dash or hyphen), with or without spaces.
+  const sepMatch = name.match(/\s*[—–-]\s*/);
+  if (sepMatch && sepMatch.index != null && sepMatch.index > 0) {
     const model = titleModel(name.slice(0, sepMatch.index).trim());
-    const variant = titleVariant(name.slice(sepMatch.index + sepMatch[0].length).trim());
+    const variant = normalizeVariant(
+      titleVariant(name.slice(sepMatch.index + sepMatch[0].length).trim()),
+    );
     return variant ? `${model}${NAME_SEP}${variant}` : model;
   }
 
@@ -43,7 +54,7 @@ export function formatBouquetDisplayName(raw: string): string {
   // "… rosas rojas" without number in the split (whole phrase ends with flower+color)
   const rosas = name.match(new RegExp(`^(centro\\b.+?)\\s+(rosas?\\s+(?:${COLOR}))$`, 'i'));
   if (rosas) {
-    return `${titleModel(rosas[1])}${NAME_SEP}${titleVariant(rosas[2])}`;
+    return `${titleModel(rosas[1])}${NAME_SEP}${normalizeVariant(titleVariant(rosas[2]))}`;
   }
 
   // Flor variada color-only: "… flor variada blanco"
@@ -56,13 +67,46 @@ export function formatBouquetDisplayName(raw: string): string {
 
   // Single trailing color after a Centro model
   const trailing = name.match(
-    /^(centro\b.+?)\s+(rosa|roja|rojo|blanca|blanco|colorido|fucsia)$/i,
+    /^(centro\b.+?)\s+(rosa|roja|rojo|blanca|blanco|colorido|fucsia|amarilla|amarillo|naranja|naranjas)$/i,
   );
   if (trailing) {
     return `${titleModel(trailing[1])}${NAME_SEP}${titleVariant(trailing[2])}`;
   }
 
   return titleModel(name);
+}
+
+/** "Rosa amarillas" → "Rosas amarillas" when the color is clearly plural. */
+function normalizeVariant(variant: string): string {
+  const m = variant.match(/^Rosa\s+(.+)$/i);
+  if (!m) return variant;
+  const color = m[1].toLowerCase();
+  if (
+    /^(rojas|blancas|amarillas|naranjas|verdes|fucsias|rosas|jaspeadas)$/.test(color)
+  ) {
+    return `Rosas ${color}`;
+  }
+  return variant;
+}
+
+/**
+ * Split a catalog name into model + variant for De făcut grouping.
+ * Always normalizes first so "typed as-is" names still group with formatted ones.
+ */
+export function parseBouquetName(raw: string): { model: string; variant: string } {
+  const formatted = formatBouquetDisplayName(raw);
+  const idx = formatted.indexOf(NAME_SEP);
+  if (idx === -1) {
+    return { model: formatted, variant: formatted };
+  }
+  const model = formatted.slice(0, idx).trim();
+  const variant = formatted.slice(idx + NAME_SEP.length).trim() || formatted;
+  return { model, variant };
+}
+
+/** Case-insensitive key so "Centro redondo" and "centro redondo" share a group. */
+export function modelGroupKey(model: string): string {
+  return model.trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
 /** Catalog style: "Centro redondo", "Centro de cara", "Centro ovalado 18 rosas". */

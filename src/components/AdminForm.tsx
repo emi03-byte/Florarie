@@ -63,7 +63,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
       return;
     }
     setForm({
-      name: existing.name,
+      name: formatBouquetDisplayName(existing.name),
       price: String(existing.price),
       image: existing.image,
       recipe: existing.recipe,
@@ -310,7 +310,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                     <BouquetImage src={bouquet.image} alt={bouquet.name} />
                   </div>
                   <span className={styles.itemName}>
-                    {bouquet.name}
+                    {formatBouquetDisplayName(bouquet.name)}
                     <span className={styles.priceInline}> · {formatEuro(bouquet.price)}</span>
                   </span>
                   <div className={styles.itemActions}>
@@ -400,7 +400,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
                     <BouquetImage src={bouquet.image} alt={bouquet.name} />
                   </div>
                   <span className={styles.itemName}>
-                    {bouquet.name}
+                    {formatBouquetDisplayName(bouquet.name)}
                     <span className={styles.priceInline}> · {formatEuro(bouquet.price)}</span>
                   </span>
                   <div className={styles.itemActions}>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Bouquet, Order } from '../types';
 import { aggregateBouquetsToMake, aggregateMaterialsNeeded } from '../lib/materials';
 import type { BouquetToMake } from '../lib/materials';
+import { modelGroupKey, parseBouquetName } from '../lib/bouquetName';
 import { downloadProductionList } from '../lib/productionDownload';
 import { useRevealOnScroll } from '../lib/useRevealOnScroll';
 import { BouquetImage } from './BouquetImage';
@@ -32,29 +33,20 @@ type ConfirmAsk = {
   mode: 'partial' | 'all';
 };
 
-function parseName(name: string): { model: string; variant: string } {
-  const sep = ' — ';
-  const idx = name.indexOf(sep);
-  if (idx === -1) return { model: name, variant: name };
-  return {
-    model: name.slice(0, idx).trim(),
-    variant: name.slice(idx + sep.length).trim() || name,
-  };
-}
-
 function groupByModel(rows: BouquetToMake[]): ModelGroup[] {
   const map = new Map<string, ModelGroup>();
 
   for (const row of rows) {
-    const { model, variant } = parseName(row.name);
-    const existing = map.get(model);
+    const { model, variant } = parseBouquetName(row.name);
+    const key = modelGroupKey(model);
+    const existing = map.get(key);
     if (existing) {
       existing.remaining += row.remaining;
       existing.made += row.made;
       existing.ordered += row.ordered;
       existing.items.push({ ...row, variant });
     } else {
-      map.set(model, {
+      map.set(key, {
         model,
         remaining: row.remaining,
         made: row.made,
