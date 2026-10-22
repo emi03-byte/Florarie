@@ -1,8 +1,8 @@
-/* Seră — sale page product grid (only used on Vânzare). Minimal variant. */
+/* Seră — sale page product grid (only used on Vânzare). */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 22px 14px;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px;
   align-content: start;
 }
 
@@ -11,21 +11,28 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  border-radius: 14px;
+  border-radius: 22px;
   overflow: hidden;
   background: var(--sera-card, #fff);
-  border: 1px solid var(--sera-line, #d9e3d5);
-  box-shadow: none;
-  transition: border-color 0.18s ease;
+  box-shadow:
+    0 1px 2px rgba(23, 39, 30, 0.08),
+    0 8px 24px -12px rgba(23, 39, 30, 0.15);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .card:hover {
-  border-color: #b9c8b4;
+  box-shadow:
+    0 1px 2px rgba(23, 39, 30, 0.1),
+    0 14px 30px -14px rgba(23, 39, 30, 0.28);
+  transform: translateY(-2px);
 }
 
 .selected {
-  border-color: var(--sera-primary, #1f5136);
-  box-shadow: 0 0 0 1px var(--sera-primary, #1f5136);
+  box-shadow:
+    0 0 0 3px var(--sera-primary, #1f5136),
+    0 8px 24px -12px rgba(23, 39, 30, 0.15);
 }
 
 .photoWrap {
@@ -57,41 +64,38 @@
 
 .photoBtn:focus-visible,
 .selectBtn:focus-visible {
-  outline: 2px solid var(--sera-primary, #1f5136);
+  outline: 3px solid var(--sera-primary, #1f5136);
   outline-offset: -3px;
 }
 
-/* Small round "+" on the photo corner; shows quantity when already in cart. */
+/* Round "+" on the photo corner; shows quantity when already in cart. */
 .fab {
   position: absolute;
-  right: 8px;
-  bottom: 8px;
+  right: 10px;
+  bottom: 10px;
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   padding: 0;
-  border: 1px solid var(--sera-line, #d9e3d5);
+  border: none;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.94);
-  color: var(--sera-primary, #1f5136);
-  box-shadow: 0 1px 3px rgba(23, 39, 30, 0.12);
+  background: var(--sera-primary, #1f5136);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(31, 81, 54, 0.33);
   cursor: pointer;
   transition:
     background-color 0.15s ease,
-    border-color 0.15s ease,
     transform 0.15s ease;
 }
 
 .fab svg {
-  width: 20px;
-  height: 20px;
-  stroke-width: 2;
+  width: 22px;
+  height: 22px;
 }
 
 .fab:hover {
-  background: var(--sera-mint, #e7f0e4);
-  border-color: var(--sera-primary, #1f5136);
+  background: var(--sera-pressed, #173e29);
 }
 
 .fab:active {
@@ -99,21 +103,28 @@
 }
 
 .fab:focus-visible {
-  outline: 2px solid var(--sera-primary, #1f5136);
-  outline-offset: 2px;
+  outline: 3px solid #fff;
+  box-shadow: 0 0 0 6px var(--sera-primary, #1f5136);
 }
 
 .fabQty {
+  background: #fff;
+  color: var(--sera-primary, #1f5136);
+  box-shadow:
+    0 0 0 3px var(--sera-primary, #1f5136),
+    0 6px 16px rgba(31, 81, 54, 0.25);
+}
+
+.fabQty:hover {
   background: var(--sera-mint, #e7f0e4);
-  border: 1.5px solid var(--sera-primary, #1f5136);
 }
 
 .fabCount {
   font-family: var(--sera-font-body, inherit);
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
-  animation: bump 0.2s ease both;
+  animation: bump 0.22s ease both;
 }
 
 @keyframes bump {
@@ -140,16 +151,16 @@
 .body {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 10px 12px 12px;
+  gap: 6px;
+  padding: 11px 13px 13px;
 }
 
 .name {
   font-family: var(--sera-font-display, serif);
   font-variation-settings: 'SOFT' 100;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.2;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.15;
   color: var(--sera-text, #17271e);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -159,10 +170,10 @@
 
 .price {
   font-family: var(--sera-font-body, inherit);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
-  color: var(--sera-muted, #4f6155);
+  color: var(--sera-text, #17271e);
 }
 
 .revealSentinel {
@@ -174,26 +185,40 @@
 @media (max-width: 900px) {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px 10px;
+    gap: 12px;
   }
 
   .card {
-    border-radius: 12px;
+    border-radius: 20px;
+  }
+
+  .card:hover {
+    transform: none;
   }
 
   .fab {
-    width: 36px;
-    height: 36px;
-    right: 6px;
-    bottom: 6px;
+    width: 42px;
+    height: 42px;
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .fab svg {
+    width: 21px;
+    height: 21px;
   }
 
   .body {
-    padding: 8px 10px 10px;
+    gap: 4px;
+    padding: 10px 12px 12px;
   }
 
   .name {
-    font-size: 15px;
+    font-size: 16px;
+  }
+
+  .price {
+    font-size: 16px;
   }
 }
 
@@ -204,6 +229,7 @@
     transition: none;
   }
 
+  .card:hover,
   .card:hover .photo img {
     transform: none;
   }
