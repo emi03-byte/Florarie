@@ -78,7 +78,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: var(--r-xs);
   border: 1px solid var(--glass-border);
   background: rgba(255, 255, 255, 0.5);
 }
@@ -210,7 +210,7 @@
 .error {
   margin: 0.5rem 0.75rem 0;
   padding: 0.55rem 0.7rem;
-  border-radius: 10px;
+  border-radius: var(--r-xs);
   background: rgba(179, 38, 30, 0.1);
   color: #b3261e;
   font-weight: 600;
@@ -219,15 +219,15 @@
 
 .line {
   display: grid;
-  grid-template-columns: 40px 1fr;
+  grid-template-columns: var(--sz-btn-sm) 1fr;
   gap: 0.4rem;
   padding-bottom: 0.35rem;
   border-bottom: 1px solid var(--line);
 }
 
 .thumb {
-  width: 40px;
-  height: 40px;
+  width: var(--sz-btn-sm);
+  height: var(--sz-btn-sm);
   overflow: hidden;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.35);
@@ -367,7 +367,7 @@
 /* ───────── Seră (approved look 988ebd4) ───────── */
 .layout {
   grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 20px;
+  gap: var(--sp-6);
   font-family: var(--sera-font-body);
   color: var(--sera-text);
 }
@@ -375,14 +375,14 @@
 .catalogPanel,
 .billPanel {
   border: none;
-  border-radius: 26px;
+  border-radius: var(--r-panel);
   background: var(--sera-card);
   box-shadow: var(--sera-shadow-panel);
 }
 
 .head,
 .billHead {
-  padding: 22px 20px 14px;
+  padding: var(--sp-7) var(--sp-6) var(--sp-5);
   border-bottom: 1px solid var(--sera-line);
 }
 
@@ -390,7 +390,7 @@
 .billHead h3 {
   font-family: var(--sera-font-display);
   font-variation-settings: 'SOFT' 100;
-  font-size: 26px;
+  font-size: var(--fs-h1);
   font-weight: 600;
   line-height: 1.15;
   color: var(--sera-primary);
@@ -399,35 +399,35 @@
 .head p {
   margin-top: 4px;
   color: var(--sera-muted);
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 600;
 }
 
 .count {
   display: inline-flex;
   align-items: center;
-  height: 28px;
-  padding: 0 10px;
+  height: var(--sz-badge);
+  padding: 0 var(--sp-3);
   border-radius: 999px;
   background: var(--sera-mint);
   color: var(--sera-primary);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 700;
 }
 
 .gridScroll {
-  padding: 16px 16px 20px;
+  padding: var(--sp-5) var(--sp-5) var(--sp-6);
   background: var(--sera-bg);
 }
 
 .grid {
   grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 16px;
+  gap: var(--sp-5);
 }
 
 .card {
   border: none;
-  border-radius: 22px;
+  border-radius: var(--r-card);
   background: var(--sera-card);
   box-shadow: var(--sera-shadow-card);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
@@ -443,13 +443,13 @@
 
 .cardBody {
   gap: 4px;
-  padding: 12px 12px 12px;
+  padding: var(--sp-4) var(--sp-4) var(--sp-4);
 }
 
 .name {
   font-family: var(--sera-font-display);
   font-variation-settings: 'SOFT' 100;
-  font-size: 16px;
+  font-size: var(--fs-md);
   font-weight: 600;
   line-height: 1.25;
   color: var(--sera-text);
@@ -457,7 +457,7 @@
 }
 
 .price {
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--sera-text);
@@ -465,24 +465,24 @@
 
 .cardActions {
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: var(--sp-2);
   margin-top: 6px;
 }
 
 .qty {
-  grid-template-columns: 36px minmax(0, 1fr) 36px;
+  grid-template-columns: var(--sz-step) minmax(0, 1fr) var(--sz-step);
   gap: 6px;
 }
 
 .qty button {
   display: grid;
   place-items: center;
-  height: 36px;
+  height: var(--sz-step);
   border: 1.5px solid var(--sera-line);
-  border-radius: 12px;
+  border-radius: var(--r-sm);
   background: #fff;
   color: var(--sera-primary);
-  font-size: 18px;
+  font-size: var(--fs-h4);
   transition: background-color 0.18s ease;
 }
 
@@ -495,12 +495,12 @@
 }
 
 .qty input {
-  height: 36px;
+  height: var(--sz-step);
   border: 1.5px solid var(--sera-field);
-  border-radius: 12px;
+  border-radius: var(--r-sm);
   background: var(--sera-bg);
   color: var(--sera-text);
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
@@ -513,17 +513,17 @@
 }
 
 .qty span {
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
 .addBtn {
-  height: 40px;
+  height: var(--sz-btn-sm);
   border-radius: 999px;
   background: var(--sera-primary);
   font-family: var(--sera-font-body);
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 800;
   letter-spacing: 0;
   text-transform: none;
@@ -536,49 +536,49 @@
 
 /* Bill panel = same look as the Coș panel */
 .list {
-  gap: 10px;
-  padding: 14px 20px;
+  gap: var(--sp-3);
+  padding: var(--sp-5) var(--sp-6);
 }
 
 .empty {
   flex: 0 0 auto;
-  margin: 14px 20px;
-  padding: 18px 16px;
+  margin: var(--sp-5) var(--sp-6);
+  padding: var(--sp-6) var(--sp-5);
   border: 1.5px dashed var(--sera-line);
-  border-radius: 18px;
+  border-radius: var(--r-tile);
   background: var(--sera-bg);
   color: var(--sera-muted);
-  font-size: 15px;
+  font-size: var(--fs-body);
   line-height: 1.45;
 }
 
 .error {
-  margin: 12px 20px 0;
-  padding: 10px 14px;
-  border-radius: 14px;
+  margin: var(--sp-4) var(--sp-6) 0;
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--r-field);
   background: var(--sera-blush);
   color: var(--sera-blush-ink);
-  font-size: 14px;
+  font-size: var(--fs-sm);
 }
 
 .line {
-  grid-template-columns: 56px minmax(0, 1fr);
-  gap: 12px;
-  padding: 10px;
+  grid-template-columns: var(--sz-thumb) minmax(0, 1fr);
+  gap: var(--sp-4);
+  padding: var(--sp-3);
   border-bottom: none;
-  border-radius: 18px;
+  border-radius: var(--r-tile);
   background: var(--sera-bg);
 }
 
 .thumb {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
+  width: var(--sz-thumb);
+  height: var(--sz-thumb);
+  border-radius: var(--r-field);
   background: var(--sera-mint);
 }
 
 .lineName {
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 700;
   line-height: 1.25;
 }
@@ -587,13 +587,13 @@
   display: grid;
   place-items: center;
   flex: none;
-  width: 34px;
-  height: 34px;
+  width: var(--sz-x);
+  height: var(--sz-x);
   margin: -6px -4px 0 0;
   padding: 0;
   border-radius: 999px;
   color: var(--sera-muted);
-  font-size: 22px;
+  font-size: var(--fs-h3);
   transition: background-color 0.18s ease, color 0.18s ease;
 }
 
@@ -609,7 +609,7 @@
 .lineBottom .qty {
   display: inline-flex;
   gap: 0;
-  height: 36px;
+  height: var(--sz-step);
   border: 1px solid var(--sera-line);
   border-radius: 999px;
   background: #fff;
@@ -617,8 +617,8 @@
 }
 
 .lineBottom .qty button {
-  width: 36px;
-  height: 34px;
+  width: var(--sz-step);
+  height: var(--sz-x);
   border: none;
   border-radius: 999px;
 }
@@ -628,37 +628,37 @@
 }
 
 .linePrice {
-  font-size: 16px;
+  font-size: var(--fs-md);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
 .footer {
-  gap: 12px;
-  padding: 14px 20px 20px;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-6) var(--sp-6);
   border-top: 1px solid var(--sera-line);
 }
 
 .totalRow {
   color: var(--sera-muted);
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 600;
 }
 
 .totalRow strong {
   font-family: var(--sera-font-body);
-  font-size: 22px;
+  font-size: var(--fs-h3);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--sera-text);
 }
 
 .submit {
-  min-height: 48px;
+  min-height: var(--sz-btn);
   border-radius: 999px;
   background: var(--sera-primary);
   font-family: var(--sera-font-body);
-  font-size: 16px;
+  font-size: var(--fs-md);
   font-weight: 800;
   letter-spacing: 0;
   text-transform: none;
@@ -687,70 +687,70 @@
 @media (max-width: 1100px) {
   .layout {
     grid-template-columns: minmax(0, 1fr) 320px;
-    gap: 16px;
+    gap: var(--sp-5);
   }
 }
 
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: var(--sp-4);
   }
 
   .catalogPanel,
   .billPanel {
-    border-radius: 22px;
+    border-radius: var(--r-card);
   }
 
   .head,
   .billHead {
-    padding: 14px 14px 10px;
+    padding: var(--sp-5) var(--sp-5) var(--sp-3);
   }
 
   .head h2,
   .billHead h3 {
-    font-size: 22px;
+    font-size: var(--fs-h3);
   }
 
   .gridScroll {
-    padding: 12px;
+    padding: var(--sp-4);
   }
 
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 12px;
+    gap: var(--sp-4);
   }
 
   .name {
-    font-size: 15px;
+    font-size: var(--fs-body);
   }
 
   .list {
-    padding: 10px 14px;
+    padding: var(--sp-3) var(--sp-5);
   }
 
   .empty {
-    margin: 10px 14px;
+    margin: var(--sp-3) var(--sp-5);
   }
 
   .footer {
-    padding: 12px 14px 14px;
+    padding: var(--sp-4) var(--sp-5) var(--sp-5);
   }
 
   .submit {
-    min-height: 48px;
+    min-height: var(--sz-btn);
   }
 }
 
 @media (max-width: 560px) {
   .qty button,
   .addBtn {
-    min-height: 36px;
+    min-height: var(--sz-step);
   }
 
   .head h2,
   .billHead h3 {
-    font-size: 22px;
+    font-size: var(--fs-h3);
   }
 }
 

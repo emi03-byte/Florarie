@@ -642,13 +642,13 @@
 
 /* ───────── Seră (approved look 988ebd4) ───────── */
 .layout {
-  gap: 20px;
+  gap: var(--sp-6);
 }
 
 .panel {
-  padding: 22px 20px 20px;
+  padding: var(--sp-7) var(--sp-6) var(--sp-6);
   border: none;
-  border-radius: 26px;
+  border-radius: var(--r-panel);
   background: var(--sera-card);
   box-shadow: var(--sera-shadow-panel);
   font-family: var(--sera-font-body);
@@ -656,40 +656,40 @@
 }
 
 .panelHead {
-  padding: 0 0 14px;
+  padding: 0 0 var(--sp-5);
   border-bottom: 1px solid var(--sera-line);
 }
 
 .headRow {
-  gap: 8px 14px;
+  gap: var(--sp-2) var(--sp-5);
 }
 
 .panelHead h2 {
   font-family: var(--sera-font-display);
   font-variation-settings: 'SOFT' 100;
-  font-size: 26px;
+  font-size: var(--fs-h1);
   font-weight: 600;
   line-height: 1.15;
   color: var(--sera-primary);
 }
 
 .summary {
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--sera-muted);
 }
 
 .summary strong {
   color: var(--sera-primary);
-  font-size: 16px;
+  font-size: var(--fs-md);
   font-weight: 800;
 }
 
 .downloadBtn {
-  width: 40px;
-  height: 40px;
+  width: var(--sz-btn-sm);
+  height: var(--sz-btn-sm);
   border: 1.5px solid var(--sera-line);
-  border-radius: 12px;
+  border-radius: var(--r-sm);
   background: #fff;
   color: var(--sera-primary);
 }
@@ -710,148 +710,148 @@
 }
 
 .empty {
-  margin-top: 14px;
-  padding: 22px 18px;
+  margin-top: var(--sp-5);
+  padding: var(--sp-7) var(--sp-6);
   border: 1.5px dashed var(--sera-line);
-  border-radius: 18px;
+  border-radius: var(--r-tile);
   background: var(--sera-bg);
   color: var(--sera-muted);
-  font-size: 15px;
+  font-size: var(--fs-body);
   text-align: center;
 }
 
 .error {
-  margin-top: 12px;
-  padding: 10px 14px;
-  border-radius: 14px;
+  margin-top: var(--sp-4);
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--r-field);
   background: var(--sera-blush);
   color: var(--sera-blush-ink);
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 600;
 }
 
 .groups {
-  gap: 14px;
-  margin-top: 14px;
+  gap: var(--sp-5);
+  margin-top: var(--sp-5);
 }
 
 .group {
   border: none;
-  border-radius: 22px;
+  border-radius: var(--r-card);
   background: var(--sera-bg);
 }
 
 .groupHead {
-  gap: 10px;
-  padding: 14px 16px 10px;
+  gap: var(--sp-3);
+  padding: var(--sp-5) var(--sp-5) var(--sp-3);
   border-bottom: none;
 }
 
 .groupTitle {
   font-family: var(--sera-font-display);
   font-variation-settings: 'SOFT' 100;
-  font-size: 19px;
+  font-size: var(--fs-h4);
   font-weight: 600;
   line-height: 1.2;
   color: var(--sera-text);
 }
 
 .groupMeta {
-  gap: 8px;
+  gap: var(--sp-2);
 }
 
 .groupBadge {
   min-width: 30px;
-  height: 28px;
-  padding: 0 10px;
+  height: var(--sz-badge);
+  padding: 0 var(--sp-3);
   background: var(--sera-primary);
-  font-size: 14px;
+  font-size: var(--fs-sm);
 }
 
 .groupProgress {
   align-items: center;
-  height: 28px;
-  padding: 0 10px;
+  height: var(--sz-badge);
+  padding: 0 var(--sp-3);
   background: #fff;
   border: 1px solid var(--sera-line);
 }
 
 .metaMade {
-  font-size: 14px;
+  font-size: var(--fs-sm);
   color: var(--sera-success);
 }
 
 .metaSep {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--sera-muted);
 }
 
 .metaTotal {
-  font-size: 14px;
+  font-size: var(--fs-sm);
   color: var(--sera-text);
 }
 
 .variantList {
-  gap: 8px;
-  padding: 0 10px 10px;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-3) var(--sp-3);
 }
 
 .variantRow {
-  grid-template-columns: 52px minmax(5rem, 1fr) auto;
-  gap: 8px 14px;
-  padding: 8px 10px 8px 8px;
+  grid-template-columns: var(--sz-thumb) minmax(5rem, 1fr) auto;
+  gap: var(--sp-2) var(--sp-5);
+  padding: var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-2);
   border-bottom: none;
-  border-radius: 18px;
+  border-radius: var(--r-tile);
   background: #fff;
   box-shadow: 0 1px 2px rgba(23, 39, 30, 0.06);
 }
 
 .thumb {
-  width: 52px;
-  height: 52px;
+  width: var(--sz-thumb);
+  height: var(--sz-thumb);
   border: none;
-  border-radius: 14px;
+  border-radius: var(--r-field);
   background: var(--sera-mint);
 }
 
 .variantLabel {
-  gap: 10px;
+  gap: var(--sp-3);
 }
 
 .variantName {
   font-family: var(--sera-font-body);
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 700;
   color: var(--sera-text);
 }
 
 .remainBadge {
-  min-width: 34px;
+  min-width: var(--sz-x);
   height: 30px;
-  padding: 0 10px;
+  padding: 0 var(--sp-3);
   border: none;
   border-radius: 999px;
   background: var(--sera-mint);
   color: var(--sera-primary);
-  font-size: 15px;
+  font-size: var(--fs-body);
 }
 
 .actions {
-  grid-template-columns: 7.25rem 7rem 9.5rem;
-  gap: 8px;
+  grid-template-columns: 6.25rem 6rem 8.25rem;
+  gap: var(--sp-2);
 }
 
 .btnAdd,
 .btnConfirm,
 .btnAll {
-  height: 40px;
-  padding: 0 12px;
+  height: var(--sz-btn-sm);
+  padding: 0 var(--sp-4);
   border: 1.5px solid var(--sera-line);
   border-radius: 999px;
   background: #fff;
   color: var(--sera-primary);
   font-family: var(--sera-font-body);
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1;
@@ -894,30 +894,30 @@
 
 .materialList {
   gap: 6px;
-  margin-top: 12px;
+  margin-top: var(--sp-4);
 }
 
 .materialChip {
-  min-height: 42px;
-  padding: 0 14px;
+  min-height: var(--sz-ctl-md);
+  padding: 0 var(--sp-5);
   border: none;
-  border-radius: 14px;
+  border-radius: var(--r-field);
   background: var(--sera-bg);
 }
 
 .materialName {
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--sera-text);
 }
 
 .materialQty {
-  min-width: 34px;
-  padding: 3px 10px;
+  min-width: var(--sz-x);
+  padding: 3px var(--sp-3);
   border-radius: 999px;
   background: #fff;
   color: var(--sera-primary);
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 800;
   text-align: center;
 }
@@ -929,7 +929,7 @@
 .materialsSheet {
   --materials-handle: 52px;
   border: none;
-  border-radius: 0 0 22px 22px;
+  border-radius: 0 0 var(--r-card) var(--r-card);
   background: var(--sera-card);
   box-shadow: 0 -8px 28px -10px rgba(23, 39, 30, 0.2);
   backdrop-filter: none;
@@ -937,13 +937,13 @@
 }
 
 .materialsSheetOpen {
-  border-radius: 22px;
+  border-radius: var(--r-card);
   background: var(--sera-card);
   box-shadow: var(--sera-shadow-panel);
 }
 
 .materialsPull {
-  padding: 0 16px;
+  padding: 0 var(--sp-5);
   color: var(--sera-primary);
 }
 
@@ -960,9 +960,9 @@
 }
 
 .materialsTabLabel {
-  gap: 8px;
+  gap: var(--sp-2);
   font-family: var(--sera-font-body);
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 800;
   letter-spacing: 0;
   text-transform: none;
@@ -971,19 +971,19 @@
 .materialsTabCount {
   min-width: 24px;
   height: 24px;
-  padding: 0 8px;
+  padding: 0 var(--sp-2);
   background: var(--sera-mint);
   color: var(--sera-primary);
-  font-size: 13px;
+  font-size: var(--fs-sm);
 }
 
 .materialsSheetBody {
-  padding: 4px 14px 14px;
+  padding: 4px var(--sp-5) var(--sp-5);
 }
 
 @media (max-width: 1180px) {
   .variantRow {
-    grid-template-columns: 52px minmax(0, 1fr);
+    grid-template-columns: var(--sz-thumb) minmax(0, 1fr);
   }
 
   .actions {
@@ -995,24 +995,24 @@
 
 @media (max-width: 900px) {
   .panel {
-    padding: 16px 14px 14px;
-    border-radius: 22px;
+    padding: var(--sp-5) var(--sp-5) var(--sp-5);
+    border-radius: var(--r-card);
   }
 
   .panelHead {
-    padding-bottom: 12px;
+    padding-bottom: var(--sp-4);
   }
 
   .panelHead h2 {
-    font-size: 22px;
+    font-size: var(--fs-h3);
   }
 
   .summary {
-    font-size: 13px;
+    font-size: var(--fs-sm);
   }
 
   .summary strong {
-    font-size: 15px;
+    font-size: var(--fs-body);
   }
 
   .panelScroll {
@@ -1020,57 +1020,57 @@
   }
 
   .groups {
-    gap: 12px;
-    margin-top: 12px;
+    gap: var(--sp-4);
+    margin-top: var(--sp-4);
   }
 
   .groupHead {
-    padding: 12px 12px 8px;
+    padding: var(--sp-4) var(--sp-4) var(--sp-2);
   }
 
   .groupTitle {
-    font-size: 17px;
+    font-size: var(--fs-title);
   }
 
   .groupBadge,
   .groupProgress {
-    height: 26px;
-    padding: 0 9px;
+    height: var(--sz-badge-sm);
+    padding: 0 var(--sp-3);
   }
 
   .groupBadge,
   .metaMade,
   .metaTotal {
-    font-size: 13px;
+    font-size: var(--fs-sm);
   }
 
   .variantList {
-    padding: 0 8px 8px;
+    padding: 0 var(--sp-2) var(--sp-2);
   }
 
   .variantRow {
-    grid-template-columns: 44px minmax(0, 1fr);
-    gap: 10px;
-    padding: 8px;
-    border-radius: 16px;
+    grid-template-columns: var(--sz-ctl) minmax(0, 1fr);
+    gap: var(--sp-3);
+    padding: var(--sp-2);
+    border-radius: var(--r-tile);
   }
 
   .thumb {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+    width: var(--sz-ctl);
+    height: var(--sz-ctl);
+    border-radius: var(--r-sm);
   }
 
   .variantName {
-    font-size: 15px;
+    font-size: var(--fs-body);
   }
 
   .remainBadge {
     min-width: 30px;
-    height: 26px;
-    padding: 0 9px;
+    height: var(--sz-badge-sm);
+    padding: 0 var(--sp-3);
     border-radius: 999px;
-    font-size: 14px;
+    font-size: var(--fs-sm);
   }
 
   .actions {
@@ -1084,10 +1084,10 @@
   .btnAll {
     width: auto;
     min-width: 0;
-    height: 40px;
+    height: var(--sz-btn-sm);
     padding: 0 6px;
     border-radius: 999px;
-    font-size: 13px;
+    font-size: var(--fs-sm);
     white-space: nowrap;
   }
 }

@@ -186,9 +186,9 @@
 
 /* ───────── Seră (approved look 988ebd4) ───────── */
 .panel {
-  padding: 22px 20px 20px;
+  padding: var(--sp-7) var(--sp-6) var(--sp-6);
   border: none;
-  border-radius: 26px;
+  border-radius: var(--r-panel);
   background: var(--sera-card);
   box-shadow: var(--sera-shadow-panel);
   font-family: var(--sera-font-body);
@@ -196,16 +196,16 @@
 }
 
 .head {
-  gap: 8px 16px;
+  gap: var(--sp-2) var(--sp-5);
   margin-bottom: 0;
-  padding-bottom: 14px;
+  padding-bottom: var(--sp-5);
   border-bottom: 1px solid var(--sera-line);
 }
 
 .head h2 {
   font-family: var(--sera-font-display);
   font-variation-settings: 'SOFT' 100;
-  font-size: 26px;
+  font-size: var(--fs-h1);
   font-weight: 600;
   line-height: 1.15;
   color: var(--sera-primary);
@@ -214,57 +214,57 @@
 .hint {
   margin-top: 4px;
   color: var(--sera-muted);
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 500;
 }
 
 .count {
   display: inline-flex;
   align-items: center;
-  height: 28px;
-  padding: 0 10px;
+  height: var(--sz-badge);
+  padding: 0 var(--sp-3);
   border-radius: 999px;
   background: var(--sera-mint);
   color: var(--sera-primary);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 700;
 }
 
 .scroll {
-  padding-top: 14px;
+  padding-top: var(--sp-5);
 }
 
 .empty {
   margin: 0;
-  padding: 22px 18px;
+  padding: var(--sp-7) var(--sp-6);
   border: 1.5px dashed var(--sera-line);
-  border-radius: 18px;
+  border-radius: var(--r-tile);
   background: var(--sera-bg);
   color: var(--sera-muted);
-  font-size: 15px;
+  font-size: var(--fs-body);
 }
 
 .list {
-  gap: 14px;
+  gap: var(--sp-5);
 }
 
 .card {
-  padding: 16px 18px;
+  padding: var(--sp-5) var(--sp-6);
   border: none;
-  border-radius: 22px;
+  border-radius: var(--r-card);
   background: var(--sera-bg);
 }
 
 .cardTop {
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
 }
 
 .orderTitle {
   font-family: var(--sera-font-display);
   font-variation-settings: 'SOFT' 100;
-  font-size: 19px;
+  font-size: var(--fs-h4);
   font-weight: 600;
   color: var(--sera-text);
 }
@@ -272,20 +272,20 @@
 .meta {
   margin-top: 2px;
   color: var(--sera-muted);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
 .download {
-  min-height: 40px;
-  padding: 0 16px;
+  min-height: var(--sz-btn-sm);
+  padding: 0 var(--sp-5);
   border: 1.5px solid var(--sera-line);
   border-radius: 999px;
   background: #fff;
   color: var(--sera-primary);
   font-family: var(--sera-font-body);
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 700;
   letter-spacing: 0;
   text-transform: none;
@@ -303,21 +303,21 @@
 }
 
 .table {
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-variant-numeric: tabular-nums;
-  border-radius: 14px;
+  border-radius: var(--r-field);
   background: #fff;
   overflow: hidden;
 }
 
 .table th,
 .table td {
-  padding: 9px 12px;
+  padding: var(--sp-3) var(--sp-4);
   border-bottom: 1px solid var(--sera-mint);
 }
 
 .table th {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--sera-muted);
@@ -329,16 +329,16 @@
 }
 
 .totalRow {
-  margin-top: 10px;
-  padding: 0 12px;
+  margin-top: var(--sp-3);
+  padding: 0 var(--sp-4);
   border-top: none;
   color: var(--sera-muted);
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 600;
 }
 
 .totalRow strong {
-  font-size: 20px;
+  font-size: var(--fs-h3);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--sera-text);
@@ -346,35 +346,35 @@
 
 @media (max-width: 900px) {
   .panel {
-    padding: 16px 14px 14px;
-    border-radius: 22px;
+    padding: var(--sp-5) var(--sp-5) var(--sp-5);
+    border-radius: var(--r-card);
   }
 
   .head h2 {
-    font-size: 22px;
+    font-size: var(--fs-h3);
   }
 
   .card {
-    padding: 14px 12px;
-    border-radius: 18px;
+    padding: var(--sp-5) var(--sp-4);
+    border-radius: var(--r-tile);
   }
 
   .orderTitle {
-    font-size: 17px;
+    font-size: var(--fs-title);
   }
 
   .download {
-    min-height: 40px;
-    font-size: 14px;
+    min-height: var(--sz-btn-sm);
+    font-size: var(--fs-sm);
   }
 
   .table th,
   .table td {
-    padding: 8px 10px;
+    padding: var(--sp-2) var(--sp-3);
   }
 
   .hint {
-    font-size: 13px;
+    font-size: var(--fs-sm);
   }
 }
 

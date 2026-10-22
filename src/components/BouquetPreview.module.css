@@ -148,7 +148,7 @@
 .qty button {
   height: 2.4rem;
   border: 1px solid rgba(23, 39, 30, 0.12);
-  border-radius: 10px;
+  border-radius: var(--r-xs);
   background: rgba(255, 255, 255, 0.9);
   color: var(--ink);
   font-size: 1.05rem;
@@ -166,7 +166,7 @@
   width: 100%;
   height: 2.4rem;
   border: 1px solid rgba(23, 39, 30, 0.12);
-  border-radius: 10px;
+  border-radius: var(--r-xs);
   background: #fff;
   color: var(--ink);
   text-align: center;
@@ -212,7 +212,7 @@
     grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
     width: min(840px, 100%);
     max-height: min(88dvh, 660px);
-    border-radius: 12px;
+    border-radius: var(--r-sm);
     box-shadow: 0 16px 40px rgba(23, 39, 30, 0.16);
   }
 
@@ -285,7 +285,7 @@
     grid-template-columns: 1fr;
     width: min(100%, 34rem);
     max-height: min(86dvh, 680px);
-    border-radius: 12px;
+    border-radius: var(--r-sm);
   }
 
   .photo {
@@ -312,7 +312,7 @@
 /* ───────── Seră (approved look 988ebd4) ───────── */
 .dialog {
   border: none;
-  border-radius: 26px;
+  border-radius: var(--r-panel);
   background: var(--sera-card);
   box-shadow: var(--sera-shadow-dialog);
   font-family: var(--sera-font-body);
@@ -324,12 +324,12 @@
   right: 14px;
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: var(--sz-btn-sm);
+  height: var(--sz-btn-sm);
   border: 1.5px solid var(--sera-line);
   background: #fff;
   color: var(--sera-primary);
-  font-size: 24px;
+  font-size: var(--fs-h2);
   transition: background-color 0.18s ease, border-color 0.18s ease;
 }
 
@@ -345,19 +345,19 @@
 
 .body {
   gap: 6px;
-  padding: 26px 24px 22px;
+  padding: var(--sp-8) var(--sp-7) var(--sp-7);
 }
 
 .badge {
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
-  min-height: 26px;
-  padding: 0 10px;
+  min-height: var(--sz-badge-sm);
+  padding: 0 var(--sp-3);
   border-radius: 999px;
   background: var(--sera-mint);
   color: var(--sera-primary);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 700;
   letter-spacing: 0;
   text-transform: none;
@@ -368,16 +368,16 @@
   padding-right: 36px;
   font-family: var(--sera-font-display);
   font-variation-settings: 'SOFT' 100;
-  font-size: 28px;
+  font-size: var(--fs-h1);
   font-weight: 600;
   line-height: 1.15;
   color: var(--sera-primary);
 }
 
 .price {
-  margin: 2px 0 14px;
+  margin: 2px 0 var(--sp-5);
   font-family: var(--sera-font-body);
-  font-size: 20px;
+  font-size: var(--fs-h3);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--sera-text);
@@ -385,7 +385,7 @@
 
 .sectionTitle {
   margin: 0 0 6px;
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 700;
   letter-spacing: 0;
   text-transform: none;
@@ -396,17 +396,17 @@
   gap: 6px;
   padding: 0;
   list-style: none;
-  font-size: 15px;
+  font-size: var(--fs-body);
   line-height: 1.4;
 }
 
 .list li {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 40px;
-  padding: 0 14px;
-  border-radius: 14px;
+  gap: var(--sp-3);
+  min-height: var(--sz-btn-sm);
+  padding: 0 var(--sp-5);
+  border-radius: var(--r-field);
   background: var(--sera-bg);
 }
 
@@ -420,17 +420,17 @@
 }
 
 .addRow {
-  margin-top: 18px;
+  margin-top: var(--sp-6);
 }
 
 .addBtn {
   height: auto;
-  min-height: 48px;
-  padding: 0 24px;
+  min-height: var(--sz-btn);
+  padding: 0 var(--sp-7);
   border-radius: 999px;
   background: var(--sera-primary);
   font-family: var(--sera-font-body);
-  font-size: 16px;
+  font-size: var(--fs-md);
   font-weight: 800;
   letter-spacing: 0;
   text-transform: none;
@@ -450,70 +450,70 @@
 
 @media (max-width: 900px) {
   .dialog {
-    border-radius: 22px;
+    border-radius: var(--r-card);
     box-shadow: var(--sera-shadow-dialog);
   }
 
   .close {
     top: 10px;
     right: 10px;
-    width: 40px;
-    height: 40px;
-    font-size: 22px;
+    width: var(--sz-btn-sm);
+    height: var(--sz-btn-sm);
+    font-size: var(--fs-h3);
   }
 
   .body {
     gap: 4px;
-    padding: 18px 18px 18px;
+    padding: var(--sp-6) var(--sp-6) var(--sp-6);
   }
 
   .badge {
-    font-size: 12px;
+    font-size: var(--fs-xs);
     color: var(--sera-primary);
   }
 
   .title {
-    font-size: 22px;
+    font-size: var(--fs-h3);
   }
 
   .price {
-    margin: 2px 0 10px;
-    font-size: 18px;
+    margin: 2px 0 var(--sp-3);
+    font-size: var(--fs-h4);
     color: var(--sera-text);
   }
 
   .sectionTitle {
-    font-size: 13px;
+    font-size: var(--fs-sm);
   }
 
   .list {
     padding: 0;
     gap: 5px;
-    font-size: 14px;
+    font-size: var(--fs-sm);
   }
 
   .list li {
-    min-height: 36px;
-    padding: 0 12px;
-    border-radius: 12px;
+    min-height: var(--sz-step);
+    padding: 0 var(--sp-4);
+    border-radius: var(--r-sm);
   }
 
   .addRow {
     display: grid;
-    margin-top: 14px;
+    margin-top: var(--sp-5);
   }
 
   .addBtn {
     width: 100%;
-    min-height: 46px;
-    padding: 0 20px;
-    font-size: 15px;
+    min-height: var(--sz-input);
+    padding: 0 var(--sp-6);
+    font-size: var(--fs-body);
   }
 }
 
 @media (max-width: 720px) {
   .dialog {
-    border-radius: 22px;
+    border-radius: var(--r-card);
   }
 
   .photo {
@@ -521,13 +521,13 @@
   }
 
   .close {
-    width: 40px;
-    height: 40px;
+    width: var(--sz-btn-sm);
+    height: var(--sz-btn-sm);
   }
 
   .addBtn {
-    font-size: 15px;
-    padding: 0 20px;
+    font-size: var(--fs-body);
+    padding: 0 var(--sp-6);
   }
 }
 

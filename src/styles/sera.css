@@ -22,11 +22,64 @@
   --sera-error: #b3261e;
   --sera-font-display: 'Fraunces', Georgia, serif;
   --sera-font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --sera-topbar-h: 68px;
-  --sera-shadow-card: 0 1px 2px rgba(23, 39, 30, 0.08), 0 8px 24px -12px rgba(23, 39, 30, 0.15);
-  --sera-shadow-panel: 0 8px 40px -10px rgba(23, 39, 30, 0.2);
-  --sera-shadow-dialog: 0 24px 60px -18px rgba(23, 39, 30, 0.35);
-  --sera-ring: 0 0 0 3px rgba(31, 81, 54, 0.22);
+  --sera-topbar-h: var(--sz-topbar);
+  --sera-shadow-card: 0 1px 2px rgba(23, 39, 30, 0.07), 0 6px 16px -10px rgba(23, 39, 30, 0.14);
+  --sera-shadow-panel: 0 4px 24px -10px rgba(23, 39, 30, 0.16);
+  --sera-shadow-dialog: 0 18px 44px -16px rgba(23, 39, 30, 0.3);
+  --sera-ring: 0 0 0 3px rgba(31, 81, 54, 0.2);
+
+  /* ── Size scale (compact) ──────────────────────────────────────────────
+     Every page, dialog and button reads its sizes from here.
+     Tweak a value below to resize that kind of element everywhere. */
+  /* control heights */
+  --sz-topbar: 60px;      /* top bar */
+  --sz-logo: 30px;        /* logo mark */
+  --sz-search: 40px;      /* top-bar search */
+  --sz-btn: 42px;         /* primary actions: Finalizează, Salvează, Intră, Am făcut toate… */
+  --sz-input: 37px;       /* inputs, selects, quantity fields */
+  --sz-ctl: 38px;         /* nav pills, round + on cards */
+  --sz-ctl-md: 36px;      /* medium controls */
+  --sz-btn-sm: 34px;      /* secondary / pill buttons */
+  --sz-step: 32px;        /* steppers (− / +) */
+  --sz-x: 30px;           /* × remove / close */
+  --sz-badge: 22px;       /* count / label pills */
+  --sz-badge-sm: 20px;
+  --sz-count: 18px;       /* small nav counters */
+  --sz-fab: 38px;         /* round + on product cards */
+  --sz-thumb: 44px;       /* list / cart thumbnails */
+  --sz-thumb-lg: 56px;    /* Coș page thumbnails */
+  --sz-cartbar: 46px;     /* phone green "Vezi coșul" bar */
+  --sz-tab: 50px;         /* phone bottom tabs */
+  --sz-icon: 16px;        /* icons in nav / buttons */
+  --sz-card-min: 150px;   /* Vânzare card min width (→ 5 columns at 1280) */
+  --sz-cart-panel: 330px; /* Vânzare side cart width */
+  /* type */
+  --fs-hero: 26px;        /* login brand */
+  --fs-brand: 21px;       /* "Florărie" */
+  --fs-h1: 23px;          /* page headings */
+  --fs-h2: 20px;
+  --fs-h3: 18px;          /* dialog / panel titles */
+  --fs-h4: 16px;          /* group titles */
+  --fs-title: 15px;       /* card titles */
+  --fs-md: 14px;          /* prices, button labels */
+  --fs-body: 14px;        /* body text */
+  --fs-sm: 13px;          /* secondary text (minimum for reading) */
+  --fs-xs: 12px;          /* badges only */
+  /* spacing */
+  --sp-2: 6px;
+  --sp-3: 8px;
+  --sp-4: 10px;
+  --sp-5: 12px;
+  --sp-6: 14px;
+  --sp-7: 16px;
+  --sp-8: 20px;
+  /* radii */
+  --r-panel: 18px;
+  --r-card: 16px;
+  --r-tile: 12px;
+  --r-field: 10px;
+  --r-sm: 9px;
+  --r-xs: 8px;
 
   --font-display: var(--sera-font-display);
   --font-body: var(--sera-font-body);
@@ -52,6 +105,19 @@
   background: var(--sera-bg);
 }
 
+@media (max-width: 900px) {
+  :root {
+    --sz-topbar: 54px;
+    --sz-logo: 30px;
+    --sz-search: 38px;
+    --sz-fab: 36px;
+    --sz-x: 32px; /* keep phone tap targets ≥ 32px */
+    --fs-brand: 20px;
+    --fs-h1: 22px;
+    --sz-card-min: 0px;
+  }
+}
+
 /* Kept for markup compatibility (Vânzare + App dialogs); tokens are global now. */
 .sera-scope {
   font-family: var(--sera-font-body);
@@ -61,8 +127,8 @@
 /* ───────── Shared top bar ───────── */
 .topbar {
   min-height: var(--sera-topbar-h);
-  gap: 22px;
-  padding: 0 24px;
+  gap: var(--sp-7);
+  padding: 0 var(--sp-7);
   background: var(--sera-card);
   border-bottom: 1px solid var(--sera-line);
   box-shadow: none;
@@ -72,16 +138,16 @@
 .brand-block {
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: var(--sp-3);
 }
 
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: var(--sz-logo);
+  height: var(--sz-logo);
   flex: none;
-  border-radius: 11px;
+  border-radius: var(--r-sm);
   background: var(--sera-mint);
   color: var(--sera-primary);
 }
@@ -89,7 +155,7 @@
 .brand {
   font-family: var(--sera-font-display);
   font-variation-settings: 'SOFT' 100;
-  font-size: 24px;
+  font-size: var(--fs-brand);
   font-weight: 600;
   letter-spacing: 0;
   color: var(--sera-primary);
@@ -102,7 +168,7 @@
 .brand-block:focus-visible {
   outline: 3px solid var(--sera-primary);
   outline-offset: 4px;
-  border-radius: 12px;
+  border-radius: var(--r-sm);
 }
 
 .tagline {
@@ -116,7 +182,7 @@
 
 .topbar-search-icon {
   position: absolute;
-  left: 15px;
+  left: 13px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--sera-muted);
@@ -124,14 +190,14 @@
 }
 
 .topbar-search-input {
-  min-height: 46px;
-  padding: 0 14px 0 44px;
+  min-height: var(--sz-search);
+  padding: 0 var(--sp-5) 0 38px;
   border: 1.5px solid var(--sera-field);
-  border-radius: 14px;
+  border-radius: var(--r-field);
   background: var(--sera-bg);
   color: var(--sera-text);
   font-family: var(--sera-font-body);
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 500;
 }
 
@@ -146,7 +212,7 @@
 }
 
 .topbar-search-suggestions {
-  border-radius: 16px;
+  border-radius: var(--r-tile);
   font-family: var(--sera-font-body);
 }
 
@@ -156,25 +222,25 @@
 
 /* Segmented navigation */
 .nav-desktop {
-  gap: 6px;
+  gap: 4px;
   margin-left: auto;
-  padding: 4px;
+  padding: 3px;
   border: 1px solid var(--sera-line);
-  border-radius: 16px;
+  border-radius: var(--r-tile);
   background: var(--sera-bg);
 }
 
 .nav-desktop button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 44px;
-  padding: 0 14px;
+  gap: 7px;
+  height: var(--sz-ctl);
+  padding: 0 var(--sp-5);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--r-sm);
   color: var(--sera-muted);
   font-family: var(--sera-font-body);
-  font-size: 15px;
+  font-size: var(--fs-sm);
   font-weight: 700;
   letter-spacing: 0;
   text-transform: none;
@@ -201,25 +267,25 @@
 }
 
 .nav-desktop button svg {
-  width: 19px;
-  height: 19px;
+  width: var(--sz-icon);
+  height: var(--sz-icon);
 }
 
 .brand-mark svg {
-  width: 20px;
-  height: 20px;
+  width: 17px;
+  height: 17px;
 }
 
 .nav-count {
   display: inline-grid;
   place-items: center;
-  min-width: 22px;
-  height: 22px;
+  min-width: var(--sz-count);
+  height: var(--sz-count);
   padding: 0 7px;
   border-radius: 999px;
   background: var(--sera-blush);
   color: var(--sera-blush-ink);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -232,12 +298,12 @@
 
 @media (max-width: 1180px) {
   .topbar {
-    gap: 14px;
-    padding: 0 16px;
+    gap: var(--sp-5);
+    padding: 0 var(--sp-5);
   }
 
   .nav-desktop button {
-    padding: 0 12px;
+    padding: 0 var(--sp-4);
   }
 }
 
@@ -248,18 +314,18 @@
 
 .app-sale .main {
   max-width: 1720px;
-  padding: 18px 20px 28px 24px;
+  padding: var(--sp-6) var(--sp-6) var(--sp-8) var(--sp-7);
 }
 
 .sera-scope.sales-shop {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) var(--sz-cart-panel);
+  gap: var(--sp-6);
   align-items: start;
 }
 
 .sera-scope .sales-main {
-  gap: 16px;
+  gap: var(--sp-5);
   min-width: 0;
 }
 
@@ -267,18 +333,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px 20px;
+  gap: var(--sp-4) var(--sp-6);
   flex-wrap: wrap;
 }
 
 .sera-sale-title {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: var(--sp-4);
   margin: 0;
   font-family: var(--sera-font-display);
   font-variation-settings: 'SOFT' 100;
-  font-size: 28px;
+  font-size: var(--fs-h1);
   font-weight: 600;
   line-height: 1.1;
   color: var(--sera-primary);
@@ -286,18 +352,18 @@
 
 .sera-sale-count {
   font-family: var(--sera-font-body);
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--sera-muted);
   font-variant-numeric: tabular-nums;
 }
 
 .sera-scope .sales-sort-bar {
-  gap: 10px;
+  gap: var(--sp-3);
 }
 
 .sera-scope .sales-sort-label {
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
@@ -310,15 +376,15 @@
 }
 
 .sera-scope .sales-sort-select {
-  min-height: 40px;
-  padding: 0 36px 0 14px;
+  min-height: var(--sz-input);
+  padding: 0 32px 0 var(--sp-5);
   border: 1.5px solid var(--sera-line);
-  border-radius: 12px;
+  border-radius: var(--r-sm);
   background-color: #fff;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%231f5136' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-position: right 14px center;
+  background-position: right 12px center;
   background-size: 12px 8px;
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--sera-text);
 }
@@ -336,12 +402,12 @@
 
 .sera-scope .sales-sort-menu {
   border-color: var(--sera-line);
-  border-radius: 16px;
+  border-radius: var(--r-tile);
 }
 
 .sera-scope .sales-sort-option {
-  min-height: 44px;
-  font-size: 15px;
+  min-height: var(--sz-ctl-md);
+  font-size: var(--fs-body);
 }
 
 .sera-scope .sales-sort-option:hover,
@@ -371,37 +437,37 @@
 @media (max-width: 1100px) {
   .sera-scope.sales-shop {
     grid-template-columns: minmax(0, 1fr) 320px;
-    gap: 16px;
+    gap: var(--sp-5);
   }
 }
 
 /* ───────── Phone / tablet ───────── */
 @media (max-width: 900px) {
   .topbar {
-    min-height: 60px;
-    gap: 10px;
-    padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
+    min-height: var(--sz-topbar);
+    gap: var(--sp-3);
+    padding: 6px max(12px, env(safe-area-inset-right)) 6px max(12px, env(safe-area-inset-left));
     border-bottom: 1px solid var(--sera-line);
   }
 
   .brand-mark {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
+    width: var(--sz-logo);
+    height: var(--sz-logo);
+    border-radius: var(--r-xs);
   }
 
   .brand {
-    font-size: 22px;
+    font-size: var(--fs-brand);
   }
 
   .topbar-search-input {
-    min-height: 44px;
-    padding-left: 42px;
-    border-radius: 13px;
+    min-height: var(--sz-search);
+    padding-left: 38px;
+    border-radius: var(--r-field);
   }
 
   .topbar-search-icon {
-    left: 14px;
+    left: 13px;
   }
 
   /* The green "Vezi coșul" bar replaces the small header cart chip on Vânzare. */
@@ -410,13 +476,13 @@
   }
 
   .topbar-cart-mobile {
-    min-height: 40px;
-    padding: 0 12px;
+    min-height: var(--sz-btn-sm);
+    padding: 0 var(--sp-4);
     border-radius: 999px;
     background: var(--sera-mint);
     color: var(--sera-primary);
     font-family: var(--sera-font-body);
-    font-size: 13px;
+    font-size: var(--fs-sm);
     letter-spacing: 0;
     text-transform: none;
   }
@@ -436,12 +502,12 @@
     position: relative;
     flex-direction: column;
     gap: 3px;
-    min-height: 54px;
+    min-height: var(--sz-tab);
     padding: 5px 4px;
-    border-radius: 16px;
+    border-radius: var(--r-tile);
     color: var(--sera-muted);
     font-family: var(--sera-font-body);
-    font-size: 12px;
+    font-size: var(--fs-xs);
     font-weight: 700;
     letter-spacing: 0;
     text-transform: none;
@@ -496,11 +562,11 @@
   }
 
   .sera-sale-title {
-    font-size: 26px;
+    font-size: var(--fs-h1);
   }
 
   .sera-scope .sales-sort-label {
-    font-size: 14px;
+    font-size: var(--fs-sm);
   }
 
   .sera-scope .sales-sort-dropdown {
@@ -509,35 +575,35 @@
   }
 
   .sera-scope .sales-sort-select {
-    min-height: 40px;
-    padding: 0 34px 0 13px;
-    font-size: 15px;
-    border-radius: 12px;
-    background-position: right 14px center;
+    min-height: var(--sz-input);
+    padding: 0 34px 0 var(--sp-4);
+    font-size: var(--fs-body);
+    border-radius: var(--r-sm);
+    background-position: right 12px center;
     background-size: 12px 8px;
   }
 
   .sera-scope .sales-sort-option {
-    font-size: 15px;
+    font-size: var(--fs-body);
   }
 
   .sera-cart-bar {
     position: fixed;
     left: max(12px, env(safe-area-inset-left));
     right: max(12px, env(safe-area-inset-right));
-    bottom: calc(78px + env(safe-area-inset-bottom));
+    bottom: calc(var(--sz-tab) + 22px + env(safe-area-inset-bottom));
     z-index: 49;
     display: flex;
     align-items: center;
-    gap: 10px;
-    height: 52px;
-    padding: 0 6px 0 18px;
+    gap: var(--sp-3);
+    height: var(--sz-cartbar);
+    padding: 0 5px 0 var(--sp-7);
     border: none;
     border-radius: 999px;
     background: var(--sera-primary);
     color: #fff;
     font-family: var(--sera-font-body);
-    font-size: 15px;
+    font-size: var(--fs-body);
     font-weight: 800;
     box-shadow: 0 10px 24px rgba(31, 81, 54, 0.35);
     cursor: pointer;
@@ -545,13 +611,13 @@
   }
 
   .sera-cart-bar svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 
   .nav-mobile-icon {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
   }
 
   .sera-cart-bar:active {
@@ -570,7 +636,7 @@
   }
 
   .sera-cart-bar-total {
-    padding: 8px 14px;
+    padding: 6px var(--sp-5);
     border-radius: 999px;
     background: #fff;
     color: var(--sera-primary);
@@ -613,35 +679,35 @@
 
 /* ───────── Global: all other screens (Coș, De făcut, Admin, Facturare, Istoric) ───────── */
 .app-fill .main {
-  padding: 18px 20px 20px 24px;
+  padding: var(--sp-6) var(--sp-6) var(--sp-6) var(--sp-7);
 }
 
 .app-error {
-  padding: 12px 16px;
-  border-radius: 16px;
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: var(--r-tile);
   background: var(--sera-blush);
   color: var(--sera-blush-ink);
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 600;
 }
 
 .app-loading {
   color: var(--sera-muted);
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 600;
 }
 
 .section-head h1 {
   font-family: var(--sera-font-display);
   font-variation-settings: 'SOFT' 100;
-  font-size: 28px;
+  font-size: var(--fs-h1);
   font-weight: 600;
   color: var(--sera-primary);
 }
 
 .section-head p {
   color: var(--sera-muted);
-  font-size: 15px;
+  font-size: var(--fs-body);
 }
 
 /* Toast */
@@ -649,17 +715,17 @@
   top: calc(var(--sera-topbar-h) + 12px + env(safe-area-inset-top));
   width: auto;
   max-width: min(94vw, 34rem);
-  min-height: 44px;
+  min-height: var(--sz-ctl);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0 20px;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-6);
   border-radius: 999px;
   background: var(--sera-primary);
   color: #fff;
   font-family: var(--sera-font-body);
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 700;
   letter-spacing: 0;
   box-shadow: 0 12px 32px -10px rgba(23, 39, 30, 0.45);
@@ -680,7 +746,7 @@
 /* Search suggestions dropdown */
 .topbar-search-suggestions {
   border: 1px solid var(--sera-line);
-  border-radius: 16px;
+  border-radius: var(--r-tile);
   background: #fff;
   box-shadow: var(--sera-shadow-panel);
 }
@@ -723,15 +789,15 @@
     top: calc(68px + env(safe-area-inset-top));
     width: auto;
     max-width: calc(100vw - 24px);
-    min-height: 42px;
-    padding: 0 16px;
-    font-size: 14px;
+    min-height: var(--sz-ctl-md);
+    padding: 0 var(--sp-5);
+    font-size: var(--fs-sm);
   }
 
   /* Floating phone search */
   .mobile-search-fab-btn {
-    width: 48px;
-    height: 48px;
+    width: var(--sz-btn);
+    height: var(--sz-btn);
     border: 1px solid var(--sera-line);
     background: #fff;
     color: var(--sera-primary);
@@ -750,9 +816,9 @@
   }
 
   .mobile-search-fab-panel {
-    padding: 10px;
+    padding: var(--sp-3);
     border: none;
-    border-radius: 22px;
+    border-radius: var(--r-card);
     background: #fff;
     box-shadow: var(--sera-shadow-dialog);
     backdrop-filter: none;
@@ -760,14 +826,14 @@
   }
 
   .mobile-search-fab-row {
-    gap: 8px;
+    gap: var(--sp-2);
   }
 
   .mobile-search-fab-input {
-    min-height: 44px;
-    padding: 0 14px;
+    min-height: var(--sz-ctl);
+    padding: 0 var(--sp-5);
     border: 1.5px solid var(--sera-field);
-    border-radius: 14px;
+    border-radius: var(--r-field);
     background: var(--sera-bg);
     font-size: 16px;
   }
@@ -779,8 +845,8 @@
   }
 
   .mobile-search-fab-close {
-    width: 44px;
-    height: 44px;
+    width: var(--sz-ctl);
+    height: var(--sz-ctl);
     border: 1.5px solid var(--sera-line);
     border-radius: 999px;
     background: #fff;

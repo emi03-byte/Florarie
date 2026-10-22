@@ -107,7 +107,7 @@
 }
 
 .cartPage .line {
-  grid-template-columns: 48px 1fr;
+  grid-template-columns: var(--sz-btn) 1fr;
   gap: 0.5rem;
   align-items: center;
   padding: 0.35rem 0.15rem 0.4rem;
@@ -115,20 +115,20 @@
 
 .line {
   display: grid;
-  grid-template-columns: 44px 1fr;
+  grid-template-columns: var(--sz-ctl) 1fr;
   gap: 0.45rem;
   padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--line);
 }
 
 .cartPage .thumb {
-  width: 48px;
-  height: 48px;
+  width: var(--sz-btn);
+  height: var(--sz-btn);
 }
 
 .thumb {
-  width: 44px;
-  height: 44px;
+  width: var(--sz-ctl);
+  height: var(--sz-ctl);
   overflow: hidden;
   border-radius: 8px;
   border: 1px solid var(--glass-border);
@@ -306,14 +306,14 @@
   }
 
   .cartPage .line {
-    grid-template-columns: 44px 1fr;
+    grid-template-columns: var(--sz-ctl) 1fr;
     gap: 0.45rem;
     padding: 0.3rem 0.12rem;
   }
 
   .cartPage .thumb {
-    width: 44px;
-    height: 44px;
+    width: var(--sz-ctl);
+    height: var(--sz-ctl);
   }
 
   .list {
@@ -392,10 +392,10 @@
 .panel {
   height: 100%;
   min-height: 0;
-  gap: 12px;
-  padding: 22px 20px 20px;
+  gap: var(--sp-4);
+  padding: var(--sp-7) var(--sp-6) var(--sp-6);
   border: none;
-  border-radius: 26px;
+  border-radius: var(--r-panel);
   background: var(--sera-card, #fff);
   box-shadow: 0 8px 40px -10px rgba(23, 39, 30, 0.2);
   font-family: var(--sera-font-body, inherit);
@@ -408,39 +408,39 @@
 }
 
 .panel .title {
-  gap: 10px;
+  gap: var(--sp-3);
   font-family: var(--sera-font-display, serif);
   font-variation-settings: 'SOFT' 100;
-  font-size: 26px;
+  font-size: var(--fs-h1);
   font-weight: 600;
   color: var(--sera-text, #17271e);
 }
 
 .panel .count {
-  min-width: 28px;
-  height: 28px;
-  padding: 0 10px;
+  min-width: var(--sz-badge);
+  height: var(--sz-badge);
+  padding: 0 var(--sp-3);
   background: var(--sera-mint, #e7f0e4);
   color: var(--sera-primary, #1f5136);
   font-family: var(--sera-font-body, inherit);
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
 .panel .empty {
   flex: 0 0 auto;
-  padding: 18px 16px;
+  padding: var(--sp-6) var(--sp-5);
   border: 1.5px dashed var(--sera-line, #d9e3d5);
-  border-radius: 18px;
+  border-radius: var(--r-tile);
   background: var(--sera-bg, #f5f8f3);
   color: var(--sera-muted, #4f6155);
-  font-size: 15px;
+  font-size: var(--fs-body);
   line-height: 1.45;
 }
 
 .panel .list {
-  gap: 10px;
+  gap: var(--sp-3);
   padding: 0;
   border: none;
   border-radius: 0;
@@ -448,25 +448,25 @@
 }
 
 .panel .line {
-  grid-template-columns: 56px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: var(--sz-thumb) minmax(0, 1fr);
+  gap: var(--sp-4);
   align-items: start;
-  padding: 10px;
+  padding: var(--sp-3);
   border: none;
-  border-radius: 18px;
+  border-radius: var(--r-tile);
   background: var(--sera-bg, #f5f8f3);
 }
 
 .panel .thumb {
-  width: 56px;
-  height: 56px;
+  width: var(--sz-thumb);
+  height: var(--sz-thumb);
   border: none;
-  border-radius: 14px;
+  border-radius: var(--r-field);
 }
 
 .panel .name {
   font-family: var(--sera-font-body, inherit);
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 700;
   color: var(--sera-text, #17271e);
 }
@@ -479,12 +479,12 @@
   display: grid;
   place-items: center;
   flex: none;
-  width: 34px;
-  height: 34px;
+  width: var(--sz-x);
+  height: var(--sz-x);
   margin: -6px -4px 0 0;
   border-radius: 999px;
   color: var(--sera-muted, #4f6155);
-  font-size: 22px;
+  font-size: var(--fs-h3);
 }
 
 .panel .remove:hover {
@@ -495,14 +495,14 @@
 .panel .lineBottom {
   margin-top: 6px;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 6px 8px;
+  gap: 6px var(--sp-2);
 }
 
 .panel .qty {
   grid-column: 1;
   grid-row: 1;
   gap: 0;
-  height: 36px;
+  height: var(--sz-step);
   padding: 0;
   border: 1px solid var(--sera-line, #d9e3d5);
   background: #fff;
@@ -511,10 +511,10 @@
 .panel .qty button {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 34px;
+  width: var(--sz-step);
+  height: var(--sz-x);
   color: var(--sera-primary, #1f5136);
-  font-size: 18px;
+  font-size: var(--fs-h4);
   font-weight: 700;
 }
 
@@ -524,7 +524,7 @@
 
 .panel .qty span {
   min-width: 20px;
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
@@ -533,7 +533,7 @@
   grid-column: 2;
   grid-row: 1;
   justify-self: end;
-  font-size: 16px;
+  font-size: var(--fs-md);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--sera-text, #17271e);
@@ -542,7 +542,7 @@
 .panel .needs {
   grid-column: 1 / -1;
   grid-row: 2;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--sera-muted, #4f6155);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -551,33 +551,33 @@
 }
 
 .panel .footer {
-  gap: 12px;
-  padding-top: 14px;
+  gap: var(--sp-4);
+  padding-top: var(--sp-5);
   border-top: 1px solid var(--sera-line, #d9e3d5);
 }
 
 .panel .totalRow {
   align-items: baseline;
   color: var(--sera-muted, #4f6155);
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 600;
 }
 
 .panel .totalRow strong {
   font-family: var(--sera-font-body, inherit);
-  font-size: 22px;
+  font-size: var(--fs-h3);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--sera-text, #17271e);
 }
 
 .panel .checkout {
-  min-height: 48px;
+  min-height: var(--sz-btn);
   border-radius: 999px;
   background: var(--sera-primary, #1f5136);
   color: #fff;
   font-family: var(--sera-font-body, inherit);
-  font-size: 16px;
+  font-size: var(--fs-md);
   font-weight: 800;
   letter-spacing: 0;
   text-transform: none;
@@ -606,24 +606,24 @@
 .pageLayout {
   width: min(100%, 820px);
   margin: 0 auto;
-  padding: 26px 26px 22px;
-  gap: 16px;
+  padding: var(--sp-8) var(--sp-8) var(--sp-7);
+  gap: var(--sp-5);
 }
 
 .pageLayout .title {
-  font-size: 28px;
+  font-size: var(--fs-h1);
   color: var(--sera-primary);
 }
 
 .pageLayout .continue {
-  min-height: 40px;
-  padding: 0 16px;
+  min-height: var(--sz-btn-sm);
+  padding: 0 var(--sp-5);
   border: 1.5px solid var(--sera-line);
   border-radius: 999px;
   background: #fff;
   color: var(--sera-primary);
   font-family: var(--sera-font-body);
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 700;
   letter-spacing: 0;
   text-transform: none;
@@ -642,29 +642,29 @@
 }
 
 .pageLayout .list {
-  gap: 12px;
+  gap: var(--sp-4);
 }
 
 .pageLayout .line {
-  grid-template-columns: 72px minmax(0, 1fr);
-  gap: 14px;
-  padding: 12px;
+  grid-template-columns: var(--sz-thumb-lg) minmax(0, 1fr);
+  gap: var(--sp-5);
+  padding: var(--sp-4);
 }
 
 .pageLayout .thumb {
-  width: 72px;
-  height: 72px;
-  border-radius: 16px;
+  width: var(--sz-thumb-lg);
+  height: var(--sz-thumb-lg);
+  border-radius: var(--r-tile);
 }
 
 .pageLayout .name {
-  font-size: 16px;
+  font-size: var(--fs-md);
 }
 
 .pageLayout .lineBottom {
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px 14px;
+  gap: var(--sp-2) var(--sp-5);
 }
 
 .pageLayout .needs {
@@ -674,55 +674,55 @@
 
 .pageLayout .linePrice {
   grid-column: 3;
-  font-size: 17px;
+  font-size: var(--fs-title);
 }
 
 .pageLayout .footer {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding-top: 16px;
+  gap: var(--sp-5);
+  padding-top: var(--sp-5);
 }
 
 .pageLayout .totalRow {
-  gap: 14px;
+  gap: var(--sp-5);
 }
 
 .pageLayout .totalRow strong {
-  font-size: 24px;
+  font-size: var(--fs-h2);
 }
 
 .pageLayout .checkout {
   min-width: 260px;
-  padding: 0 28px;
+  padding: 0 var(--sp-8);
 }
 
 .pageLayout .empty {
-  padding: 28px 20px;
+  padding: var(--sp-8) var(--sp-6);
   text-align: center;
 }
 
 @media (max-width: 900px) {
   .pageLayout {
     width: 100%;
-    padding: 18px 16px 16px;
-    border-radius: 22px;
+    padding: var(--sp-6) var(--sp-5) var(--sp-5);
+    border-radius: var(--r-card);
   }
 
   .pageLayout .title {
-    font-size: 24px;
+    font-size: var(--fs-h2);
   }
 
   .pageLayout .line {
-    grid-template-columns: 56px minmax(0, 1fr);
-    padding: 10px;
+    grid-template-columns: var(--sz-thumb) minmax(0, 1fr);
+    padding: var(--sp-3);
   }
 
   .pageLayout .thumb {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
+    width: var(--sz-thumb);
+    height: var(--sz-thumb);
+    border-radius: var(--r-field);
   }
 
   .pageLayout .qty {

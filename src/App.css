@@ -174,7 +174,7 @@
   margin: 0;
   padding: 0.35rem;
   list-style: none;
-  border-radius: 14px;
+  border-radius: var(--r-field);
   background: #fff;
   border: 1px solid rgba(23, 39, 30, 0.1);
   box-shadow: 0 12px 32px rgba(23, 39, 30, 0.14);
@@ -198,7 +198,7 @@
   margin: 0;
   padding: 0.65rem 0.75rem;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--r-xs);
   background: transparent;
   color: inherit;
   font: inherit;
@@ -335,7 +335,7 @@
   gap: 0.75rem;
   margin-top: 1rem;
   padding: 0.7rem 0.9rem;
-  border-radius: 14px;
+  border-radius: var(--r-field);
   background: rgba(255, 255, 255, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.95);
   box-shadow: 0 12px 32px rgba(23, 39, 30, 0.12);
@@ -352,7 +352,7 @@
 .sales-checkout-btn {
   flex-shrink: 0;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--r-xs);
   padding: 0.55rem 0.9rem;
   font-size: 0.72rem;
   font-weight: 700;
@@ -451,7 +451,7 @@
   margin: 0;
   padding: 0.35rem;
   list-style: none;
-  border-radius: 14px;
+  border-radius: var(--r-field);
   background: #fff;
   border: 1px solid rgba(23, 39, 30, 0.1);
   box-shadow: 0 12px 32px rgba(23, 39, 30, 0.14);
@@ -475,7 +475,7 @@
   margin: 0;
   padding: 0.65rem 0.75rem;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--r-xs);
   background: transparent;
   color: var(--ink);
   font: inherit;
@@ -501,7 +501,7 @@
 .app-error {
   margin: 0 0 1rem;
   padding: 0.75rem 1rem;
-  border-radius: 12px;
+  border-radius: var(--r-sm);
   background: rgba(179, 38, 30, 0.1);
   color: #b3261e;
   font-weight: 600;
@@ -563,7 +563,7 @@
   input,
   textarea,
   select {
-    font-size: 16px !important;
+    font-size: var(--fs-md) !important;
   }
 
   .topbar {
@@ -715,7 +715,7 @@
     max-width: none;
     margin: 0;
     padding: 0.45rem;
-    border-radius: 14px;
+    border-radius: var(--r-field);
     background: rgba(255, 255, 255, 0.97);
     border: 1px solid rgba(23, 39, 30, 0.1);
     box-shadow: 0 12px 32px rgba(23, 39, 30, 0.16);
@@ -749,7 +749,7 @@
     margin: 0;
     padding: 0.45rem 0.75rem;
     border: 1px solid rgba(23, 39, 30, 0.1);
-    border-radius: 10px;
+    border-radius: var(--r-xs);
     background: rgba(255, 255, 255, 0.92);
     color: var(--ink);
     font: inherit;
@@ -774,7 +774,7 @@
     margin: 0;
     padding: 0;
     border: 1px solid rgba(23, 39, 30, 0.1);
-    border-radius: 10px;
+    border-radius: var(--r-xs);
     background: rgba(23, 39, 30, 0.05);
     color: var(--ink);
     cursor: pointer;
@@ -822,7 +822,7 @@
 
   .sales-sort-menu {
     padding: 0.25rem;
-    border-radius: 10px;
+    border-radius: var(--r-xs);
   }
 
   .nav-mobile {
@@ -907,7 +907,7 @@
     flex-direction: column;
     gap: 0.35rem;
     padding: 0.65rem;
-    border-radius: 18px;
+    border-radius: var(--r-tile);
     background: #fff;
     border: 1px solid rgba(23, 39, 30, 0.1);
     box-shadow: 0 16px 40px rgba(23, 39, 30, 0.18);
@@ -926,9 +926,9 @@
   }
 
   .nav-more-sheet button {
-    min-height: 48px;
+    min-height: var(--sz-btn);
     border: 1px solid rgba(23, 39, 30, 0.08);
-    border-radius: 12px;
+    border-radius: var(--r-sm);
     background: rgba(245, 248, 243, 0.9);
     color: var(--ink);
     font-size: 0.95rem;
@@ -968,7 +968,7 @@
   }
 
   .sales-checkout-btn {
-    min-height: 44px;
+    min-height: var(--sz-ctl);
     flex: 1 1 auto;
   }
 
