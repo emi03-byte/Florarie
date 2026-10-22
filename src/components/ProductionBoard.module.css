@@ -308,44 +308,13 @@
 
 .actions {
   display: grid;
-  grid-template-columns: 6.5rem 7rem 5.75rem 8.25rem;
+  grid-template-columns: 6.5rem 5.75rem 8.25rem;
   gap: 0.4rem;
   align-items: center;
   justify-content: end;
 }
 
-.qtyGroup {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  gap: 0;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.7);
-}
-
-.qtyGroup input {
-  width: 2.75rem;
-  border: none;
-  border-left: 1px solid var(--line);
-  border-right: 1px solid var(--line);
-  padding: 0.35rem 0.2rem;
-  text-align: center;
-  font: inherit;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  background: transparent;
-}
-
-.qtyGroup input:focus {
-  outline: none;
-  background: rgba(255, 255, 255, 0.9);
-}
-
 .btnAdd,
-.btnIcon,
 .btnConfirm,
 .btnAll {
   border: 1px solid var(--glass-border);
@@ -359,11 +328,6 @@
   line-height: 1.15;
   height: 1.85rem;
   box-sizing: border-box;
-}
-
-.btnAdd,
-.btnConfirm,
-.btnAll {
   width: 100%;
   text-align: center;
   white-space: nowrap;
@@ -375,28 +339,13 @@
   color: var(--leaf-deep);
 }
 
-.btnIcon {
-  border: none;
-  border-radius: 0;
-  min-width: 1.85rem;
-  padding: 0.35rem 0.4rem;
-  background: transparent;
-  font-size: 1rem;
-}
-
 .btnAdd:hover:not(:disabled),
-.btnIcon:hover:not(:disabled),
 .btnConfirm:hover:not(:disabled),
 .btnAll:hover:not(:disabled) {
   border-color: var(--leaf);
 }
 
-.btnIcon:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.85);
-}
-
 .btnAdd:disabled,
-.btnIcon:disabled,
 .btnConfirm:disabled,
 .btnAll:disabled {
   opacity: 0.55;
@@ -624,11 +573,6 @@
     flex-wrap: nowrap;
     align-items: stretch;
     gap: 0.2rem;
-  }
-
-  /* Phone: no +/- stepper — "Am făcut" marks 1; keep one compact row */
-  .qtyGroup {
-    display: none;
   }
 
   .btnAdd,

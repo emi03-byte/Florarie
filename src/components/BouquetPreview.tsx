@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { Bouquet } from '../types';
 import { formatEuro } from '../lib/money';
 import { formatIngredient } from '../lib/ingredients';
@@ -12,6 +12,8 @@ type Props = {
 };
 
 export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
+  const [ready, setReady] = useState(false);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
@@ -20,17 +22,35 @@ export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
+  useEffect(() => {
+    setReady(false);
+    const src = bouquet.image || '/bouquets/placeholder.svg';
+    const img = new Image();
+    let cancelled = false;
+    const markReady = () => {
+      if (!cancelled) setReady(true);
+    };
+    img.onload = markReady;
+    img.onerror = markReady;
+    img.src = src;
+    if (img.complete) markReady();
+    return () => {
+      cancelled = true;
+    };
+  }, [bouquet.id, bouquet.image]);
+
   return (
     <div
-      className={styles.backdrop}
+      className={`${styles.backdrop}${ready ? ` ${styles.backdropReady}` : ''}`}
       role="presentation"
       onClick={onClose}
     >
       <div
-        className={styles.dialog}
+        className={`${styles.dialog}${ready ? ` ${styles.dialogReady}` : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="bouquet-preview-title"
+        aria-busy={!ready}
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -43,7 +63,12 @@ export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
         </button>
 
         <div className={styles.photo}>
-          <BouquetImage src={bouquet.image} alt={bouquet.name} />
+          <BouquetImage
+            src={bouquet.image}
+            alt={bouquet.name}
+            eager
+            onLoad={() => setReady(true)}
+          />
         </div>
 
         <div className={styles.body}>

@@ -10,6 +10,8 @@ type Props = {
   /** Override confirm button text. Receives the chosen quantity. */
   confirmLabel?: (quantity: number) => string;
   showPrice?: boolean;
+  /** Upper bound for quantity (default 99). */
+  max?: number;
 };
 
 export function QuantityDialog({
@@ -18,8 +20,10 @@ export function QuantityDialog({
   onCancel,
   confirmLabel,
   showPrice = true,
+  max = 99,
 }: Props) {
   const [qty, setQty] = useState(1);
+  const maxQty = Math.max(1, Math.floor(max));
 
   // Quantity to add — always starts at 1 (not the amount already in cart).
   useEffect(() => {
@@ -35,7 +39,7 @@ export function QuantityDialog({
   }, [onCancel]);
 
   function changeQty(value: number) {
-    setQty(Math.max(1, Math.min(99, value)));
+    setQty(Math.max(1, Math.min(maxQty, value)));
   }
 
   return (
@@ -67,7 +71,7 @@ export function QuantityDialog({
           <input
             type="number"
             min={1}
-            max={99}
+            max={maxQty}
             value={qty}
             autoFocus
             onChange={(e) => {
@@ -80,6 +84,7 @@ export function QuantityDialog({
             type="button"
             onClick={() => changeQty(qty + 1)}
             aria-label="Crește cantitatea"
+            disabled={qty >= maxQty}
           >
             +
           </button>
