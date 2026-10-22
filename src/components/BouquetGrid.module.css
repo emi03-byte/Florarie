@@ -1,8 +1,8 @@
 /* Seră — sale page product grid (only used on Vânzare). */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--sz-card-min, 150px), 1fr));
-  gap: var(--sp-5);
+  grid-template-columns: repeat(auto-fill, minmax(var(--sz-card-min, 190px), 1fr));
+  gap: 16px;
   align-content: start;
 }
 
@@ -11,7 +11,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  border-radius: var(--r-card);
+  border-radius: 22px;
   overflow: hidden;
   background: var(--sera-card, #fff);
   box-shadow: var(--sera-shadow-card);
@@ -88,8 +88,8 @@
 }
 
 .fab svg {
-  width: 22px;
-  height: var(--sz-count);
+  width: 20px;
+  height: 20px;
 }
 
 .fab:hover {
@@ -149,14 +149,14 @@
 .body {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+  gap: 6px;
+  padding: 11px 13px 13px;
 }
 
 .name {
   font-family: var(--sera-font-display, serif);
   font-variation-settings: 'SOFT' 100;
-  font-size: var(--fs-title);
+  font-size: 17px;
   font-weight: 600;
   line-height: 1.15;
   color: var(--sera-text, #17271e);
@@ -168,7 +168,7 @@
 
 .price {
   font-family: var(--sera-font-body, inherit);
-  font-size: var(--fs-md);
+  font-size: 16px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--sera-text, #17271e);
@@ -240,11 +240,11 @@
 @media (max-width: 900px) {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--sp-4);
+    gap: 12px;
   }
 
   .card {
-    border-radius: var(--r-card);
+    border-radius: 20px;
   }
 
   .card:hover {
@@ -264,16 +264,16 @@
   }
 
   .body {
-    gap: 2px;
-    padding: var(--sp-3) var(--sp-4) var(--sp-4);
+    gap: 4px;
+    padding: 10px 12px 12px;
   }
 
   .name {
-    font-size: var(--fs-md);
+    font-size: 16px;
   }
 
   .price {
-    font-size: var(--fs-md);
+    font-size: 16px;
   }
 }
 

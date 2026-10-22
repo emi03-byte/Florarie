@@ -51,7 +51,7 @@
   --sz-cartbar: 46px;     /* phone green "Vezi coșul" bar */
   --sz-tab: 50px;         /* phone bottom tabs */
   --sz-icon: 16px;        /* icons in nav / buttons */
-  --sz-card-min: 150px;   /* Vânzare card min width (→ 5 columns at 1280) */
+  --sz-card-min: 190px;   /* Vânzare card min width (→ 4 columns at 1280, as 1c913a3) */
   --sz-cart-panel: 330px; /* Vânzare side cart width */
   /* type */
   --fs-hero: 26px;        /* login brand */
