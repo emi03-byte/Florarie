@@ -11,6 +11,8 @@ type Props = {
   onRemove: (bouquetId: string) => void;
   onCheckout: () => void;
   onContinueShopping?: () => void;
+  /** 'panel' = always-visible side panel on the sale page (visual only). */
+  variant?: 'page' | 'panel';
 };
 
 export function Cart({
@@ -20,6 +22,7 @@ export function Cart({
   onRemove,
   onCheckout,
   onContinueShopping,
+  variant = 'page',
 }: Props) {
   const lines = items
     .map((item) => {
@@ -33,7 +36,9 @@ export function Cart({
   const count = lines.reduce((sum, line) => sum + line.item.quantity, 0);
 
   return (
-    <aside className={`${styles.cart} ${styles.cartPage}`}>
+    <aside
+      className={`${styles.cart} ${variant === 'panel' ? styles.panel : styles.cartPage}`}
+    >
       <div className={styles.header}>
         <h2 className={styles.title}>
           Coș {count > 0 ? <span className={styles.count}>{count}</span> : null}

@@ -10,6 +10,7 @@ import { OrderHistory } from './components/OrderHistory';
 import { ProductionBoard } from './components/ProductionBoard';
 import { QuantityDialog } from './components/QuantityDialog';
 import { SalesSortSelect } from './components/SalesSortSelect';
+import { SeraIcon } from './components/SeraIcon';
 import {
   createOrder,
   deleteBouquet,
@@ -34,6 +35,7 @@ import {
 } from './lib/salesSort';
 import type { Bouquet, CartItem, Order } from './types';
 import './App.css';
+import './styles/sera.css';
 
 type View =
   | 'vanzare'
@@ -299,6 +301,30 @@ function App() {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  // Display-only derivations for the Seră sale page (no state changes).
+  const cartQuantities: Record<string, number> = {};
+  for (const item of cart) cartQuantities[item.bouquetId] = item.quantity;
+  const cartTotal = cart.reduce((sum, item) => {
+    const bouquet = catalog.find((b) => b.id === item.bouquetId);
+    return bouquet ? sum + bouquet.price * item.quantity : sum;
+  }, 0);
+
+  function changeCartQty(id: string, quantity: number) {
+    if (quantity <= 0) {
+      setCart((prev) => prev.filter((i) => i.bouquetId !== id));
+      return;
+    }
+    setCart((prev) =>
+      prev.map((item) =>
+        item.bouquetId === id ? { ...item, quantity: Math.min(99, quantity) } : item,
+      ),
+    );
+  }
+
+  function removeFromCart(id: string) {
+    setCart((prev) => prev.filter((i) => i.bouquetId !== id));
+  }
+
   async function checkout() {
     if (cart.length === 0) return;
     setError('');
@@ -344,12 +370,12 @@ function App() {
 
   return (
     <div
-      className={`app${view === 'productie' || view === 'admin' || view === 'cos' || view === 'facturare' || view === 'istoric' ? ' app-fill' : ''}`}
+      className={`app${view === 'productie' || view === 'admin' || view === 'cos' || view === 'facturare' || view === 'istoric' ? ' app-fill' : ''}${view === 'vanzare' ? ' app-sale' : ''}${view === 'vanzare' && cartCount > 0 ? ' app-sale-has-cart' : ''}`}
     >
       <div className="bg-wash" aria-hidden="true" />
 
       <header
-        className={`topbar no-print${hideBrandSearchOnMobile ? ' topbar-mobile-hide-brand' : ''}`}
+        className={`topbar no-print${hideBrandSearchOnMobile ? ' topbar-mobile-hide-brand' : ''}${view === 'vanzare' ? ' topbar-on-sale' : ''}`}
       >
         <button
           type="button"
@@ -357,13 +383,17 @@ function App() {
           onClick={() => goTo('vanzare')}
           aria-label="Mergi la produse"
         >
-          <span className="brand">Florarie</span>
+          <span className="brand-mark" aria-hidden="true">
+            <SeraIcon name="flower" size={22} />
+          </span>
+          <span className="brand">Florărie</span>
           <span className="tagline">Punct de vânzare</span>
         </button>
         <div className="topbar-search" ref={searchRef}>
           <label className="topbar-search-label" htmlFor="product-search">
             Caută produs
           </label>
+          <SeraIcon name="search" size={20} className="topbar-search-icon" />
           <input
             id="product-search"
             className="topbar-search-input"
@@ -413,28 +443,34 @@ function App() {
             className={view === 'vanzare' || view === 'factura' ? 'active' : ''}
             onClick={() => goTo('vanzare')}
           >
-            Vânzare
+            <SeraIcon name="flower" size={20} />
+            <span>Vânzare</span>
           </button>
           <button
             type="button"
             className={view === 'cos' ? 'active' : ''}
             onClick={() => goTo('cos')}
           >
-            Coș{cartCount > 0 ? ` (${cartCount})` : ''}
+            <SeraIcon name="bag" size={20} />
+            <span>Coș</span>
+            {cartCount > 0 ? <b className="nav-count">{cartCount}</b> : null}
           </button>
           <button
             type="button"
             className={view === 'productie' ? 'active' : ''}
             onClick={() => goTo('productie')}
           >
-            De făcut{openCount > 0 ? ` (${openCount})` : ''}
+            <SeraIcon name="list" size={20} />
+            <span>De făcut</span>
+            {openCount > 0 ? <b className="nav-count">{openCount}</b> : null}
           </button>
           <button
             type="button"
             className={view === 'admin' ? 'active' : ''}
             onClick={() => goTo('admin')}
           >
-            Admin
+            <SeraIcon name="admin" size={20} />
+            <span>Admin</span>
           </button>
         </nav>
         {cartCount > 0 ? (
@@ -542,6 +578,7 @@ function App() {
           className={view === 'vanzare' || view === 'factura' ? 'active' : ''}
           onClick={() => goTo('vanzare')}
         >
+          <SeraIcon name="flower" size={24} className="nav-mobile-icon" />
           <span className="nav-mobile-label">Vânzare</span>
         </button>
         <button
@@ -549,24 +586,25 @@ function App() {
           className={view === 'cos' ? 'active' : ''}
           onClick={() => goTo('cos')}
         >
-          <span className="nav-mobile-label">
-            Coș{cartCount > 0 ? ` ${cartCount}` : ''}
-          </span>
+          <SeraIcon name="bag" size={24} className="nav-mobile-icon" />
+          <span className="nav-mobile-label">Coș</span>
+          {cartCount > 0 ? <b className="nav-count">{cartCount}</b> : null}
         </button>
         <button
           type="button"
           className={view === 'productie' ? 'active' : ''}
           onClick={() => goTo('productie')}
         >
-          <span className="nav-mobile-label">
-            De făcut{openCount > 0 ? ` ${openCount}` : ''}
-          </span>
+          <SeraIcon name="list" size={24} className="nav-mobile-icon" />
+          <span className="nav-mobile-label">De făcut</span>
+          {openCount > 0 ? <b className="nav-count">{openCount}</b> : null}
         </button>
         <button
           type="button"
           className={view === 'admin' ? 'active' : ''}
           onClick={() => goTo('admin')}
         >
+          <SeraIcon name="admin" size={24} className="nav-mobile-icon" />
           <span className="nav-mobile-label">Admin</span>
         </button>
       </nav>
@@ -587,13 +625,21 @@ function App() {
         {loading ? <p className="app-loading no-print">Se încarcă…</p> : null}
 
         {view === 'vanzare' && (
-          <section className="sales-shop">
+          <section className="sales-shop sera-scope">
             <div className="sales-main">
-              <div className="sales-sort-bar no-print">
-                <label className="sales-sort-label" htmlFor="sales-sort">
-                  Sortare
-                </label>
-                <SalesSortSelect value={salesSort} onChange={setSalesSort} />
+              <div className="sera-sale-head no-print">
+                <h1 className="sera-sale-title">
+                  Vânzare
+                  {catalog.length > 0 ? (
+                    <span className="sera-sale-count">{catalog.length} produse</span>
+                  ) : null}
+                </h1>
+                <div className="sales-sort-bar">
+                  <label className="sales-sort-label" htmlFor="sales-sort">
+                    Sortare
+                  </label>
+                  <SalesSortSelect value={salesSort} onChange={setSalesSort} />
+                </div>
               </div>
               <BouquetGrid
                 bouquets={sortedCatalog}
@@ -601,8 +647,30 @@ function App() {
                 onSelect={openPreview}
                 onViewDetails={openPreview}
                 onAdd={askAddToCart}
+                cartQuantities={cartQuantities}
               />
             </div>
+            <div className="sera-cart-panel no-print">
+              <Cart
+                variant="panel"
+                items={cart}
+                catalog={catalog}
+                onChangeQty={changeCartQty}
+                onRemove={removeFromCart}
+                onCheckout={() => void checkout()}
+              />
+            </div>
+            {cartCount > 0 ? (
+              <button
+                type="button"
+                className="sera-cart-bar no-print"
+                onClick={() => goTo('cos')}
+              >
+                <SeraIcon name="bag" size={22} strokeWidth={2} />
+                <span className="sera-cart-bar-label">Vezi coșul · {cartCount}</span>
+                <span className="sera-cart-bar-total">{formatEuro(cartTotal)}</span>
+              </button>
+            ) : null}
             {previewBouquet ? (
               <BouquetPreview
                 bouquet={previewBouquet}
@@ -614,16 +682,18 @@ function App() {
         )}
 
         {qtyAsk ? (
-          <QuantityDialog
-            key={qtyAskKey}
-            bouquet={qtyAsk}
-            onCancel={() => setQtyAsk(null)}
-            onConfirm={(quantity) => {
-              addToCart(qtyAsk, quantity);
-              setQtyAsk(null);
-              setPreviewId(null);
-            }}
-          />
+          <div className="sera-scope">
+            <QuantityDialog
+              key={qtyAskKey}
+              bouquet={qtyAsk}
+              onCancel={() => setQtyAsk(null)}
+              onConfirm={(quantity) => {
+                addToCart(qtyAsk, quantity);
+                setQtyAsk(null);
+                setPreviewId(null);
+              }}
+            />
+          </div>
         ) : null}
 
         {view === 'cos' && (
@@ -631,20 +701,8 @@ function App() {
             <Cart
               items={cart}
               catalog={catalog}
-              onChangeQty={(id, quantity) => {
-                if (quantity <= 0) {
-                  setCart((prev) => prev.filter((i) => i.bouquetId !== id));
-                  return;
-                }
-                setCart((prev) =>
-                  prev.map((item) =>
-                    item.bouquetId === id
-                      ? { ...item, quantity: Math.min(99, quantity) }
-                      : item,
-                  ),
-                );
-              }}
-              onRemove={(id) => setCart((prev) => prev.filter((i) => i.bouquetId !== id))}
+              onChangeQty={changeCartQty}
+              onRemove={removeFromCart}
               onCheckout={() => void checkout()}
               onContinueShopping={() => goTo('vanzare')}
             />

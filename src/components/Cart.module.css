@@ -387,3 +387,217 @@
     min-height: 0;
   }
 }
+
+/* ── Seră: always-visible cart panel on the sale page (variant="panel") ── */
+.panel {
+  height: 100%;
+  min-height: 0;
+  gap: 12px;
+  padding: 22px 20px 20px;
+  border: none;
+  border-radius: 26px;
+  background: var(--sera-card, #fff);
+  box-shadow: 0 8px 40px -10px rgba(23, 39, 30, 0.2);
+  font-family: var(--sera-font-body, inherit);
+  color: var(--sera-text, #17271e);
+}
+
+.panel .header {
+  padding: 0;
+  border-bottom: none;
+}
+
+.panel .title {
+  gap: 10px;
+  font-family: var(--sera-font-display, serif);
+  font-variation-settings: 'SOFT' 100;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--sera-text, #17271e);
+}
+
+.panel .count {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 10px;
+  background: var(--sera-mint, #e7f0e4);
+  color: var(--sera-primary, #1f5136);
+  font-family: var(--sera-font-body, inherit);
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.panel .empty {
+  flex: 0 0 auto;
+  padding: 18px 16px;
+  border: 1.5px dashed var(--sera-line, #d9e3d5);
+  border-radius: 18px;
+  background: var(--sera-bg, #f5f8f3);
+  color: var(--sera-muted, #4f6155);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.panel .list {
+  gap: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.panel .line {
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 10px;
+  border: none;
+  border-radius: 18px;
+  background: var(--sera-bg, #f5f8f3);
+}
+
+.panel .thumb {
+  width: 64px;
+  height: 64px;
+  border: none;
+  border-radius: 14px;
+}
+
+.panel .name {
+  font-family: var(--sera-font-body, inherit);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--sera-text, #17271e);
+}
+
+.panel .qtyInline {
+  display: none;
+}
+
+.panel .remove {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  margin: -6px -4px 0 0;
+  border-radius: 999px;
+  color: var(--sera-muted, #4f6155);
+  font-size: 22px;
+}
+
+.panel .remove:hover {
+  background: var(--sera-blush, #fbe3df);
+  color: var(--sera-blush-ink, #8a3434);
+}
+
+.panel .lineBottom {
+  margin-top: 6px;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 8px;
+}
+
+.panel .qty {
+  grid-column: 1;
+  grid-row: 1;
+  gap: 0;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--sera-line, #d9e3d5);
+  background: #fff;
+}
+
+.panel .qty button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: var(--sera-primary, #1f5136);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.panel .qty button:hover {
+  background: var(--sera-mint, #e7f0e4);
+}
+
+.panel .qty span {
+  min-width: 20px;
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.panel .linePrice {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  font-size: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--sera-text, #17271e);
+}
+
+.panel .needs {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  font-size: 13px;
+  color: var(--sera-muted, #4f6155);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.panel .footer {
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--sera-line, #d9e3d5);
+}
+
+.panel .totalRow {
+  align-items: baseline;
+  color: var(--sera-muted, #4f6155);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.panel .totalRow strong {
+  font-family: var(--sera-font-body, inherit);
+  font-size: 24px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--sera-text, #17271e);
+}
+
+.panel .checkout {
+  min-height: 60px;
+  border-radius: 999px;
+  background: var(--sera-primary, #1f5136);
+  color: #fff;
+  font-family: var(--sera-font-body, inherit);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.panel .checkout:hover:not(:disabled) {
+  filter: none;
+  transform: none;
+  background: var(--sera-pressed, #173e29);
+}
+
+.panel .checkout:focus-visible,
+.panel .qty button:focus-visible,
+.panel .remove:focus-visible {
+  outline: 3px solid var(--sera-primary, #1f5136);
+  outline-offset: 2px;
+}
+
+.panel .checkout:disabled {
+  opacity: 1;
+  background: var(--sera-line, #d9e3d5);
+  color: var(--sera-muted, #4f6155);
+}
