@@ -454,70 +454,85 @@ function App() {
           ref={floatingSearchRef}
         >
           {floatingSearchOpen ? (
-            <div className="mobile-search-fab-panel">
-              <input
-                ref={floatingSearchInputRef}
-                className="mobile-search-fab-input"
-                type="search"
-                enterKeyHint="search"
-                autoComplete="off"
-                autoCorrect="off"
-                spellCheck={false}
-                placeholder="Caută produs…"
-                value={searchQuery}
-                aria-label="Caută produs"
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setSearchOpen(true);
-                }}
+            <>
+              <button
+                type="button"
+                className="mobile-search-fab-backdrop"
+                aria-label="Închide căutarea"
+                onClick={() => setFloatingSearchOpen(false)}
               />
-              {searchQuery.trim().length >= 3 ? (
-                <ul className="mobile-search-fab-suggestions" role="listbox">
-                  {searchSuggestions.length === 0 ? (
-                    <li className="topbar-search-empty">Niciun produs găsit</li>
-                  ) : (
-                    searchSuggestions.map((bouquet) => (
-                      <li key={bouquet.id} role="option">
-                        <button
-                          type="button"
-                          className="topbar-search-suggestion"
-                          onClick={() => pickSearchResult(bouquet)}
-                        >
-                          <span className="topbar-search-name">{bouquet.name}</span>
-                          <span className="topbar-search-price">
-                            {formatEuro(bouquet.price)}
-                          </span>
-                        </button>
-                      </li>
-                    ))
-                  )}
-                </ul>
-              ) : null}
-            </div>
-          ) : null}
-          <button
-            type="button"
-            className="mobile-search-fab-btn"
-            aria-label={floatingSearchOpen ? 'Închide căutarea' : 'Caută produs'}
-            aria-expanded={floatingSearchOpen}
-            onClick={() => setFloatingSearchOpen((open) => !open)}
-          >
-            {floatingSearchOpen ? (
-              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                <path
-                  fill="currentColor"
-                  d="M18.3 5.7a1 1 0 0 0-1.4-1.4L12 9.17 7.1 4.3A1 1 0 0 0 5.7 5.7L10.59 10.6 5.7 15.49a1 1 0 1 0 1.4 1.42L12 12l4.9 4.9a1 1 0 0 0 1.4-1.4L13.41 10.6z"
-                />
-              </svg>
-            ) : (
+              <div className="mobile-search-fab-panel">
+                <div className="mobile-search-fab-row">
+                  <input
+                    ref={floatingSearchInputRef}
+                    className="mobile-search-fab-input"
+                    type="search"
+                    enterKeyHint="search"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    placeholder="Caută produs…"
+                    value={searchQuery}
+                    aria-label="Caută produs"
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setSearchOpen(true);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="mobile-search-fab-close"
+                    aria-label="Închide căutarea"
+                    onClick={() => setFloatingSearchOpen(false)}
+                  >
+                    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                      <path
+                        fill="currentColor"
+                        d="M18.3 5.7a1 1 0 0 0-1.4-1.4L12 9.17 7.1 4.3A1 1 0 0 0 5.7 5.7L10.59 10.6 5.7 15.49a1 1 0 1 0 1.4 1.42L12 12l4.9 4.9a1 1 0 0 0 1.4-1.4L13.41 10.6z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                {searchQuery.trim().length >= 3 ? (
+                  <ul className="mobile-search-fab-suggestions" role="listbox">
+                    {searchSuggestions.length === 0 ? (
+                      <li className="topbar-search-empty">Niciun produs găsit</li>
+                    ) : (
+                      searchSuggestions.map((bouquet) => (
+                        <li key={bouquet.id} role="option">
+                          <button
+                            type="button"
+                            className="topbar-search-suggestion"
+                            onClick={() => pickSearchResult(bouquet)}
+                          >
+                            <span className="topbar-search-name">{bouquet.name}</span>
+                            <span className="topbar-search-price">
+                              {formatEuro(bouquet.price)}
+                            </span>
+                          </button>
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                ) : null}
+              </div>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="mobile-search-fab-btn"
+              aria-label="Caută produs"
+              aria-expanded={false}
+              onClick={() => setFloatingSearchOpen(true)}
+            >
               <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
                 <path
                   fill="currentColor"
                   d="M10.5 3a7.5 7.5 0 0 1 5.95 12.1l3.72 3.73a1 1 0 0 1-1.41 1.41l-3.73-3.72A7.5 7.5 0 1 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z"
                 />
               </svg>
-            )}
-          </button>
+            </button>
+          )}
         </div>
       ) : null}
 

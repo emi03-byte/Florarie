@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Bouquet, Order } from '../types';
 import { aggregateBouquetsToMake, aggregateMaterialsNeeded } from '../lib/materials';
 import type { BouquetToMake } from '../lib/materials';
-import { modelGroupKey, parseBouquetName } from '../lib/bouquetName';
+import {
+  modelGroupKey,
+  parseBouquetName,
+  preferModelLabel,
+} from '../lib/bouquetName';
 import { downloadProductionList } from '../lib/productionDownload';
 import { useRevealOnScroll } from '../lib/useRevealOnScroll';
 import { BouquetImage } from './BouquetImage';
@@ -41,6 +45,7 @@ function groupByModel(rows: BouquetToMake[]): ModelGroup[] {
     const key = modelGroupKey(model);
     const existing = map.get(key);
     if (existing) {
+      existing.model = preferModelLabel(existing.model, model);
       existing.remaining += row.remaining;
       existing.made += row.made;
       existing.ordered += row.ordered;
