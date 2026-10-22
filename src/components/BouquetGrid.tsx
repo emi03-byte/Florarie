@@ -51,6 +51,12 @@ export function BouquetGrid({
                 <span className={styles.photo}>
                   <BouquetImage src={bouquet.image} alt="" />
                 </span>
+                <span className={styles.peek} aria-hidden="true">
+                  <span className={styles.peekPill}>
+                    <SeraIcon name="eye" size={18} strokeWidth={2} />
+                    Vezi detalii
+                  </span>
+                </span>
               </button>
               <button
                 type="button"

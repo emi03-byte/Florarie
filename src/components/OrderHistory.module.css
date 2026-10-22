@@ -69,7 +69,7 @@
   padding: 0.5rem 0.55rem;
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(42, 36, 40, 0.08);
+  border: 1px solid rgba(23, 39, 30, 0.08);
 }
 
 .cardTop {
@@ -122,7 +122,7 @@
 .table td {
   text-align: left;
   padding: 0.25rem 0.2rem;
-  border-bottom: 1px solid rgba(42, 36, 40, 0.08);
+  border-bottom: 1px solid rgba(23, 39, 30, 0.08);
 }
 
 .table th {
@@ -149,7 +149,7 @@
   align-items: baseline;
   margin-top: 0.4rem;
   padding-top: 0.35rem;
-  border-top: 1px solid rgba(42, 36, 40, 0.12);
+  border-top: 1px solid rgba(23, 39, 30, 0.12);
   font-size: 0.85rem;
 }
 
@@ -181,5 +181,205 @@
 
   .hint {
     font-size: 0.75rem;
+  }
+}
+
+/* ───────── Seră (approved look 988ebd4) ───────── */
+.panel {
+  padding: 22px 20px 20px;
+  border: none;
+  border-radius: 26px;
+  background: var(--sera-card);
+  box-shadow: var(--sera-shadow-panel);
+  font-family: var(--sera-font-body);
+  color: var(--sera-text);
+}
+
+.head {
+  gap: 8px 16px;
+  margin-bottom: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--sera-line);
+}
+
+.head h2 {
+  font-family: var(--sera-font-display);
+  font-variation-settings: 'SOFT' 100;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--sera-primary);
+}
+
+.hint {
+  margin-top: 4px;
+  color: var(--sera-muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.count {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--sera-mint);
+  color: var(--sera-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.scroll {
+  padding-top: 14px;
+}
+
+.empty {
+  margin: 0;
+  padding: 22px 18px;
+  border: 1.5px dashed var(--sera-line);
+  border-radius: 18px;
+  background: var(--sera-bg);
+  color: var(--sera-muted);
+  font-size: 15px;
+}
+
+.list {
+  gap: 14px;
+}
+
+.card {
+  padding: 16px 18px;
+  border: none;
+  border-radius: 22px;
+  background: var(--sera-bg);
+}
+
+.cardTop {
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.orderTitle {
+  font-family: var(--sera-font-display);
+  font-variation-settings: 'SOFT' 100;
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--sera-text);
+}
+
+.meta {
+  margin-top: 2px;
+  color: var(--sera-muted);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.download {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1.5px solid var(--sera-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--sera-primary);
+  font-family: var(--sera-font-body);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.download:hover {
+  border-color: var(--sera-leaf);
+  background: var(--sera-mint);
+}
+
+.download:focus-visible {
+  outline: 3px solid var(--sera-primary);
+  outline-offset: 2px;
+}
+
+.table {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--sera-mint);
+}
+
+.table th {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--sera-muted);
+  background: #fff;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.totalRow {
+  margin-top: 10px;
+  padding: 0 12px;
+  border-top: none;
+  color: var(--sera-muted);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.totalRow strong {
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--sera-text);
+}
+
+@media (max-width: 900px) {
+  .panel {
+    padding: 16px 14px 14px;
+    border-radius: 22px;
+  }
+
+  .head h2 {
+    font-size: 22px;
+  }
+
+  .card {
+    padding: 14px 12px;
+    border-radius: 18px;
+  }
+
+  .orderTitle {
+    font-size: 17px;
+  }
+
+  .download {
+    min-height: 40px;
+    font-size: 14px;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px 10px;
+  }
+
+  .hint {
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .download {
+    transition: none;
   }
 }

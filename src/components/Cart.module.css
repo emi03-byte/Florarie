@@ -31,7 +31,7 @@
   flex-shrink: 0;
   margin: 0;
   padding: 0 0 0.45rem;
-  border-bottom: 1px solid rgba(42, 36, 40, 0.08);
+  border-bottom: 1px solid rgba(23, 39, 30, 0.08);
 }
 
 .title {
@@ -45,9 +45,9 @@
 }
 
 .continue {
-  border: 1px solid rgba(42, 36, 40, 0.1);
+  border: 1px solid rgba(23, 39, 30, 0.1);
   border-radius: var(--radius-sm);
-  background: rgba(42, 36, 40, 0.04);
+  background: rgba(23, 39, 30, 0.04);
   color: var(--ink);
   padding: 0.28rem 0.55rem;
   font-size: 0.64rem;
@@ -58,7 +58,7 @@
 }
 
 .continue:hover {
-  border-color: rgba(139, 77, 92, 0.35);
+  border-color: rgba(31, 81, 54, 0.35);
   color: var(--accent-deep);
   background: rgba(255, 255, 255, 0.95);
 }
@@ -88,7 +88,7 @@
   min-height: 0;
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(42, 36, 40, 0.06);
+  border: 1px solid rgba(23, 39, 30, 0.06);
 }
 
 .list {
@@ -103,7 +103,7 @@
   overflow: auto;
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(42, 36, 40, 0.06);
+  border: 1px solid rgba(23, 39, 30, 0.06);
 }
 
 .cartPage .line {
@@ -277,7 +277,7 @@
   border: none;
   border-radius: var(--radius-sm);
   background: var(--accent-deep);
-  color: #fffaf8;
+  color: #fff;
   font-weight: 700;
   font-size: 0.72rem;
   letter-spacing: 0.05em;
@@ -334,8 +334,8 @@
 
   .continue:hover {
     color: var(--ink);
-    background: rgba(42, 36, 40, 0.04);
-    border-color: rgba(42, 36, 40, 0.12);
+    background: rgba(23, 39, 30, 0.04);
+    border-color: rgba(23, 39, 30, 0.12);
   }
 
   .checkout {
@@ -600,4 +600,161 @@
   opacity: 1;
   background: var(--sera-line, #d9e3d5);
   color: var(--sera-muted, #4f6155);
+}
+
+/* ── Seră: full Coș page (variant="page") — same look as the panel, wider ── */
+.pageLayout {
+  width: min(100%, 820px);
+  margin: 0 auto;
+  padding: 26px 26px 22px;
+  gap: 16px;
+}
+
+.pageLayout .title {
+  font-size: 28px;
+  color: var(--sera-primary);
+}
+
+.pageLayout .continue {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1.5px solid var(--sera-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--sera-primary);
+  font-family: var(--sera-font-body);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.pageLayout .continue:hover {
+  border-color: var(--sera-field);
+  background: var(--sera-bg);
+  color: var(--sera-primary);
+}
+
+.pageLayout .continue:focus-visible {
+  outline: 3px solid var(--sera-primary);
+  outline-offset: 2px;
+}
+
+.pageLayout .list {
+  gap: 12px;
+}
+
+.pageLayout .line {
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 14px;
+  padding: 12px;
+}
+
+.pageLayout .thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+}
+
+.pageLayout .name {
+  font-size: 16px;
+}
+
+.pageLayout .lineBottom {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.pageLayout .needs {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.pageLayout .linePrice {
+  grid-column: 3;
+  font-size: 17px;
+}
+
+.pageLayout .footer {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.pageLayout .totalRow {
+  gap: 14px;
+}
+
+.pageLayout .totalRow strong {
+  font-size: 24px;
+}
+
+.pageLayout .checkout {
+  min-width: 260px;
+  padding: 0 28px;
+}
+
+.pageLayout .empty {
+  padding: 28px 20px;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .pageLayout {
+    width: 100%;
+    padding: 18px 16px 16px;
+    border-radius: 22px;
+  }
+
+  .pageLayout .title {
+    font-size: 24px;
+  }
+
+  .pageLayout .line {
+    grid-template-columns: 56px minmax(0, 1fr);
+    padding: 10px;
+  }
+
+  .pageLayout .thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+  }
+
+  .pageLayout .qty {
+    display: inline-flex;
+  }
+
+  .pageLayout .lineBottom {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .pageLayout .needs {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .pageLayout .linePrice {
+    grid-column: 2;
+  }
+
+  .pageLayout .footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pageLayout .checkout {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageLayout .continue {
+    transition: none;
+  }
 }

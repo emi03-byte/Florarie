@@ -1,4 +1,4 @@
-type IconName = 'flower' | 'bag' | 'list' | 'admin' | 'search' | 'plus';
+type IconName = 'flower' | 'bag' | 'list' | 'admin' | 'search' | 'plus' | 'eye';
 
 const PATHS: Record<IconName, string[]> = {
   flower: [
@@ -29,6 +29,9 @@ const PATHS: Record<IconName, string[]> = {
   ],
   search: ['m21 21-4.3-4.3'],
   plus: ['M5 12h14', 'M12 5v14'],
+  eye: [
+    'M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0',
+  ],
 };
 
 type Props = {
@@ -56,6 +59,7 @@ export function SeraIcon({ name, size = 22, strokeWidth = 1.75, className }: Pro
     >
       {name === 'flower' ? <circle cx="12" cy="12" r="3" /> : null}
       {name === 'search' ? <circle cx="11" cy="11" r="8" /> : null}
+      {name === 'eye' ? <circle cx="12" cy="12" r="3" /> : null}
       {name === 'list' ? <rect width="8" height="4" x="8" y="2" rx="1" /> : null}
       {PATHS[name].map((d) => (
         <path key={d} d={d} />

@@ -37,7 +37,7 @@ export function Cart({
 
   return (
     <aside
-      className={`${styles.cart} ${variant === 'panel' ? styles.panel : styles.cartPage}`}
+      className={`${styles.cart} ${styles.panel} ${variant === 'panel' ? '' : `${styles.cartPage} ${styles.pageLayout}`}`}
     >
       <div className={styles.header}>
         <h2 className={styles.title}>

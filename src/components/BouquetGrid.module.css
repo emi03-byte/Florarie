@@ -182,6 +182,63 @@
   pointer-events: none;
 }
 
+/* "Vezi detalii" affordance — only on devices with a real hover (mouse).
+   Touch devices keep tapping the photo / name to open the details window. */
+.photoBtn {
+  position: relative;
+}
+
+.peek {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .peek {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding-bottom: 18px;
+    background: linear-gradient(180deg, rgba(23, 39, 30, 0) 35%, rgba(23, 39, 30, 0.22) 100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .peekPill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 0 14px 0 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--sera-primary, #1f5136);
+    box-shadow: 0 6px 18px -6px rgba(23, 39, 30, 0.35);
+    font-family: var(--sera-font-body, inherit);
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    transform: translateY(6px);
+    transition: transform 0.2s ease;
+  }
+
+  .card:hover .peek,
+  .photoBtn:focus-visible .peek {
+    opacity: 1;
+  }
+
+  .card:hover .peekPill,
+  .photoBtn:focus-visible .peekPill {
+    transform: none;
+  }
+
+  /* Hovering the "+" itself: hide the pill so the two never compete. */
+  .photoWrap:has(.fab:hover) .peek {
+    opacity: 0;
+  }
+}
+
 @media (max-width: 900px) {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -225,7 +282,9 @@
 @media (prefers-reduced-motion: reduce) {
   .card,
   .photo img,
-  .fab {
+  .fab,
+  .peek,
+  .peekPill {
     transition: none;
   }
 

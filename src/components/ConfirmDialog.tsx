@@ -6,6 +6,8 @@ type Props = {
   message: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  /** Visual only: red confirm button for destructive actions. */
+  danger?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -15,6 +17,7 @@ export function ConfirmDialog({
   message,
   confirmLabel = 'Confirmă',
   cancelLabel = 'Anulează',
+  danger = false,
   onConfirm,
   onCancel,
 }: Props) {
@@ -39,11 +42,13 @@ export function ConfirmDialog({
         <h2 id="confirm-dialog-title" className={styles.title}>
           {message}
         </h2>
-        <div className={styles.actions} style={{ marginTop: '1rem' }}>
+        <div className={styles.actions} style={{ marginTop: '1.25rem' }}>
           <button type="button" className={styles.cancel} onClick={onCancel}>
             {cancelLabel}
           </button>
-          <button type="button" className={styles.confirm} onClick={onConfirm} autoFocus>
+          <button type="button" className={`${styles.confirm}${danger ? ` ${styles.danger}` : ''}`}
+            onClick={onConfirm}
+            autoFocus>
             {confirmLabel}
           </button>
         </div>

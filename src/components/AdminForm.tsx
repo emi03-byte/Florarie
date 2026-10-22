@@ -433,6 +433,7 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
           message={`Ești sigur că vrei să ștergi „${deleteAsk.name}”?`}
           confirmLabel="Șterge"
           cancelLabel="Anulează"
+          danger
           onCancel={() => setDeleteAsk(null)}
           onConfirm={() => {
             const id = deleteAsk.id;
