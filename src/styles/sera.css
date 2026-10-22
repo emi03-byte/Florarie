@@ -22,7 +22,7 @@
   --sera-error: #b3261e;
   --sera-font-display: 'Fraunces', Georgia, serif;
   --sera-font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --sera-topbar-h: 76px;
+  --sera-topbar-h: 60px;
 }
 
 /* Re-map the app's legacy tokens inside Seră areas, so shared components
@@ -44,7 +44,7 @@
 /* ───────── Shared top bar ───────── */
 .topbar {
   min-height: var(--sera-topbar-h);
-  gap: 22px;
+  gap: 18px;
   padding: 0 24px;
   background: var(--sera-card);
   border-bottom: 1px solid var(--sera-line);
@@ -55,25 +55,30 @@
 .brand-block {
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   flex: none;
-  border-radius: 12px;
+  border-radius: 9px;
   background: var(--sera-mint);
   color: var(--sera-primary);
+}
+
+.brand-mark svg {
+  width: 18px;
+  height: 18px;
 }
 
 .brand {
   font-family: var(--sera-font-display);
   font-variation-settings: 'SOFT' 100;
-  font-size: 26px;
-  font-weight: 600;
+  font-size: 21px;
+  font-weight: 500;
   letter-spacing: 0;
   color: var(--sera-primary);
 }
@@ -83,9 +88,9 @@
 }
 
 .brand-block:focus-visible {
-  outline: 3px solid var(--sera-primary);
+  outline: 2px solid var(--sera-primary);
   outline-offset: 4px;
-  border-radius: 12px;
+  border-radius: 10px;
 }
 
 .tagline {
@@ -93,29 +98,31 @@
 }
 
 .topbar-search {
-  flex: 1 1 18rem;
-  max-width: 440px;
+  flex: 1 1 16rem;
+  max-width: 360px;
 }
 
 .topbar-search-icon {
   position: absolute;
-  left: 16px;
+  left: 12px;
   top: 50%;
+  width: 17px;
+  height: 17px;
   transform: translateY(-50%);
   color: var(--sera-muted);
   pointer-events: none;
 }
 
 .topbar-search-input {
-  min-height: 52px;
-  padding: 0 16px 0 46px;
-  border: 1.5px solid var(--sera-field);
-  border-radius: 16px;
-  background: var(--sera-bg);
+  min-height: 40px;
+  padding: 0 12px 0 36px;
+  border: 1px solid var(--sera-field);
+  border-radius: 10px;
+  background: #fff;
   color: var(--sera-text);
   font-family: var(--sera-font-body);
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 400;
 }
 
 .topbar-search-input::placeholder {
@@ -125,11 +132,11 @@
 .topbar-search-input:focus {
   border-color: var(--sera-primary);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(31, 81, 54, 0.18);
+  box-shadow: 0 0 0 3px rgba(31, 81, 54, 0.12);
 }
 
 .topbar-search-suggestions {
-  border-radius: 16px;
+  border-radius: 12px;
   font-family: var(--sera-font-body);
 }
 
@@ -137,80 +144,87 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Segmented navigation */
+/* Navigation: quiet text tabs, active = light tint */
 .nav-desktop {
-  gap: 6px;
+  gap: 2px;
   margin-left: auto;
-  padding: 5px;
-  border: 1px solid var(--sera-line);
-  border-radius: 18px;
-  background: var(--sera-bg);
+  padding: 0;
+  border: none;
+  background: transparent;
 }
 
 .nav-desktop button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 48px;
-  padding: 0 16px;
+  gap: 7px;
+  height: 40px;
+  padding: 0 12px;
   border: none;
-  border-radius: 14px;
+  border-radius: 10px;
   color: var(--sera-muted);
   font-family: var(--sera-font-body);
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
   transition:
-    background-color 0.18s ease,
-    color 0.18s ease;
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.nav-desktop button svg {
+  width: 18px;
+  height: 18px;
 }
 
 .nav-desktop button:hover {
-  background: var(--sera-mint);
-  color: var(--sera-primary);
+  background: var(--sera-bg);
+  color: var(--sera-text);
 }
 
 .nav-desktop button.active {
-  background: var(--sera-primary);
+  background: var(--sera-mint);
   border-color: transparent;
-  color: #fff;
+  color: var(--sera-primary);
+  font-weight: 600;
 }
 
 .nav-desktop button:focus-visible,
 .nav-mobile button:focus-visible {
-  outline: 3px solid var(--sera-primary);
+  outline: 2px solid var(--sera-primary);
   outline-offset: 2px;
 }
 
 .nav-count {
   display: inline-grid;
   place-items: center;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 7px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
   border-radius: 999px;
-  background: var(--sera-blush);
-  color: var(--sera-blush-ink);
+  background: var(--sera-bg);
+  border: 1px solid var(--sera-line);
+  color: var(--sera-text);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
 .nav-desktop button.active .nav-count {
   background: #fff;
+  border-color: transparent;
   color: var(--sera-primary);
 }
 
 @media (max-width: 1180px) {
   .topbar {
-    gap: 14px;
+    gap: 12px;
     padding: 0 16px;
   }
 
   .nav-desktop button {
-    padding: 0 12px;
+    padding: 0 10px;
   }
 }
 
@@ -221,18 +235,18 @@
 
 .app-sale .main {
   max-width: 1720px;
-  padding: 18px 20px 28px 24px;
+  padding: 22px 24px 32px;
 }
 
 .sera-scope.sales-shop {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 28px;
   align-items: start;
 }
 
 .sera-scope .sales-main {
-  gap: 16px;
+  gap: 18px;
   min-width: 0;
 }
 
@@ -240,59 +254,59 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px 20px;
+  gap: 10px 16px;
   flex-wrap: wrap;
 }
 
 .sera-sale-title {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 10px;
   margin: 0;
   font-family: var(--sera-font-display);
   font-variation-settings: 'SOFT' 100;
-  font-size: 32px;
-  font-weight: 600;
-  line-height: 1.1;
-  color: var(--sera-primary);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--sera-text);
 }
 
 .sera-sale-count {
   font-family: var(--sera-font-body);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--sera-muted);
   font-variant-numeric: tabular-nums;
 }
 
 .sera-scope .sales-sort-bar {
-  gap: 10px;
+  gap: 8px;
 }
 
 .sera-scope .sales-sort-label {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
   color: var(--sera-muted);
 }
 
 .sera-scope .sales-sort-dropdown {
-  min-width: 13rem;
-  max-width: 16rem;
+  min-width: 11rem;
+  max-width: 14rem;
 }
 
 .sera-scope .sales-sort-select {
-  min-height: 48px;
-  padding: 0 40px 0 16px;
-  border: 1.5px solid var(--sera-line);
-  border-radius: 14px;
+  min-height: 36px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--sera-line);
+  border-radius: 10px;
   background-color: #fff;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%231f5136' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-position: right 16px center;
-  background-size: 12px 8px;
-  font-size: 15px;
-  font-weight: 600;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%234f6155' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: right 12px center;
+  background-size: 11px 7px;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--sera-text);
 }
 
@@ -304,17 +318,19 @@
 
 .sera-scope .sales-sort-select:focus-visible {
   border-color: var(--sera-primary);
-  box-shadow: 0 0 0 3px rgba(31, 81, 54, 0.18);
+  box-shadow: 0 0 0 3px rgba(31, 81, 54, 0.12);
 }
 
 .sera-scope .sales-sort-menu {
   border-color: var(--sera-line);
-  border-radius: 16px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(23, 39, 30, 0.1);
 }
 
 .sera-scope .sales-sort-option {
-  min-height: 44px;
-  font-size: 15px;
+  min-height: 38px;
+  padding: 8px 10px;
+  font-size: 14px;
 }
 
 .sera-scope .sales-sort-option:hover,
@@ -325,14 +341,15 @@
 .sera-scope .sales-sort-option.is-active {
   background: var(--sera-mint);
   color: var(--sera-primary);
+  font-weight: 600;
 }
 
 /* Always-visible cart panel (desktop) */
 .sera-cart-panel {
   position: sticky;
-  top: calc(var(--sera-topbar-h) + 16px);
-  height: calc(100dvh - var(--sera-topbar-h) - 32px);
-  min-height: 420px;
+  top: calc(var(--sera-topbar-h) + 22px);
+  height: calc(100dvh - var(--sera-topbar-h) - 44px);
+  min-height: 400px;
   animation: contentIn 0.45s ease both;
 }
 
@@ -343,38 +360,34 @@
 
 @media (max-width: 1100px) {
   .sera-scope.sales-shop {
-    grid-template-columns: minmax(0, 1fr) 320px;
-    gap: 16px;
+    grid-template-columns: minmax(0, 1fr) 290px;
+    gap: 20px;
   }
 }
 
 /* ───────── Phone / tablet ───────── */
 @media (max-width: 900px) {
   .topbar {
-    min-height: 64px;
+    min-height: 56px;
     gap: 10px;
     padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
     border-bottom: 1px solid var(--sera-line);
   }
 
   .brand-mark {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
   }
 
   .brand {
-    font-size: 22px;
+    font-size: 19px;
   }
 
   .topbar-search-input {
-    min-height: 48px;
-    padding-left: 44px;
-    border-radius: 14px;
-  }
-
-  .topbar-search-icon {
-    left: 14px;
+    min-height: 40px;
+    padding-left: 36px;
+    border-radius: 10px;
   }
 
   /* The green "Vezi coșul" bar replaces the small header cart chip on Vânzare. */
@@ -383,21 +396,22 @@
   }
 
   .topbar-cart-mobile {
-    min-height: 40px;
+    min-height: 36px;
     padding: 0 12px;
     border-radius: 999px;
     background: var(--sera-mint);
     color: var(--sera-primary);
     font-family: var(--sera-font-body);
     font-size: 13px;
+    font-weight: 600;
     letter-spacing: 0;
     text-transform: none;
   }
 
   /* Bottom tab bar */
   .nav-mobile {
-    gap: 6px;
-    padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+    gap: 4px;
+    padding: 4px 8px calc(4px + env(safe-area-inset-bottom));
     background: #fff;
     border-top: 1px solid var(--sera-line);
     box-shadow: none;
@@ -408,56 +422,69 @@
   .nav-mobile button {
     position: relative;
     flex-direction: column;
-    gap: 3px;
-    min-height: 58px;
-    padding: 6px 4px;
-    border-radius: 16px;
+    gap: 2px;
+    min-height: 50px;
+    padding: 4px;
+    border-radius: 12px;
     color: var(--sera-muted);
     font-family: var(--sera-font-body);
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: 0;
     text-transform: none;
   }
 
+  .nav-mobile-icon {
+    width: 21px;
+    height: 21px;
+  }
+
   .nav-mobile button.active {
-    background: var(--sera-mint);
+    background: transparent;
     color: var(--sera-primary);
+    font-weight: 700;
+  }
+
+  .nav-mobile button.active .nav-mobile-icon {
+    stroke-width: 2.1;
   }
 
   .nav-mobile .nav-count {
     position: absolute;
-    top: 4px;
-    left: calc(50% + 6px);
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
+    top: 2px;
+    left: calc(50% + 5px);
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
     font-size: 11px;
+    background: var(--sera-mint);
+    border-color: transparent;
+    color: var(--sera-primary);
   }
 
   .main {
-    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
 
   .app-fill .main {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    padding-bottom: calc(68px + env(safe-area-inset-bottom));
   }
 
   .mobile-search-fab {
-    bottom: calc(84px + env(safe-area-inset-bottom));
+    bottom: calc(72px + env(safe-area-inset-bottom));
   }
 
   .app-sale-has-cart .mobile-search-fab {
-    bottom: calc(160px + env(safe-area-inset-bottom));
+    bottom: calc(128px + env(safe-area-inset-bottom));
   }
 
   /* Vânzare */
   .app-sale .main {
-    padding: 14px 14px calc(96px + env(safe-area-inset-bottom));
+    padding: 16px 14px calc(80px + env(safe-area-inset-bottom));
   }
 
   .app-sale-has-cart .main {
-    padding-bottom: calc(170px + env(safe-area-inset-bottom));
+    padding-bottom: calc(136px + env(safe-area-inset-bottom));
   }
 
   .sera-scope.sales-shop {
@@ -469,52 +496,52 @@
   }
 
   .sera-sale-title {
-    font-size: 28px;
-  }
-
-  .sera-scope .sales-sort-label {
-    font-size: 14px;
+    font-size: 22px;
   }
 
   .sera-scope .sales-sort-dropdown {
     min-width: 0;
-    max-width: 13rem;
+    max-width: 12rem;
   }
 
   .sera-scope .sales-sort-select {
-    min-height: 48px;
-    padding: 0 36px 0 14px;
-    font-size: 15px;
-    border-radius: 14px;
-    background-position: right 14px center;
-    background-size: 12px 8px;
+    min-height: 36px;
+    padding: 0 30px 0 12px;
+    border-radius: 10px;
+    background-position: right 12px center;
+    background-size: 11px 7px;
   }
 
   .sera-scope .sales-sort-option {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .sera-cart-bar {
     position: fixed;
     left: max(12px, env(safe-area-inset-left));
     right: max(12px, env(safe-area-inset-right));
-    bottom: calc(82px + env(safe-area-inset-bottom));
+    bottom: calc(68px + env(safe-area-inset-bottom));
     z-index: 49;
     display: flex;
     align-items: center;
-    gap: 10px;
-    height: 62px;
-    padding: 0 8px 0 20px;
+    gap: 8px;
+    height: 48px;
+    padding: 0 5px 0 16px;
     border: none;
     border-radius: 999px;
     background: var(--sera-primary);
     color: #fff;
     font-family: var(--sera-font-body);
-    font-size: 16px;
-    font-weight: 800;
-    box-shadow: 0 12px 30px rgba(31, 81, 54, 0.4);
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 6px 18px rgba(31, 81, 54, 0.25);
     cursor: pointer;
-    animation: seraBarIn 0.22s ease both;
+    animation: seraBarIn 0.2s ease both;
+  }
+
+  .sera-cart-bar svg {
+    width: 18px;
+    height: 18px;
   }
 
   .sera-cart-bar:active {
@@ -522,7 +549,7 @@
   }
 
   .sera-cart-bar:focus-visible {
-    outline: 3px solid var(--sera-text);
+    outline: 2px solid var(--sera-text);
     outline-offset: 3px;
   }
 
@@ -533,10 +560,11 @@
   }
 
   .sera-cart-bar-total {
-    padding: 12px 16px;
+    padding: 8px 12px;
     border-radius: 999px;
     background: #fff;
     color: var(--sera-primary);
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
   }
 }
@@ -550,7 +578,7 @@
 @keyframes seraBarIn {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
