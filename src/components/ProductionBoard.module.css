@@ -568,10 +568,24 @@
 
   .materialsBackdrop {
     display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 45;
   }
 
   .materialsSheet {
     display: flex;
+    /* Only lower on the page — sit above the phone tab bar; keep existing look. */
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(3.15rem + env(safe-area-inset-bottom));
+    z-index: 46;
+    max-height: calc(100dvh - 3.15rem - env(safe-area-inset-bottom));
+  }
+
+  .materialsSheetOpen {
+    height: calc(100dvh - 3.15rem - env(safe-area-inset-bottom));
   }
 
   .variantRow {
@@ -1104,6 +1118,24 @@
     border-radius: 999px;
     font-size: var(--fs-sm);
     white-space: nowrap;
+  }
+
+  /* Closed Materiales handle: floating rounded bar over De făcut (phone only). */
+  .materialsSheet {
+    left: 0.5rem;
+    right: 0.5rem;
+    width: auto;
+    border-radius: var(--r-card);
+  }
+
+  .materialsSheetOpen {
+    left: 0;
+    right: 0;
+    border-radius: var(--r-card);
+  }
+
+  .materialsPull {
+    border-radius: var(--r-card);
   }
 }
 

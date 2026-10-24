@@ -497,10 +497,23 @@
 
   .formBackdrop {
     display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 45;
   }
 
   .formSheet {
     display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(3.15rem + env(safe-area-inset-bottom));
+    z-index: 46;
+    max-height: calc(100dvh - 3.15rem - env(safe-area-inset-bottom));
+  }
+
+  .formSheetOpen {
+    height: calc(100dvh - 3.15rem - env(safe-area-inset-bottom));
   }
 
   .item {
@@ -977,6 +990,24 @@
 
   .itemActions button {
     padding: 0 var(--sp-3);
+  }
+
+  /* Closed Catalog handle: floating rounded bar (same as Materiales, phone only). */
+  .formSheet {
+    left: 0.5rem;
+    right: 0.5rem;
+    width: auto;
+    border-radius: var(--r-card);
+  }
+
+  .formSheetOpen {
+    left: 0;
+    right: 0;
+    border-radius: var(--r-card);
+  }
+
+  .formPull {
+    border-radius: var(--r-card);
   }
 }
 

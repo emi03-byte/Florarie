@@ -563,7 +563,7 @@
   input,
   textarea,
   select {
-    font-size: var(--fs-md) !important;
+    font-size: 16px !important;
   }
 
   .topbar {
