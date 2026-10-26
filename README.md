@@ -15,7 +15,13 @@ npm run dev
 ```
 
 Implicit folosește **SQLite** în `server/data/florarie.db` (se creează automat + seed).  
-Parola implicită: `florarie` (schimbă `APP_PASSWORD` în `server/.env`).
+Parola se stochează ca **hash bcrypt** (`APP_PASSWORD_HASH` în `server/.env`):
+
+```bash
+cd server
+npm run hash-password
+# copiază linia APP_PASSWORD_HASH=... în .env; nu lăsa parola în clar în git
+```
 
 ### 2. Frontend (port 5173)
 
@@ -44,7 +50,7 @@ Deschide `http://localhost:5173`, introdu parola, folosește aplicația.
 ### App Service (API)
 - Deploy folderul `server/` (build: `npm install && npm run build`, start: `npm start`)
 - Application settings:
-  - `APP_PASSWORD` = parola magazinului (o trimiți doar cui vrei)
+  - `APP_PASSWORD_HASH` = hash bcrypt (generează local cu `npm run hash-password`; **nu** pune parola în clar)
   - `JWT_SECRET` = string lung aleator
   - `SQL_CONNECTION_STRING` = connection string Azure SQL
   - `CORS_ORIGIN` = URL-ul Static Web Apps (ex. `https://xxx.azurestaticapps.net`)

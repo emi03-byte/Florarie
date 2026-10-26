@@ -1,23 +1,63 @@
 import type { Request, Response, NextFunction } from 'express';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 /** Keep sellers signed in for a work week; closing the tab still clears sessionStorage. */
 const TOKEN_TTL = '7d';
+const BCRYPT_ROUNDS = 12;
 
-export function getAppPassword(): string {
-  return process.env.APP_PASSWORD || 'florarie';
-}
+const isProd = process.env.NODE_ENV === 'production' || Boolean(process.env.WEBSITE_SITE_NAME);
 
 export function getJwtSecret(): string {
-  return process.env.JWT_SECRET || 'dev-florarie-secret-change-me';
+  const secret = process.env.JWT_SECRET?.trim();
+  if (secret) return secret;
+  if (isProd) {
+    throw new Error('JWT_SECRET lipsește — setează-l în App Settings / .env');
+  }
+  console.warn('[auth] JWT_SECRET lipsește; folosesc secret de dezvoltare (doar local).');
+  return 'dev-florarie-secret-change-me';
+}
+
+/** bcrypt hash from APP_PASSWORD_HASH (preferred). */
+export function getPasswordHash(): string | null {
+  const hash = process.env.APP_PASSWORD_HASH?.trim();
+  return hash || null;
 }
 
 export function issueToken(): string {
   return jwt.sign({ role: 'seller' }, getJwtSecret(), { expiresIn: TOKEN_TTL });
 }
 
-export function verifyPassword(password: string): boolean {
-  return password === getAppPassword();
+/**
+ * Verify shop password against APP_PASSWORD_HASH (bcrypt).
+ * Legacy APP_PASSWORD (plaintext) is accepted only outside production, with a warning.
+ */
+export async function verifyPassword(password: string): Promise<boolean> {
+  if (!password) return false;
+
+  const hash = getPasswordHash();
+  if (hash) {
+    try {
+      return await bcrypt.compare(password, hash);
+    } catch {
+      return false;
+    }
+  }
+
+  const legacy = process.env.APP_PASSWORD;
+  if (legacy && !isProd) {
+    console.warn(
+      '[auth] APP_PASSWORD_HASH lipsește — compar plaintext (doar local). Rulează: npm run hash-password',
+    );
+    return password === legacy;
+  }
+
+  console.error('[auth] Nici APP_PASSWORD_HASH, nici APP_PASSWORD (local) nu sunt setate.');
+  return false;
+}
+
+export async function hashPassword(plain: string): Promise<string> {
+  return bcrypt.hash(plain, BCRYPT_ROUNDS);
 }
 
 export type AuthedRequest = Request & { user?: { role: string } };

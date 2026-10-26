@@ -62,11 +62,17 @@ az webapp create `
   --name $AppName `
   --runtime "NODE:20-lts" | Out-Null
 
+# Store bcrypt hash only — never the plaintext password in App Settings
+Push-Location (Join-Path $PSScriptRoot "..\server")
+$AppPasswordHash = (node -e "const b=require('bcryptjs'); b.hash(process.argv[1],12).then(h=>process.stdout.write(h))" "$AppPassword")
+if (-not $AppPasswordHash) { throw "bcryptjs hash failed — run npm install in server/ first" }
+Pop-Location
+
 az webapp config appsettings set `
   --resource-group $ResourceGroup `
   --name $AppName `
   --settings `
-    APP_PASSWORD="$AppPassword" `
+    APP_PASSWORD_HASH="$AppPasswordHash" `
     JWT_SECRET="$JwtSecret" `
     SQL_CONNECTION_STRING="$SqlConn" `
     SCM_DO_BUILD_DURING_DEPLOYMENT=true | Out-Null
