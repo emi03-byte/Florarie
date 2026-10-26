@@ -36,17 +36,15 @@ async function requestOnce<T>(path: string, init: RequestInit = {}): Promise<T> 
   if (token) headers.set('Authorization', `Bearer ${token}`);
 
   const response = await fetch(`${API_URL}${path}`, { ...init, headers });
-  if (response.status === 401) {
-    setToken(null);
-    throw new Error('Neautentificat');
-  }
   if (!response.ok) {
-    let message = `Eroare ${response.status}`;
+    if (response.status === 401) setToken(null);
+    let message =
+      response.status === 401 ? 'Neautentificat' : `Eroare ${response.status}`;
     try {
       const data = (await response.json()) as { error?: string };
       if (data.error) message = data.error;
     } catch {
-      /* ignore */
+      /* ignore non-JSON bodies (e.g. IIS default 401 page) */
     }
     if (response.status === 503) {
       throw Object.assign(new Error(message), { retryable: true });
