@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { Bouquet } from '../types';
 import { formatEuro } from '../lib/money';
 import { formatIngredient } from '../lib/ingredients';
+import { useBodyScrollLock } from '../lib/useBodyScrollLock';
 import { BouquetImage } from './BouquetImage';
 import styles from './BouquetPreview.module.css';
 
@@ -13,6 +14,7 @@ type Props = {
 
 export function BouquetPreview({ bouquet, onClose, onAdd }: Props) {
   const [ready, setReady] = useState(false);
+  useBodyScrollLock(true);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {

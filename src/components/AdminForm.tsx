@@ -3,6 +3,7 @@ import type { Bouquet, Ingredient } from '../types';
 import { formatBouquetDisplayName } from '../lib/bouquetName';
 import { createId } from '../lib/id';
 import { formatEuro } from '../lib/money';
+import { useBodyScrollLock } from '../lib/useBodyScrollLock';
 import { useRevealOnScroll } from '../lib/useRevealOnScroll';
 import { BouquetImage } from './BouquetImage';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -88,17 +89,16 @@ export function AdminForm({ bouquets, onSave, onDelete }: Props) {
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
+  useBodyScrollLock(catalogOpen);
+
   useEffect(() => {
     if (!catalogOpen) return;
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') setCatalogOpen(false);
     }
     document.addEventListener('keydown', onKeyDown);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = prev;
     };
   }, [catalogOpen]);
 

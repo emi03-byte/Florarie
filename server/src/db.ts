@@ -17,6 +17,8 @@ export type DbDriver = {
   markBouquetMade(bouquetId: string, count: number): Promise<Order[]>;
   /** Increase how many of this bouquet still need to be made. */
   addBouquetToMake(bouquetId: string, count: number): Promise<Order[]>;
+  /** Remove remaining units from De făcut (cancels qty; materials drop with remaining). */
+  removeBouquetFromMake(bouquetId: string, count: number): Promise<Order[]>;
 };
 
 let driver: DbDriver | null = null;
@@ -422,6 +424,88 @@ async function initSqlite(): Promise<DbDriver> {
           Number(order.total) + Number(bouquet.price) * add,
           order.id,
         );
+      });
+      tx();
+      return listOrdersSqlite();
+    },
+    async removeBouquetFromMake(bouquetId, count) {
+      let left = Math.max(0, Math.floor(count));
+      if (left <= 0) return listOrdersSqlite();
+
+      const bouquet = db.prepare('SELECT price FROM bouquets WHERE id = ?').get(bouquetId) as
+        | { price: number }
+        | undefined;
+      const unitPrice = bouquet ? Number(bouquet.price) : 0;
+
+      const openOrders = db
+        .prepare(
+          `SELECT o.id FROM orders o
+           WHERE o.status = 'open'
+           ORDER BY o.created_at DESC`,
+        )
+        .all() as { id: string }[];
+
+      const tx = db.transaction(() => {
+        for (const { id: orderId } of openOrders) {
+          if (left <= 0) break;
+          const items = db
+            .prepare(
+              `SELECT id, bouquet_id, quantity, made_quantity
+               FROM order_items WHERE order_id = ? ORDER BY id DESC`,
+            )
+            .all(orderId) as {
+            id: number;
+            bouquet_id: string;
+            quantity: number;
+            made_quantity: number;
+          }[];
+
+          let removedHere = 0;
+          for (const item of items) {
+            if (item.bouquet_id !== bouquetId || left <= 0) continue;
+            const remaining = item.quantity - item.made_quantity;
+            if (remaining <= 0) continue;
+            const apply = Math.min(remaining, left);
+            left -= apply;
+            removedHere += apply;
+            const newQty = item.quantity - apply;
+            if (newQty <= 0) {
+              db.prepare('DELETE FROM order_items WHERE id = ?').run(item.id);
+            } else {
+              db.prepare('UPDATE order_items SET quantity = ? WHERE id = ?').run(
+                newQty,
+                item.id,
+              );
+            }
+          }
+
+          if (removedHere > 0 && unitPrice) {
+            const row = db
+              .prepare('SELECT total FROM orders WHERE id = ?')
+              .get(orderId) as { total: number };
+            db.prepare('UPDATE orders SET total = ? WHERE id = ?').run(
+              Math.max(0, Number(row.total) - unitPrice * removedHere),
+              orderId,
+            );
+          }
+
+          const leftItems = db
+            .prepare('SELECT COUNT(*) AS c FROM order_items WHERE order_id = ?')
+            .get(orderId) as { c: number };
+          if (leftItems.c === 0) {
+            db.prepare('DELETE FROM orders WHERE id = ?').run(orderId);
+          } else {
+            const remaining = db
+              .prepare(
+                `SELECT COUNT(*) AS c FROM order_items
+                 WHERE order_id = ? AND made_quantity < quantity`,
+              )
+              .get(orderId) as { c: number };
+            if (remaining.c === 0) {
+              db.prepare(`UPDATE orders SET status = 'done' WHERE id = ?`).run(orderId);
+            }
+          }
+        }
       });
       tx();
       return listOrdersSqlite();
@@ -839,6 +923,97 @@ async function initMssql(connectionString: string): Promise<DbDriver> {
         .input('total', sql.Decimal(10, 2), orderTotal + price * add)
         .input('order_id', sql.NVarChar, orderId)
         .query('UPDATE dbo.orders SET total = @total WHERE id = @order_id');
+
+      return listOrdersMssql();
+    },
+    async removeBouquetFromMake(bouquetId, count) {
+      let left = Math.max(0, Math.floor(count));
+      if (left <= 0) return listOrdersMssql();
+
+      const bouquetResult = await pool
+        .request()
+        .input('id', sql.NVarChar, bouquetId)
+        .query('SELECT price FROM dbo.bouquets WHERE id = @id');
+      const unitPrice = bouquetResult.recordset[0]
+        ? Number(bouquetResult.recordset[0].price)
+        : 0;
+
+      const open = await pool
+        .request()
+        .query(
+          `SELECT id FROM dbo.orders WHERE status = N'open' ORDER BY created_at DESC`,
+        );
+
+      for (const orderRow of open.recordset) {
+        if (left <= 0) break;
+        const orderId = String(orderRow.id);
+        const items = await pool
+          .request()
+          .input('order_id', sql.NVarChar, orderId)
+          .query(
+            `SELECT id, bouquet_id, quantity, made_quantity FROM dbo.order_items WHERE order_id = @order_id ORDER BY id DESC`,
+          );
+
+        let removedHere = 0;
+        for (const item of items.recordset) {
+          if (String(item.bouquet_id) !== bouquetId || left <= 0) continue;
+          const remaining = Number(item.quantity) - Number(item.made_quantity);
+          if (remaining <= 0) continue;
+          const apply = Math.min(remaining, left);
+          left -= apply;
+          removedHere += apply;
+          const newQty = Number(item.quantity) - apply;
+          if (newQty <= 0) {
+            await pool
+              .request()
+              .input('id', sql.Int, item.id)
+              .query('DELETE FROM dbo.order_items WHERE id = @id');
+          } else {
+            await pool
+              .request()
+              .input('quantity', sql.Int, newQty)
+              .input('id', sql.Int, item.id)
+              .query('UPDATE dbo.order_items SET quantity = @quantity WHERE id = @id');
+          }
+        }
+
+        if (removedHere > 0 && unitPrice) {
+          const totalRow = await pool
+            .request()
+            .input('order_id', sql.NVarChar, orderId)
+            .query('SELECT total FROM dbo.orders WHERE id = @order_id');
+          const total = Number(totalRow.recordset[0]?.total ?? 0);
+          await pool
+            .request()
+            .input('total', sql.Decimal(10, 2), Math.max(0, total - unitPrice * removedHere))
+            .input('order_id', sql.NVarChar, orderId)
+            .query('UPDATE dbo.orders SET total = @total WHERE id = @order_id');
+        }
+
+        const leftItems = await pool
+          .request()
+          .input('order_id', sql.NVarChar, orderId)
+          .query('SELECT COUNT(*) AS c FROM dbo.order_items WHERE order_id = @order_id');
+        if (Number(leftItems.recordset[0].c) === 0) {
+          await pool
+            .request()
+            .input('order_id', sql.NVarChar, orderId)
+            .query('DELETE FROM dbo.orders WHERE id = @order_id');
+        } else {
+          const remaining = await pool
+            .request()
+            .input('order_id', sql.NVarChar, orderId)
+            .query(
+              `SELECT COUNT(*) AS c FROM dbo.order_items WHERE order_id = @order_id AND made_quantity < quantity`,
+            );
+          if (Number(remaining.recordset[0].c) === 0) {
+            await pool
+              .request()
+              .input('order_id', sql.NVarChar, orderId)
+              .query(`UPDATE dbo.orders SET status = N'done' WHERE id = @order_id`);
+          }
+        }
+      }
 
       return listOrdersMssql();
     },

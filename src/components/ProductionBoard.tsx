@@ -9,6 +9,7 @@ import {
 } from '../lib/bouquetName';
 import { downloadProductionList } from '../lib/productionDownload';
 import { formatEuro } from '../lib/money';
+import { useBodyScrollLock } from '../lib/useBodyScrollLock';
 import { useRevealOnScroll } from '../lib/useRevealOnScroll';
 import { BouquetImage } from './BouquetImage';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -20,6 +21,7 @@ type Props = {
   catalog: Bouquet[];
   onMarkMade: (bouquetId: string, count: number) => Promise<void>;
   onAddToMake: (bouquetId: string, count: number) => Promise<void>;
+  onRemoveFromMake: (bouquetId: string, count: number) => Promise<void>;
   onToast?: (message: string) => void;
 };
 
@@ -35,7 +37,7 @@ type ConfirmAsk = {
   bouquetId: string;
   variant: string;
   count: number;
-  mode: 'partial' | 'all';
+  mode: 'partial' | 'all' | 'remove';
 };
 
 function groupByModel(rows: BouquetToMake[]): ModelGroup[] {
@@ -93,6 +95,7 @@ export function ProductionBoard({
   catalog,
   onMarkMade,
   onAddToMake,
+  onRemoveFromMake,
   onToast,
 }: Props) {
   const bouquets = useMemo(
@@ -125,6 +128,9 @@ export function ProductionBoard({
   const [markAsk, setMarkAsk] = useState<
     (BouquetToMake & { variant: string }) | null
   >(null);
+  const [removeAsk, setRemoveAsk] = useState<
+    (BouquetToMake & { variant: string }) | null
+  >(null);
   const [confirmAsk, setConfirmAsk] = useState<ConfirmAsk | null>(null);
   const [materialsOpen, setMaterialsOpen] = useState(false);
 
@@ -138,17 +144,16 @@ export function ProductionBoard({
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
+  useBodyScrollLock(materialsOpen);
+
   useEffect(() => {
     if (!materialsOpen) return;
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') setMaterialsOpen(false);
     }
     document.addEventListener('keydown', onKeyDown);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = prev;
     };
   }, [materialsOpen]);
 
@@ -183,6 +188,28 @@ export function ProductionBoard({
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Nu am putut adăuga');
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function removeFromMake(
+    bouquetId: string,
+    count: number,
+    variant: string,
+  ) {
+    if (count <= 0) return;
+    setError('');
+    setBusyId(bouquetId);
+    try {
+      await onRemoveFromMake(bouquetId, count);
+      onToast?.(
+        count === 1
+          ? `Șters din De făcut: ${variant}`
+          : `Șterse din De făcut: ${count} × ${variant}`,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Nu am putut șterge');
     } finally {
       setBusyId(null);
     }
@@ -312,6 +339,18 @@ export function ProductionBoard({
                             >
                               Am făcut toate
                             </button>
+                            <button
+                              type="button"
+                              className={`${styles.btnRemove} no-print`}
+                              disabled={!canMark || busy}
+                              title="Șterge din De făcut (scad și materialele)"
+                              aria-label={`Șterge ${row.variant}`}
+                              onClick={() =>
+                                setRemoveAsk({ ...row, variant: row.variant })
+                              }
+                            >
+                              Șterge
+                            </button>
                           </div>
                         </li>
                       );
@@ -383,22 +422,61 @@ export function ProductionBoard({
         />
       ) : null}
 
+      {removeAsk ? (
+        <QuantityDialog
+          bouquet={{
+            id: removeAsk.bouquetId,
+            name: removeAsk.name,
+            price: 0,
+            image: removeAsk.image,
+            recipe: '',
+            ingredients: [],
+          }}
+          showPrice={false}
+          max={Math.max(1, removeAsk.remaining)}
+          confirmLabel={(qty) =>
+            qty === 1 ? 'Șterge 1' : `Șterge ${qty}`
+          }
+          onCancel={() => setRemoveAsk(null)}
+          onConfirm={(quantity) => {
+            const target = removeAsk;
+            setRemoveAsk(null);
+            setConfirmAsk({
+              bouquetId: target.bouquetId,
+              variant: target.variant,
+              count: Math.min(quantity, target.remaining),
+              mode: 'remove',
+            });
+          }}
+        />
+      ) : null}
+
       {confirmAsk ? (
         <ConfirmDialog
           title="Confirmare"
           message={
-            confirmAsk.mode === 'all'
-              ? `Marchezi toate cele ${confirmAsk.count} rămase (${confirmAsk.variant})?`
-              : confirmAsk.count === 1
-                ? `Marchezi 1 × ${confirmAsk.variant} ca făcute?`
-                : `Marchezi ${confirmAsk.count} × ${confirmAsk.variant} ca făcute?`
+            confirmAsk.mode === 'remove'
+              ? confirmAsk.count === 1
+                ? `Ștergi 1 × ${confirmAsk.variant} din De făcut? Materialele vor scădea.`
+                : `Ștergi ${confirmAsk.count} × ${confirmAsk.variant} din De făcut? Materialele vor scădea.`
+              : confirmAsk.mode === 'all'
+                ? `Marchezi toate cele ${confirmAsk.count} rămase (${confirmAsk.variant})?`
+                : confirmAsk.count === 1
+                  ? `Marchezi 1 × ${confirmAsk.variant} ca făcute?`
+                  : `Marchezi ${confirmAsk.count} × ${confirmAsk.variant} ca făcute?`
           }
-          confirmLabel="Da, confirm"
+          confirmLabel={
+            confirmAsk.mode === 'remove' ? 'Da, șterge' : 'Da, confirm'
+          }
           onCancel={() => setConfirmAsk(null)}
           onConfirm={() => {
             const target = confirmAsk;
             setConfirmAsk(null);
-            void markMade(target.bouquetId, target.count, target.variant);
+            if (target.mode === 'remove') {
+              void removeFromMake(target.bouquetId, target.count, target.variant);
+            } else {
+              void markMade(target.bouquetId, target.count, target.variant);
+            }
           }}
         />
       ) : null}

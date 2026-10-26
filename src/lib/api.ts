@@ -68,10 +68,10 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   }
 }
 
-export async function login(password: string): Promise<void> {
+export async function login(username: string, password: string): Promise<void> {
   const data = await request<{ token: string }>('/api/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ password }),
+    body: JSON.stringify({ username, password }),
   });
   setToken(data.token);
 }
@@ -134,6 +134,16 @@ export function markBouquetMade(bouquetId: string, count: number): Promise<Order
 
 export function addBouquetToMake(bouquetId: string, count: number): Promise<Order[]> {
   return request<Order[]>('/api/orders/add-to-make', {
+    method: 'POST',
+    body: JSON.stringify({ bouquetId, count }),
+  });
+}
+
+export function removeBouquetFromMake(
+  bouquetId: string,
+  count: number,
+): Promise<Order[]> {
+  return request<Order[]>('/api/orders/remove-from-make', {
     method: 'POST',
     body: JSON.stringify({ bouquetId, count }),
   });

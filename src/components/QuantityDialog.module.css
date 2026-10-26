@@ -11,6 +11,7 @@
   background: rgba(23, 39, 30, 0.38);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
+  overscroll-behavior: none;
   animation: fade 0.18s ease both;
 }
 

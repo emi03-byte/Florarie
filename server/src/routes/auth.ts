@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { Request, Response, NextFunction } from 'express';
-import { issueToken, verifyPassword } from '../auth.js';
+import { getShopUsername, issueToken, verifyPassword } from '../auth.js';
 
 export const authRouter = Router();
 
@@ -34,10 +34,16 @@ function rateLimitLogin(req: Request, res: Response, next: NextFunction) {
 }
 
 authRouter.post('/login', rateLimitLogin, async (req, res) => {
+  const username = String(req.body?.username ?? '').trim();
   const password = String(req.body?.password ?? '');
+  const expectedUser = getShopUsername();
+  if (username.toLowerCase() !== expectedUser.toLowerCase()) {
+    res.status(401).json({ error: 'Utilizator greșit. Verifică numele și încearcă din nou.' });
+    return;
+  }
   const ok = await verifyPassword(password);
   if (!ok) {
-    res.status(401).json({ error: 'Parolă incorectă' });
+    res.status(401).json({ error: 'Parolă greșită. Verifică și încearcă din nou.' });
     return;
   }
   // Successful login: ease the counter a bit

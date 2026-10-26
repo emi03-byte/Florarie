@@ -790,6 +790,7 @@
     padding: 0;
     max-height: min(55vh, 18rem);
     overflow: auto;
+    overscroll-behavior: contain;
   }
 
   .sales-sort-bar {

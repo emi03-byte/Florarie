@@ -40,6 +40,12 @@ body {
   touch-action: manipulation;
 }
 
+/* While a modal is open — block background rubber-band / chain scroll. */
+html[data-sera-scroll-lock='1'],
+html[data-sera-scroll-lock='1'] body {
+  overscroll-behavior: none;
+}
+
 button,
 input,
 textarea {

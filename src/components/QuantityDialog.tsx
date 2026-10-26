@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Bouquet } from '../types';
 import { formatEuro } from '../lib/money';
+import { useBodyScrollLock } from '../lib/useBodyScrollLock';
 import styles from './QuantityDialog.module.css';
 
 type Props = {
@@ -25,6 +26,7 @@ export function QuantityDialog({
   /** String so the user can clear the field and type freely. */
   const [qtyText, setQtyText] = useState('1');
   const maxQty = Math.max(1, Math.floor(max));
+  useBodyScrollLock(true);
 
   const parsed = Number(qtyText);
   const qtyValid =

@@ -102,3 +102,14 @@ ordersRouter.post('/add-to-make', async (req, res) => {
     throw error;
   }
 });
+
+ordersRouter.post('/remove-from-make', async (req, res) => {
+  const bouquetId = String(req.body?.bouquetId ?? '');
+  const count = Number(req.body?.count);
+  if (!bouquetId || !Number.isFinite(count) || count <= 0) {
+    res.status(400).json({ error: 'bouquetId și count sunt obligatorii' });
+    return;
+  }
+  const orders = await runDb((db) => db.removeBouquetFromMake(bouquetId, count));
+  res.json(orders);
+});

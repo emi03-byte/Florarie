@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useBodyScrollLock } from '../lib/useBodyScrollLock';
 import styles from './QuantityDialog.module.css';
 
 type Props = {
@@ -21,6 +22,8 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: Props) {
+  useBodyScrollLock(true);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onCancel();

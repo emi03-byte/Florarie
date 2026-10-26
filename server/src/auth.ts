@@ -18,6 +18,12 @@ export function getJwtSecret(): string {
   return 'dev-florarie-secret-change-me';
 }
 
+/** Fixed shop login name (default: jardin). Override with APP_USERNAME. */
+export function getShopUsername(): string {
+  const fromEnv = process.env.APP_USERNAME?.trim();
+  return fromEnv && fromEnv.length > 0 ? fromEnv : 'jardin';
+}
+
 /** bcrypt hash from APP_PASSWORD_HASH (preferred). */
 export function getPasswordHash(): string | null {
   const hash = process.env.APP_PASSWORD_HASH?.trim();

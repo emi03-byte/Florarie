@@ -323,25 +323,26 @@
 
 .actions {
   display: grid;
-  grid-template-columns: 6.5rem 5.75rem 8.25rem;
-  gap: 0.4rem;
+  grid-template-columns: 5.9rem 5.35rem 7.5rem 4.6rem;
+  gap: 0.32rem;
   align-items: center;
   justify-content: end;
 }
 
 .btnAdd,
 .btnConfirm,
-.btnAll {
+.btnAll,
+.btnRemove {
   border: 1px solid var(--glass-border);
   background: rgba(255, 255, 255, 0.55);
   color: var(--ink);
-  padding: 0.28rem 0.35rem;
-  font-size: 0.7rem;
+  padding: 0.2rem 0.28rem;
+  font-size: 0.66rem;
   font-weight: 700;
   cursor: pointer;
   border-radius: 6px;
-  line-height: 1.15;
-  height: 1.85rem;
+  line-height: 1.12;
+  height: 1.7rem;
   box-sizing: border-box;
   width: 100%;
   text-align: center;
@@ -356,13 +357,15 @@
 
 .btnAdd:hover:not(:disabled),
 .btnConfirm:hover:not(:disabled),
-.btnAll:hover:not(:disabled) {
+.btnAll:hover:not(:disabled),
+.btnRemove:hover:not(:disabled) {
   border-color: var(--leaf);
 }
 
 .btnAdd:disabled,
 .btnConfirm:disabled,
-.btnAll:disabled {
+.btnAll:disabled,
+.btnRemove:disabled {
   opacity: 0.55;
   cursor: default;
   pointer-events: none;
@@ -378,6 +381,163 @@
   background: var(--accent-deep);
   border-color: var(--accent-deep);
   color: #fff;
+}
+
+.removeBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  background: rgba(23, 39, 30, 0.38);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.removeDialog {
+  width: min(100%, 420px);
+  max-height: min(80dvh, 560px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1.1rem 1.15rem 1rem;
+  border-radius: var(--r-panel, 18px);
+  background: var(--sera-card, #fff);
+  box-shadow: var(--sera-shadow-dialog, 0 18px 44px -16px rgba(23, 39, 30, 0.3));
+  font-family: var(--sera-font-body, inherit);
+  color: var(--sera-text, #17271e);
+}
+
+.removeTitle {
+  margin: 0;
+  font-family: var(--sera-font-display, Georgia, serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--sera-primary, #1f5136);
+}
+
+.removeHint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--sera-muted, #4f6155);
+  line-height: 1.35;
+}
+
+.removeList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.removeRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3.25rem auto;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: var(--r-tile, 12px);
+  background: var(--sera-bg, #f5f8f3);
+}
+
+.removeCheck {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.removeCheck input {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--sera-primary, #1f5136);
+}
+
+.removeName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.removeQty {
+  width: 3.25rem;
+  min-height: 2rem;
+  padding: 0 0.35rem;
+  border: 1.5px solid var(--sera-line, #d9e3d5);
+  border-radius: 8px;
+  background: #fff;
+  text-align: center;
+  font: inherit;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.removeQty:focus {
+  outline: none;
+  border-color: var(--sera-primary, #1f5136);
+  box-shadow: var(--sera-ring, 0 0 0 3px rgba(31, 81, 54, 0.2));
+}
+
+.removeQty:disabled {
+  opacity: 0.55;
+}
+
+.removeMax {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--sera-muted, #4f6155);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.removeActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.removeCancel,
+.removeConfirm {
+  min-height: 2.35rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.removeCancel {
+  border: 1.5px solid var(--sera-line, #d9e3d5);
+  background: #fff;
+  color: var(--sera-muted, #4f6155);
+}
+
+.removeConfirm {
+  border: none;
+  background: var(--sera-blush-ink, #8a3434);
+  color: #fff;
+}
+
+.removeConfirm:disabled,
+.removeCancel:disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
 }
 
 .materialsBackdrop,
@@ -513,6 +673,7 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 0.35rem 0.55rem 0.55rem;
 }
 
@@ -606,7 +767,8 @@
 
   .btnAdd,
   .btnConfirm,
-  .btnAll {
+  .btnAll,
+  .btnRemove {
     flex: 1 1 0;
     width: auto;
     min-width: 0;
@@ -733,6 +895,7 @@
 .btnAdd:focus-visible,
 .btnConfirm:focus-visible,
 .btnAll:focus-visible,
+.btnRemove:focus-visible,
 .materialsPull:focus-visible {
   outline: 3px solid var(--sera-primary);
   outline-offset: 2px;
@@ -866,21 +1029,22 @@
 }
 
 .actions {
-  grid-template-columns: 6.25rem 6rem 8.25rem;
-  gap: var(--sp-2);
+  grid-template-columns: 5.6rem 5.4rem 7.4rem 4.5rem;
+  gap: 7px;
 }
 
 .btnAdd,
 .btnConfirm,
-.btnAll {
-  height: var(--sz-btn-sm);
-  padding: 0 var(--sp-4);
+.btnAll,
+.btnRemove {
+  height: 30px;
+  padding: 0 9px;
   border: 1.5px solid var(--sera-line);
   border-radius: 999px;
   background: #fff;
   color: var(--sera-primary);
   font-family: var(--sera-font-body);
-  font-size: var(--fs-sm);
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1;
@@ -915,9 +1079,21 @@
   background: var(--sera-pressed);
 }
 
+.btnRemove {
+  border-color: var(--sera-blush);
+  background: var(--sera-blush);
+  color: var(--sera-blush-ink);
+}
+
+.btnRemove:hover:not(:disabled) {
+  border-color: #f0cfc8;
+  background: #f7d9d3;
+}
+
 .btnAdd:disabled,
 .btnConfirm:disabled,
-.btnAll:disabled {
+.btnAll:disabled,
+.btnRemove:disabled {
   opacity: 0.5;
 }
 
@@ -1017,7 +1193,7 @@
 
   .actions {
     grid-column: 1 / -1;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     justify-content: stretch;
   }
 }
@@ -1104,19 +1280,20 @@
 
   .actions {
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.9fr) minmax(0, 1.2fr);
-    gap: 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
   }
 
   .btnAdd,
   .btnConfirm,
-  .btnAll {
+  .btnAll,
+  .btnRemove {
     width: auto;
     min-width: 0;
-    height: var(--sz-btn-sm);
-    padding: 0 6px;
+    height: 29px;
+    padding: 0 5px;
     border-radius: 999px;
-    font-size: var(--fs-sm);
+    font-size: 11px;
     white-space: nowrap;
   }
 

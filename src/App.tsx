@@ -14,6 +14,7 @@ import { SeraIcon } from './components/SeraIcon';
 import {
   createOrder,
   deleteBouquet,
+  removeBouquetFromMake,
   fetchCatalog,
   fetchOrders,
   isLoggedIn,
@@ -33,6 +34,7 @@ import {
   sortCatalog,
   type SalesSort,
 } from './lib/salesSort';
+import { useBodyScrollLock } from './lib/useBodyScrollLock';
 import type { Bouquet, CartItem, Order } from './types';
 import './App.css';
 import './styles/sera.css';
@@ -154,6 +156,8 @@ function App() {
     observer.observe(el);
     return () => observer.disconnect();
   }, [authed, view]);
+
+  useBodyScrollLock(floatingSearchOpen);
 
   useEffect(() => {
     if (!floatingSearchOpen) return;
@@ -734,6 +738,10 @@ function App() {
               }}
               onAddToMake={async (bouquetId, count) => {
                 const next = await addBouquetToMake(bouquetId, count);
+                setOrders(next);
+              }}
+              onRemoveFromMake={async (bouquetId, count) => {
+                const next = await removeBouquetFromMake(bouquetId, count);
                 setOrders(next);
               }}
             />
